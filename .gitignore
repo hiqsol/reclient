@@ -1,0 +1,24 @@
+aclocal.m4
+autom4te.cache
+autoscan*.log
+config.h*
+config.log
+config.status
+configure
+configure.lineno
+configure.scan
+depcomp
+install-sh
+missing
+stamp-h1
+
+# General ignores
+old.*
+*.a
+*.core
+*.o
+.*.swp
+*~
+.deps
+Makefile
+Makefile.in
