@@ -62,6 +62,7 @@ reValue rePP::login (const reValue &a) {
 	request->m_options.ref(new epp_Options(epp_string("1.0"),epp_string("en")));
 	request->m_client_id.ref(new epp_string(username));
 	request->m_password.ref(new epp_string(password));
+	if (a.get("newPassword").toBool()) request->m_new_password.ref(new epp_string(a.gl("newPassword")));
 	// filling services info
 	request->m_services.ref(new epp_objuri_seq());
 	request->m_services->push_back("urn:ietf:params:xml:ns:contact-1.0"); // COM,NET don't support contacts
