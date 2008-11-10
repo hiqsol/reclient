@@ -1,0 +1,19 @@
+#!/usr/bin/perl
+
+$SPOOLDIR= shift(@ARGV);
+$request = shift(@ARGV);
+die "usage: repp SPOOLDIR 'rePP request' [reqname]\n" unless ($request);
+$reqname = shift(@ARGV);
+$reqname = 'tt' unless ($reqname);
+
+open(REQ,">$SPOOLDIR/request/$reqname");
+print REQ $request;
+close(REQ);
+
+sleep(1);
+
+open(REP,"$SPOOLDIR/report/$reqname");
+while (<REP>) {
+	print $_;
+};
+close(REP);
