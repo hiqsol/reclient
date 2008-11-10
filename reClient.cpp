@@ -60,20 +60,34 @@ int main (int argc,char *argv[]) {
 		"port",		reMod::get("port"),
 		"certificate",	reMod::get("certificate")
 	));
-	script.runFunction("rePP:login",reValue(
+	reValue loginOptions = reValue(
 		"username",	reMod::get("username"),
-		"password",	reMod::get("password")
-	));
+		"password",	reMod::get("password"),
+		"newPassword",	reMod::get("newPassword")
+	);
+	script.runFunction("rePP:login",loginOptions);
 
 	bool loggedIn = true;
+	time_t logintime = timestamp();
+	time_t lastlogin = logintime;
+	time_t lasthello = logintime;
 	// MAIN LOOP
 	try {
-		time_t lasthello = timestamp();
 		while (loggedIn) {
-			if (timestamp()-lasthello>60*8) {
+			time_t nowtime = timestamp();
+			// PREVENTING IDLE-TIMEOUT (VeriSign - 10 minutes)
+			if (nowtime-lasthello>60*8) {
 				script.runFunction("rePP:hello");
-				lasthello = timestamp();
+				lasthello = nowtime;
 				printf("HELLO\n");
+			};
+			// PREVENTING ABSOLUTE-TIMEOUT (VeriSign - 24 hours)
+			if (nowtime-lastlogin>60*60*23) {
+				script.runFunction("rePP:logout");
+				script.runFunction("rePP:login",loginOptions);
+				lastlogin = nowtime;
+				lasthello = nowtime;
+				printf("RELOGIN\n");
 			};
 			size_t num = 0;
 			reValue files = csplit(reExec::backtick("ls -rt "+requestDir),"\n");
