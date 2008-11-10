@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">
+  <response>
+    <result code="2101">
+      <msg>Unimplemented command</msg>
+      <extValue>
+        <value xmlns:epp="urn:ietf:params:xml:ns:epp-1.0"><epp:undef/></value>
+        <reason>Command not found</reason>
+      </extValue>
+    </result>
+    <trID>
+      <svTRID>284208352-1220618954048</svTRID>
+    </trID>
+  </response>
+</epp>

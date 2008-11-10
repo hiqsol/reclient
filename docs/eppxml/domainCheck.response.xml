@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">
+  <response>
+    <result code="1000">
+      <msg>Command completed successfully</msg>
+    </result>
+    <resData>
+      <domain:chkData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd">
+        <domain:cd>
+          <domain:name avail="0">example1.com</domain:name>
+          <domain:reason>Domain exists</domain:reason>
+        </domain:cd>
+        <domain:cd>
+          <domain:name avail="0">example2.com</domain:name>
+          <domain:reason>Domain exists</domain:reason>
+        </domain:cd>
+        <domain:cd>
+          <domain:name avail="0">example3.com</domain:name>
+          <domain:reason>Domain exists</domain:reason>
+        </domain:cd>
+	<domain:cd>
+          <domain:name avail="1">my-example-i3.com</domain:name>
+        </domain:cd>
+      </domain:chkData>
+    </resData>
+    <trID>
+      <clTRID>DCk-1</clTRID>
+      <svTRID>284218292-1220624343633</svTRID>
+    </trID>
+  </response>
+</epp>

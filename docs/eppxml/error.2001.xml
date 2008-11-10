@@ -1,0 +1,20 @@
+<epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">
+  <response>
+    <result code="2001">
+      <msg>Command syntax error</msg>
+      <extValue>
+        <value xmlns:epp="urn:ietf:params:xml:ns:epp-1.0"><epp:undef/></value>
+        <reason>NameStore Extension not provided</reason>
+      </extValue>
+    </result>
+    <extension>
+      <namestoreExt:nsExtErrData xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1" xsi:schemaLocation="http://www.verisign-grs.com/epp/namestoreExt-1.1 namestoreExt-1.1.xsd">
+        <namestoreExt:msg code="1">Specified sub-product does not exist</namestoreExt:msg>
+      </namestoreExt:nsExtErrData>
+    </extension>
+    <trID>
+      <clTRID>0001-00001</clTRID>
+      <svTRID>281078263-1220520444837</svTRID>
+    </trID>
+  </response>
+</epp>

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">
+  <response>
+    <result code="1000">
+      <msg>Command completed successfully</msg>
+    </result>
+    <resData>
+      <domain:infData xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd">
+        <domain:name>my-example-i3.com</domain:name>
+        <domain:roid>29366479_DOMAIN_COM-VRSN</domain:roid>
+        <domain:status s="ok"/>
+        <domain:host>NS2.MY-EXAMPLE-I3.COM</domain:host>
+        <domain:host>NS1.MY-EXAMPLE-I3.COM</domain:host>
+        <domain:clID>4557</domain:clID>
+        <domain:crID>evoplus1</domain:crID>
+        <domain:crDate>2008-09-05T15:31:39.0000Z</domain:crDate>
+        <domain:upID>evoplus1</domain:upID>
+        <domain:upDate>2008-09-05T15:31:39.0000Z</domain:upDate>
+        <domain:exDate>2009-09-05T15:31:39.0000Z</domain:exDate>
+        <domain:authInfo>
+          <domain:pw>mYpWd001</domain:pw>
+        </domain:authInfo>
+      </domain:infData>
+    </resData>
+    <trID>
+      <clTRID>DI-4</clTRID>
+      <svTRID>287500738-1221831668246</svTRID>
+    </trID>
+  </response>
+</epp>

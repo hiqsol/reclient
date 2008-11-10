@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">
+  <greeting>
+    <svID>VeriSign Com/Net EPP Registration Server</svID>
+    <svDate>2008-09-05T13:30:40.0061Z</svDate>
+    <svcMenu>
+      <version>1.0</version>
+      <lang>en</lang>
+      <objURI>urn:ietf:params:xml:ns:domain-1.0</objURI>
+      <objURI>urn:ietf:params:xml:ns:host-1.0</objURI>
+      <svcExtension>
+        <extURI>http://www.verisign.com/epp/idnLang-1.0</extURI>
+        <extURI>http://www.verisign-grs.com/epp/namestoreExt-1.1</extURI>
+        <extURI>urn:ietf:params:xml:ns:rgp-1.0</extURI>
+        <extURI>http://www.verisign.com/epp/whoisInf-1.0</extURI>
+        <extURI>http://www.verisign.com/epp/sync-1.0</extURI>
+      </svcExtension>
+    </svcMenu>
+    <dcp>
+      <access><all/></access>
+      <statement>
+        <purpose>
+          <admin/>
+          <other/>
+          <prov/>
+        </purpose>
+        <recipient>
+          <ours/>
+          <public/>
+          <unrelated/>
+        </recipient>
+        <retention>
+          <indefinite/>
+        </retention>
+      </statement>
+    </dcp>
+  </greeting>
+</epp>
