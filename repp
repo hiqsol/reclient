@@ -10,7 +10,7 @@ open(REQ,">$SPOOLDIR/request/$reqname");
 print REQ $request;
 close(REQ);
 
-sleep(1);
+sleep(2);
 
 open(REP,"$SPOOLDIR/report/$reqname");
 while (<REP>) {
