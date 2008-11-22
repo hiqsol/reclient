@@ -1,0 +1,11 @@
+OK
+clientHold - not include in the zone file
+clientUpdateProhibited
+clientTransferProhibited
+clientTransferDeleteProhibited
+clientTransferRenewProhibited
+serverHold
+serverUpdateProhibited
+serverTransferProhibited
+serverTransferDeleteProhibited
+serverTransferRenewProhibited
