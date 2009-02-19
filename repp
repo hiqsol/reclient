@@ -1,18 +1,41 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -s
+
+use File::Temp qw/tempfile/;
 
 $SPOOLDIR= shift(@ARGV);
 $request = shift(@ARGV);
-die "usage: repp SPOOLDIR 'rePP request' [reqname]\n" unless ($request);
+die "usage: repp [-sleep=N.NN -timeout=N] SPOOLDIR 'rePP request' [reqname]\n" unless ($request);
 $reqname = shift(@ARGV);
-$reqname = 'tt' unless ($reqname);
+$sleep = 0.1 unless ($sleep);
+$timeout = 4 unless ($timeout);
 
-open(REQ,">$SPOOLDIR/request/$reqname");
-print REQ $request;
-close(REQ);
+$REQDIR = "$SPOOLDIR/request";
+$REPDIR = "$SPOOLDIR/report";
 
-sleep(2);
+if ($reqname) {
+	$reqfile = "$REQDIR/$reqname";
+	open($REQ,">$reqfile");
+} else {
+	($REQ,$reqfile) = tempfile( DIR => $REQDIR );
+	$reqname = substr($reqfile,rindex($reqfile,'/')+1);
+};
 
-open(REP,"$SPOOLDIR/report/$reqname");
+print $REQ $request;
+chmod(0644,$REQ);
+close($REQ);
+
+$total_sleep = 0.0;
+$repfile = "$REPDIR/$reqname";
+while (!-e $repfile) {
+	select(undef,undef,undef,$sleep);
+	$total_sleep += $sleep;
+	if ($total_sleep>=$timeout) {
+		unlink($reqfile);
+		die("timeout $timeout seconds exceeded");
+	};
+};
+
+open(REP,$repfile);
 while (<REP>) {
 	print $_;
 };
