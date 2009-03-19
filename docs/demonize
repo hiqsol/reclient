@@ -1,0 +1,14 @@
+
+if(daemon_mode) {
+	if(getppid() != 1) {
+		signal(SIGTTOU, SIG_IGN);
+		signal(SIGTTIN, SIG_IGN);
+		signal(SIGTSTP, SIG_IGN);
+	}
+	if(fork() != 0) exit(0);
+	setsid();
+	getrlimit(RLIMIT_NOFILE, &flim);
+	for(fd = 0; fd < flim.rlim_max; fd++) close(fd);
+	chdir("/");
+}
+
