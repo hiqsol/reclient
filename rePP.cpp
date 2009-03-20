@@ -670,8 +670,8 @@ reValue rePP::hostSmartUpdate (const reValue &a,const reValue &info) {
 		reValue add_i,rem_i;
 		for (reValue::size_type i=0,n=old_i.size();i<n;i++) if (!new_i.has(old_i.key(i))) rem_i.set(old_i.key(i),reValue::Null);
 		for (reValue::size_type i=0,n=new_i.size();i<n;i++) if (!old_i.has(new_i.key(i))) add_i.set(new_i.key(i),reValue::Null);
-		if (rem_i.size()) r.let("remove").set("statuses",rem_i);
-		if (add_i.size()) r.let("add").set("statuses",add_i);
+		if (rem_i.size()) r.let("remove").set("ips",rem_i);
+		if (add_i.size()) r.let("add").set("ips",add_i);
 	};
 	if (a.has("new_name")) {
 		reLine name = r.pop("new_name").toLine();
