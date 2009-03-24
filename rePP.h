@@ -69,8 +69,10 @@ public:
 	reValue domainSmartCheck	(const reValue &a);
 	reValue domainSmartUpdate	(const reValue &a,const reValue &info);
 	reValue domainSmartUpdate	(const reValue &a) { return domainSmartUpdate(a,domainInfo(a)); };
-	reValue domainSmartLock		(const reValue &a);
-	reValue domainSmartUnlock	(const reValue &a);
+	reValue domainSmartLock		(const reValue &a,const reValue &info);
+	reValue domainSmartLock		(const reValue &a) { return domainSmartLock(a,domainInfo(a)); };
+	reValue domainSmartUnlock	(const reValue &a,const reValue &info);
+	reValue domainSmartUnlock	(const reValue &a) { return domainSmartUnlock(a,domainInfo(a)); };
 	reValue hostAllowUpdate		(const reValue &a);
 	reValue hostProhibitUpdate	(const reValue &a);
 	reValue hostSmartCheck		(const reValue &a);

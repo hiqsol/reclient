@@ -592,8 +592,7 @@ reValue rePP::domainProhibitUpdate (const reValue &a) {
 	));
 };
 
-reValue rePP::domainSmartLock (const reValue &a) {
-	reValue info = domainInfo(a);
+reValue rePP::domainSmartLock (const reValue &a,const reValue &info) {
 	reValue o_s = info.get("statuses");
 	reValue n_s = o_s;
 	reValue s_s = ksplit("clientUpdateProhibited,clientDeleteProhibited,clientTransferProhibited");
@@ -605,8 +604,7 @@ reValue rePP::domainSmartLock (const reValue &a) {
 	return go ? domainSmartUpdate(reValue("name",a.gl("name"),"statuses",n_s),info) : reValue::Null;
 };
 
-reValue rePP::domainSmartUnlock (const reValue &a) {
-	reValue info = domainInfo(a);
+reValue rePP::domainSmartUnlock (const reValue &a,const reValue &info) {
 	reValue o_s = info.get("statuses");
 	reValue n_s(o_s.size(),true);
 	reValue s_s = ksplit("clientUpdateProhibited,clientDeleteProhibited,clientTransferProhibited");
