@@ -7,7 +7,7 @@ $request = shift(@ARGV);
 die "usage: repp [-sleep=N.NN -timeout=N] SPOOLDIR 'rePP request' [reqname]\n" unless ($request);
 $reqname = shift(@ARGV);
 $sleep = 0.1 unless ($sleep);
-$timeout = 4 unless ($timeout);
+$timeout = 9 unless ($timeout);
 
 $REQDIR = "$SPOOLDIR/request";
 $REPDIR = "$SPOOLDIR/report";
