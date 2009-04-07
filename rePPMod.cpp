@@ -48,6 +48,8 @@ reValue rePPMod::domainSmartCheck	(const reValue &a) { return sessions.let(a.gl(
 reValue rePPMod::domainSmartUpdate	(const reValue &a) { return sessions.let(a.gl("session",0)).domainSmartUpdate(a); };
 reValue rePPMod::domainSmartLock	(const reValue &a) { return sessions.let(a.gl("session",0)).domainSmartLock(a); };
 reValue rePPMod::domainSmartUnlock	(const reValue &a) { return sessions.let(a.gl("session",0)).domainSmartUnlock(a); };
+reValue rePPMod::domainSmartHold	(const reValue &a) { return sessions.let(a.gl("session",0)).domainSmartHold(a); };
+reValue rePPMod::domainSmartUnhold	(const reValue &a) { return sessions.let(a.gl("session",0)).domainSmartUnhold(a); };
 reValue rePPMod::hostSmartCheck		(const reValue &a) { return sessions.let(a.gl("session",0)).hostSmartCheck(a); };
 reValue rePPMod::hostSmartUpdate	(const reValue &a) { return sessions.let(a.gl("session",0)).hostSmartUpdate(a); };
 reValue rePPMod::hostSmartSet		(const reValue &a) { return sessions.let(a.gl("session",0)).hostSmartSet(a); };

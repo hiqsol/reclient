@@ -616,6 +616,20 @@ reValue rePP::domainSmartUnlock (const reValue &a,const reValue &info) {
 	return go ? domainSmartUpdate(reValue("name",a.gl("name"),"statuses",n_s),info) : reValue::Null;
 };
 
+reValue rePP::domainSmartHold (const reValue &a,const reValue &info) {
+	reValue o_s = info.get("statuses");
+	if (o_s.has('clientHold')) return reValue::Null;
+	o_s.set("clientHold",reValue::Null);
+	return domainSmartUpdate(reValue("name",a.gl("name"),"statuses",o_s),info);
+};
+
+reValue rePP::domainSmartUnhold (const reValue &a,const reValue &info) {
+	reValue o_s = info.get("statuses");
+	if (!o_s.has("clientHold")) return reValue::Null;
+	o_s.del("clientHold");
+	return domainSmartUpdate(reValue("name",a.gl("name"),"statuses",o_s),info);
+};
+
 reValue rePP::hostSmartCheck (const reValue &a) {
 	const reValue names = a.get("names").csplit();
 	bool check = true;

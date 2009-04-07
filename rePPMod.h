@@ -10,7 +10,7 @@
 
 class rePPMod : public reMod {
 public:
-	rePPMod () : reMod("rePPMod","init,incBatchNo,poll,hello,login,logout,domainInfo,domainSync,domainCheck,domainRenew,domainCreate,domainUpdate,domainDelete,domainTransfer,hostInfo,hostCheck,hostCreate,hostUpdate,hostDelete,contactCheck,setNamestoreExtension,pollOne,pollAll,domainAllowUpdate,domainProhibitUpdate,domainSmartCheck,domainSmartUpdate,domainSmartLock,domainSmartUnlock,hostSmartCheck,hostSmartUpdate,hostSmartSet") {};
+	rePPMod () : reMod("rePPMod","init,incBatchNo,poll,hello,login,logout,domainInfo,domainSync,domainCheck,domainRenew,domainCreate,domainUpdate,domainDelete,domainTransfer,hostInfo,hostCheck,hostCreate,hostUpdate,hostDelete,contactCheck,setNamestoreExtension,pollOne,pollAll,domainAllowUpdate,domainProhibitUpdate,domainSmartCheck,domainSmartUpdate,domainSmartLock,domainSmartUnlock,domainSmartHold,domainSmartUnhold,hostSmartCheck,hostSmartUpdate,hostSmartSet") {};
 
 // 
 	static reValue init			(const reValue &a);
@@ -46,6 +46,8 @@ public:
 	static reValue domainSmartUpdate	(const reValue &a);
 	static reValue domainSmartLock		(const reValue &a);
 	static reValue domainSmartUnlock	(const reValue &a);
+	static reValue domainSmartHold		(const reValue &a);
+	static reValue domainSmartUnhold	(const reValue &a);
 	static reValue hostSmartCheck		(const reValue &a);
 	static reValue hostSmartUpdate		(const reValue &a);
 	static reValue hostSmartSet		(const reValue &a);
