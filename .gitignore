@@ -12,6 +12,7 @@ install-sh
 missing
 stamp-h1
 reClient
+save-reClient
 
 # General ignores
 old.*
