@@ -1,7 +1,10 @@
 #!/usr/bin/perl -s
 
-$COMM	= "/home/sol/prj/reclient/reClient";
-$CONF	= "/home/sol/prj/revo/etc/verisign-epp.rsx";
+$COMM	= shift(@ARGV);
+$CONF	= shift(@ARGV);
+
+$COMM	= "/home/sol/prj/reclient/reClient"		unless ($COMM);
+$CONF	= "/home/sol/prj/revo/etc/verisign-epp.rsx"	unless ($CONF);
 @PROG	= ($COMM,$CONF);
 
 sub get_cpu {
@@ -20,7 +23,6 @@ sub get_cpu {
 sub start {
 	exit(exec(@PROG));
 };
-
 
 do {
 	($pid,$cpu) = get_cpu('reClient');
