@@ -618,7 +618,7 @@ reValue rePP::domainSmartUnlock (const reValue &a,const reValue &info) {
 
 reValue rePP::domainSmartHold (const reValue &a,const reValue &info) {
 	reValue o_s = info.get("statuses");
-	if (o_s.has('clientHold')) return reValue::Null;
+	if (o_s.has("clientHold")) return reValue::Null;
 	o_s.set("clientHold",reValue::Null);
 	return domainSmartUpdate(reValue("name",a.gl("name"),"statuses",o_s),info);
 };
