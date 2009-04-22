@@ -6,7 +6,8 @@
 reHash<rePP> rePPMod::sessions;
 
 reValue rePPMod::init (const reValue &a) {
-	sessions.set(a.gl("session",0),rePP(a.gl("host"),a.gi4("port"),a.gl("certificate"),a.gl("serial")));
+	sessions.set(a.gl("session",0),rePP(a.gl("host"),a.gi4("port"),a.gl("certificate"),a.gl("cacertfile"),a.gl("cacertdir")));
+	if (a.has("serial")) sessions.let(a.gl("session",0)).setSerialNo(a.gl("serial"));
 	return reValue::Null;
 };
 

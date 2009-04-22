@@ -25,10 +25,11 @@ using namespace eppobject::namestoreExt;
 class rePP {
 public:
 	rePP () {};
-	rePP (const reLine &h,unsigned p,const reLine &c,const reLine &s)
-		: host(h),port(p),certificate(c),serialNo(s),batchNo(1),commandNo(1)
+	rePP (const reLine &h,unsigned p,const reLine &c,const reLine &f,const reLine &d)
+		: host(h),port(p),certificate(c),cacertfile(f),cacertdir(d),serialNo("0"),batchNo(1),commandNo(1)
 	{
-		transport = new epp_TransportSSL(certificate,"","");
+		transport = new epp_TransportSSL(certificate,cacertfile,cacertdir);
+		//printf("certificate:%s cacertfile:%s cacertdir:%s\n",certificate.c_str(),cacertfile.c_str(),cacertdir.c_str());
 		transport->setServerName(host);
 		transport->setServerPort(port);
 		refcnt_ptr<epp_TransportSSL> tref(dynamic_cast<epp_TransportSSL*>(transport));
@@ -38,6 +39,8 @@ public:
 	void setCredentials (const reLine &u,const reLine &p) { username = u;password = p; };
 	void setNamestoreExtension (const reLine &ext,const reLine &data);
 	epp_Extension_ref getExtension (const reLine &ext) { return extensions.has(ext) ? extensions.let(ext) : NULL; };
+
+	void setSerialNo (const reLine &s) { serialNo = s; };
 	unsigned incBatchNo () { return ++batchNo; };
 
 // NATIVE EPP COMMANDS
@@ -127,6 +130,8 @@ private:
 	reLine				host;
 	unsigned			port;
 	reLine				certificate;
+	reLine				cacertfile;
+	reLine				cacertdir;
 	reLine				username;
 	reLine				password;
 	reLine				serialNo;
