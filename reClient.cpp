@@ -2,6 +2,7 @@
 // reClient - Registrar EPP Client
 
 #include "rePPMod.h"
+#include "rebase/reScript/reBaseMod.h"
 #include "rebase/reScript/reScript.h"
 #include "rebase/reUtils/reExec.h"
 #include "rebase/reUtils/reFile.h"
@@ -45,7 +46,7 @@ void writelog (const reLine &s) { writelog(s.c_str()); };
 int main (int argc,char *argv[]) {
 	// INITIALIZING reScript
 	reScript script;
-	reMod base;
+	reBaseMod base;
 	rePPMod repp;
 	script.add(&base,"");
 	script.add(&repp,"repp");
@@ -56,11 +57,11 @@ int main (int argc,char *argv[]) {
 		exit(1);
 	};
 	script.runFile(argv[1]);
-	reLine requestDir	= checkDir(reMod::gl("requestDir"));
-	reLine reportDir	= checkDir(reMod::gl("reportDir"));
-	reLine storeDir		= checkDir(reMod::gl("storeDir"));
-	reLine errorDir		= checkDir(reMod::gl("errorDir"));
-	reLine logDir		= checkDir(reMod::gl("logDir"));
+	reLine requestDir	= checkDir(reBaseMod::gl("requestDir"));
+	reLine reportDir	= checkDir(reBaseMod::gl("reportDir"));
+	reLine storeDir		= checkDir(reBaseMod::gl("storeDir"));
+	reLine errorDir		= checkDir(reBaseMod::gl("errorDir"));
+	reLine logDir		= checkDir(reBaseMod::gl("logDir"));
 	reValue dirs;
 	dirs[requestDir]	= 1;
 	dirs[reportDir]		= 1;
@@ -95,11 +96,11 @@ int main (int argc,char *argv[]) {
 
 	// INITIALIZING EPP
 	script.runFunction("repp:init",reValue(
-		"host",		reMod::get("host"),
-		"port",		reMod::get("port"),
-		"certificate",	reMod::get("certificate"),
-		"cacertfile",	reMod::get("cacertfile"),
-		"cacertdir",	reMod::get("cacertdir"),
+		"host",		reBaseMod::get("host"),
+		"port",		reBaseMod::get("port"),
+		"certificate",	reBaseMod::get("certificate"),
+		"cacertfile",	reBaseMod::get("cacertfile"),
+		"cacertdir",	reBaseMod::get("cacertdir"),
 		"serial",	THE_SNO
 	));
 	script.runFunction("repp:setNamestoreExtension",reValue(
@@ -111,9 +112,9 @@ int main (int argc,char *argv[]) {
 		"data",		"dotNET"
 	));
 	reValue loginOptions = reValue(
-		"username",	reMod::get("username"),
-		"password",	reMod::get("password"),
-		"newPassword",	reMod::get("newPassword")
+		"username",	reBaseMod::get("username"),
+		"password",	reBaseMod::get("password"),
+		"newPassword",	reBaseMod::get("newPassword")
 	);
 	script.runFunction("repp:login",loginOptions);
 	writelog("inited, loggedin");
@@ -159,7 +160,7 @@ int main (int argc,char *argv[]) {
 			};
 			if (!is_ok) reExec::spawn("cp "+save+" "+errorDir+rnam);
 			num++;
-			if (reMod::get("REPP_LOGGEDOUT").toBool()) {
+			if (reBaseMod::get("REPP_LOGGEDOUT").toBool()) {
 				loggedIn = false;
 				break;
 			};
@@ -173,10 +174,10 @@ int main (int argc,char *argv[]) {
 
 void minUse () {
 	reValue i = (int64_t)1;
-	reValue n = reMod::set(reValue("a","b"));
-	reValue a = reMod::get(reValue(1,false));
+	reValue n = reBaseMod::set(reValue("a","b"));
+	reValue a = reBaseMod::get(reValue(1,false));
 	a.set("asdasd",123);
-	reMod::inc(n);
-	reMod::sum(a);
+	reBaseMod::inc(n);
+	reBaseMod::sum(a);
 };
 
