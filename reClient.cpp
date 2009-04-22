@@ -98,6 +98,8 @@ int main (int argc,char *argv[]) {
 		"host",		reMod::get("host"),
 		"port",		reMod::get("port"),
 		"certificate",	reMod::get("certificate"),
+		"cacertfile",	reMod::get("cacertfile"),
+		"cacertdir",	reMod::get("cacertdir"),
 		"serial",	THE_SNO
 	));
 	script.runFunction("repp:setNamestoreExtension",reValue(
