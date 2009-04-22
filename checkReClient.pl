@@ -4,7 +4,7 @@ $COMM	= shift(@ARGV);
 $CONF	= shift(@ARGV);
 
 $COMM	= "/home/sol/prj/reclient/reClient"		unless ($COMM);
-$CONF	= "/home/sol/prj/revo/etc/verisign-epp.rsx"	unless ($CONF);
+$CONF	= "/home/sol/prj/revo/etc/verisign.epp01.rsx"	unless ($CONF);
 @PROG	= ($COMM,$CONF);
 
 sub get_cpu {
