@@ -73,6 +73,7 @@ int main (int argc,char *argv[]) {
 		exit(1);
 	};
 	printf("dirs ok: %s %s %s\n",requestDir.c_str(),reportDir.c_str(),storeDir.c_str());
+	bool doSerialize	= reBaseMod::get("doSerialize").toBool();
 
 	// INITIALIZING LOG
 	reValue lastlog = csplit(chomp(reExec::backtick("ls -t "+logDir+" | head -n 1")),".");
@@ -148,7 +149,7 @@ int main (int argc,char *argv[]) {
 			reLine b_no = script.runFunction("repp:incBatchNo").toLine();
 			reLine rnam = u2line(THE_SNO)+'-'+b_no+'.'+file;
 			reValue res = script.runFile(path);
-			reLine lres = res.dump2line();
+			reLine lres = doSerialize ? reScript::data2text(res) : res.dump2line();
 			reFile::writeln(reportDir+file,lres);
 			reFile::appendln(path,"\n\n"+lres);
 			bool is_ok = rePP::isResponseOk(res);
