@@ -114,9 +114,9 @@ int main (int argc,char *argv[]) {
 	));
 	reValue loginOptions = reValue(
 		"username",	reBaseMod::get("username"),
-		"password",	reBaseMod::get("password"),
-		"new_password",	reBaseMod::get("new_password")
+		"password",	reBaseMod::get("password")
 	);
+	if (reBaseMod::has("new_password").toBool()) loginOptions.set("new_password",reBaseMod::get("new_password"));
 	if (reBaseMod::has("login_trID").toBool()) loginOptions.set("trID",reBaseMod::get("login_trID"));
 	script.runFunction("repp:login",loginOptions);
 	writelog("inited, loggedin");
