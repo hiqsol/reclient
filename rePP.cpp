@@ -248,12 +248,7 @@ reValue rePP::domainCreate (const reValue &a) {
 	if (a.has("nameservers")) request->m_name_servers.ref(newStringSeq(a.get("nameservers").csplit()));
 	if (a.has("registrant")) request->m_registrant.ref(new epp_string(a.gl("registrant")));
 	if (a.has("password")) request->m_auth_info.ref(newAuthInfo(a));
-	if (a.has("tech") || a.has("admin") || a.has("billing")) {
-		request->m_contacts.ref(new epp_domain_contact_seq());
-		if (a.has("tech")) request->m_contacts->push_back(DomainContact(TECH,a.gl("tech")));
-		if (a.has("admin")) request->m_contacts->push_back(DomainContact(ADMIN,a.gl("admin")));
-		if (a.has("billing")) request->m_contacts->push_back(DomainContact(BILLING,a.gl("billing")));
-	};
+	if (hasContacts(a)) request->m_contacts.ref(newDomainContactSeq(a));
 	// performing command
 	epp_DomainCreate_ref command(new epp_DomainCreate());
 	command->setRequestData(*request);
@@ -278,17 +273,20 @@ reValue rePP::domainUpdate (const reValue &a) {
 		request->m_add.ref(new epp_DomainUpdateAddRemove());
 		if (add.has("statuses")) request->m_add->m_status.ref(newDomainStatusSeq(add.get("statuses").csplit()));
 		if (add.has("nameservers")) request->m_add->m_name_servers.ref(newStringSeq(add.get("nameservers").csplit()));
+		if (hasContacts(add)) request->m_add->m_contacts.ref(newDomainContactSeq(add));
 	};
 	if (a.has("remove")) {
 		const reValue &remove = a.get("remove");
 		request->m_remove.ref(new epp_DomainUpdateAddRemove());
 		if (remove.has("statuses")) request->m_remove->m_status.ref(newDomainStatusSeq(remove.get("statuses").csplit()));
 		if (remove.has("nameservers")) request->m_remove->m_name_servers.ref(newStringSeq(remove.get("nameservers").csplit()));
+		if (hasContacts(remove)) request->m_remove->m_contacts.ref(newDomainContactSeq(remove));
 	};
 	if (a.has("change")) {
 		const reValue &change = a.get("change");
 		request->m_change.ref(new epp_DomainUpdateChange());
 		if (change.has("password")) request->m_change->m_auth_info.ref(newAuthInfo(change));
+		if (change.has("registrant")) request->m_change->m_registrant.ref(new epp_string(change.gl("registrant")));
 	};
 	// performing command
 	epp_DomainUpdate_ref command(new epp_DomainUpdate());
@@ -785,6 +783,14 @@ epp_DomainContact rePP::DomainContact (epp_DomainContactType type,const reLine &
 	epp_DomainContact res;
 	res.m_type.ref(new epp_DomainContactType(type));
 	res.m_id.ref(new epp_string(id));
+	return res;
+};
+
+epp_domain_contact_seq *rePP::newDomainContactSeq (const reValue &a) {
+	epp_domain_contact_seq *res = new epp_domain_contact_seq();
+	if (a.has("tech")) res->push_back(DomainContact(TECH,a.gl("tech")));
+	if (a.has("admin")) res->push_back(DomainContact(ADMIN,a.gl("admin")));
+	if (a.has("billing")) res->push_back(DomainContact(BILLING,a.gl("billing")));
 	return res;
 };
 
