@@ -4,7 +4,7 @@ use File::Temp qw/tempfile/;
 
 $SPOOLDIR= shift(@ARGV);
 $request = shift(@ARGV);
-die "usage: repp [-sleep=N.NN -timeout=N] SPOOLDIR 'rePP request' [reqname]\n" unless ($request);
+die "usage: repp [-sleep=N.NN -timeout=N] SPOOLDIR 'rePP request or filename' [reqname]\n" unless ($request);
 $reqname = shift(@ARGV);
 $sleep = 0.1 unless ($sleep);
 $timeout = 9 unless ($timeout);
@@ -18,6 +18,14 @@ if ($reqname) {
 } else {
 	($REQ,$reqfile) = tempfile( DIR => $REQDIR );
 	$reqname = substr($reqfile,rindex($reqfile,'/')+1);
+};
+
+if (-f $request) {
+	open(SRC,$request);
+	$request = "";
+	while (<SRC>) {
+		$request .= $_;
+	};
 };
 
 print $REQ $request;
