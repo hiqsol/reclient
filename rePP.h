@@ -112,6 +112,7 @@ protected:
 	static epp_AuthInfo		*newAuthInfo		(const reValue &a);
 	static epp_PollOpType		*newPollOpType		(const reLine &t);
 	static epp_DomainHostsType	*newDomainHostsType	(const reLine &t);
+	static epp_DomainContact	DomainContact		(epp_DomainContactType t,const reLine &c);
 	static epp_DomainStatus		DomainStatus		(const reValue &a);
 	static epp_domain_status_seq	*newDomainStatusSeq	(const reValue &a);
 	static epp_HostStatus		HostStatus		(const reValue &a);

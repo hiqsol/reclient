@@ -67,7 +67,7 @@ reValue rePP::login (const reValue &a) {
 	request->m_options.ref(new epp_Options(epp_string("1.0"),epp_string("en")));
 	request->m_client_id.ref(new epp_string(username));
 	request->m_password.ref(new epp_string(password));
-	if (a.get("newPassword").toBool()) request->m_new_password.ref(new epp_string(a.gl("newPassword")));
+	if (a.has("new_password")) request->m_new_password.ref(new epp_string(a.gl("new_password")));
 	// filling services info
 	request->m_services.ref(new epp_objuri_seq());
 	request->m_services->push_back("urn:ietf:params:xml:ns:contact-1.0"); // COM,NET don't support contacts
@@ -246,7 +246,14 @@ reValue rePP::domainCreate (const reValue &a) {
 	request->m_name.ref(new epp_string(a.gl("name")));
 	request->m_period.ref(new epp_DomainPeriod(YEAR,a.get("period").toInt4(1)));
 	if (a.has("nameservers")) request->m_name_servers.ref(newStringSeq(a.get("nameservers").csplit()));
+	if (a.has("registrant")) request->m_registrant.ref(new epp_string(a.gl("registrant")));
 	if (a.has("password")) request->m_auth_info.ref(newAuthInfo(a));
+	if (a.has("tech") || a.has("admin") || a.has("billing")) {
+		request->m_contacts.ref(new epp_domain_contact_seq());
+		if (a.has("tech")) request->m_contacts->push_back(DomainContact(TECH,a.gl("tech")));
+		if (a.has("admin")) request->m_contacts->push_back(DomainContact(ADMIN,a.gl("admin")));
+		if (a.has("billing")) request->m_contacts->push_back(DomainContact(BILLING,a.gl("billing")));
+	};
 	// performing command
 	epp_DomainCreate_ref command(new epp_DomainCreate());
 	command->setRequestData(*request);
@@ -772,6 +779,13 @@ epp_DomainHostsType *rePP::newDomainHostsType (const reLine &t) {
 	else if ("del"==t) type = eppobject::domain::DEL;
 	else if ("sub"==t) type = eppobject::domain::SUB;
 	return new epp_DomainHostsType(type);
+};
+
+epp_DomainContact rePP::DomainContact (epp_DomainContactType type,const reLine &id) {
+	epp_DomainContact res;
+	res.m_type.ref(new epp_DomainContactType(type));
+	res.m_id.ref(new epp_string(id));
+	return res;
 };
 
 epp_DomainStatus rePP::DomainStatus (const reValue &a) {
