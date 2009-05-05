@@ -11,6 +11,8 @@
 #include "epp-rtk-cpp/data/epp_AuthInfo.h"
 #include "epp-rtk-cpp/data/epp_domaindata.h"
 #include "epp-rtk-cpp/data/epp_hostdata.h"
+#include "epp-rtk-cpp/data/epp_ContactNameAddress.h"
+#include "epp-rtk-cpp/data/epp_ContactPhone.h"
 #include "epp-rtk-cpp/data/epp_PollResData.h"
 #include "epp-rtk-cpp/data/epp_Response.h"
 #include "epp-rtk-cpp/transport/transports.h"
@@ -20,6 +22,7 @@ using namespace epptransport;
 using namespace eppobject::epp;
 using namespace eppobject::domain;
 using namespace eppobject::host;
+using namespace eppobject::contact;
 using namespace eppobject::namestoreExt;
 
 class rePP {
@@ -63,6 +66,11 @@ public:
 	reValue hostUpdate		(const reValue &a);
 	reValue hostDelete		(const reValue &a);
 	reValue contactCheck		(const reValue &a);
+	reValue contactCreate		(const reValue &a);
+	reValue contactInfo		(const reValue &a);
+	reValue contactTransfer		(const reValue &a);
+	reValue contactUpdate		(const reValue &a);
+	reValue contactDelete		(const reValue &a);
 
 // SMART COMMANDS
 	reValue pollOne			(const reValue &a);
@@ -108,20 +116,29 @@ protected:
 
 	static reValue	errorResult	(int code,const reLine &msg) { return reValue("result_code",code,"result_msg",msg); };
 
-	static epp_string_seq		*newStringSeq		(const reValue &a);
-	static epp_AuthInfo		*newAuthInfo		(const reValue &a);
-	static epp_PollOpType		*newPollOpType		(const reLine &t);
-	static epp_DomainHostsType	*newDomainHostsType	(const reLine &t);
-	static bool			hasContacts		(const reValue &a) { return a.has("admin") || a.has("tech") || a.has("billing"); };
-	static epp_DomainContact	DomainContact		(epp_DomainContactType t,const reLine &c);
-	static epp_domain_contact_seq	*newDomainContactSeq	(const reValue &a);
-	static epp_DomainStatus		DomainStatus		(const reValue &a);
-	static epp_domain_status_seq	*newDomainStatusSeq	(const reValue &a);
-	static epp_HostStatus		HostStatus		(const reValue &a);
-	static epp_host_status_seq	*newHostStatusSeq	(const reValue &a);
-	static epp_host_address_seq	*newHostAddressSeq	(const reValue &a);
+	static epp_string_seq			*newStringSeq			(const reValue &a);
+	static epp_AuthInfo			*newAuthInfo			(const reValue &a);
+	static epp_PollOpType			*newPollOpType			(const reLine &t);
+	static epp_DomainHostsType		*newDomainHostsType		(const reLine &t);
+	static bool				hasContacts			(const reValue &a) { return a.has("admin") || a.has("tech") || a.has("billing"); };
+	static epp_DomainContact		DomainContact			(epp_DomainContactType t,const reLine &c);
+	static epp_domain_contact_seq		*newDomainContactSeq		(const reValue &a);
+	static epp_DomainStatus			DomainStatus			(const reValue &a);
+	static epp_domain_status_seq		*newDomainStatusSeq		(const reValue &a);
+	static epp_ContactStatus		ContactStatus			(const reValue &a);
+	static epp_contact_status_seq		*newContactStatusSeq		(const reValue &a);
+	static epp_HostStatus			HostStatus			(const reValue &a);
+	static epp_host_status_seq		*newHostStatusSeq		(const reValue &a);
+	static epp_host_address_seq		*newHostAddressSeq		(const reValue &a);
+	static bool				hasContactAddressName		(const reValue &a) { return a.has("name") || a.has("organization") || hasContactAddress(a); };
+	static bool				hasContactAddress		(const reValue &a) { return a.has("street1") || a.has("street2") || a.has("street3") || a.has("city") || a.has("province") || a.has("postal_code") || a.has("country"); };
+	static epp_ContactAddress		*newContactAddress		(const reValue &a);
+	static epp_ContactNameAddress		ContactNameAddress		(const reValue &a);
+	static epp_ContactNameAddress_seq	*newContactNameAddressSeq	(const reValue &a);
+	static epp_ContactPhone			*newContactPhone		(const reValue &p,const reValue &e);
 
 	static reValue			readDomainTrnData	(const epp_PollResData_ref &t);
+	static reValue			readContactTrnData	(const epp_PollResData_ref &t);
 	static reValue			readMessageQueueData	(const epp_MessageQueue_ref &r);
 	static reValue			readTransIDData		(const epp_TransID_ref &r);
 	static reValue			readResultsData		(const epp_result_seq_ref &r);

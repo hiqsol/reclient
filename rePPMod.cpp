@@ -38,6 +38,11 @@ reValue rePPMod::hostCreate		(const reValue &a) { return sessions.let(a.gl("sess
 reValue rePPMod::hostUpdate		(const reValue &a) { return sessions.let(a.gl("session",0)).hostUpdate(a); };
 reValue rePPMod::hostDelete		(const reValue &a) { return sessions.let(a.gl("session",0)).hostDelete(a); };
 reValue rePPMod::contactCheck		(const reValue &a) { return sessions.let(a.gl("session",0)).contactCheck(a); };
+reValue rePPMod::contactCreate		(const reValue &a) { return sessions.let(a.gl("session",0)).contactCreate(a); };
+reValue rePPMod::contactInfo		(const reValue &a) { return sessions.let(a.gl("session",0)).contactInfo(a); };
+reValue rePPMod::contactTransfer	(const reValue &a) { return sessions.let(a.gl("session",0)).contactTransfer(a); };
+reValue rePPMod::contactUpdate		(const reValue &a) { return sessions.let(a.gl("session",0)).contactUpdate(a); };
+reValue rePPMod::contactDelete		(const reValue &a) { return sessions.let(a.gl("session",0)).contactDelete(a); };
 
 // SMART COMMANDS
 

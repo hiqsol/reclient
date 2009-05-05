@@ -20,9 +20,15 @@
 #include "epp-rtk-cpp/epp_HostUpdate.h"
 #include "epp-rtk-cpp/epp_HostDelete.h"
 #include "epp-rtk-cpp/epp_ContactCheck.h"
+#include "epp-rtk-cpp/epp_ContactCreate.h"
+#include "epp-rtk-cpp/epp_ContactInfo.h"
+#include "epp-rtk-cpp/epp_ContactTransfer.h"
+#include "epp-rtk-cpp/epp_ContactUpdate.h"
+#include "epp-rtk-cpp/epp_ContactDelete.h"
 #include "epp-rtk-cpp/data/epp_Greeting.h"
 #include "epp-rtk-cpp/data/epp_domainXMLbase.h"
 #include "epp-rtk-cpp/data/epp_hostXMLbase.h"
+#include "epp-rtk-cpp/data/epp_contactXMLbase.h"
 #include "comnetaddon/epp_DomainSync.h"
 
 #include "epp-rtk-cpp/data/epp_Exception.h"
@@ -46,7 +52,7 @@ reValue rePP::poll (const reValue &a) {
 	if (err.notNull()) return err;
 	// getting response
 	epp_PollRsp_ref r = command->getResponseData();
-	return readDomainTrnData(r->m_res_data)+readResponseData(r->m_rsp);
+	return readDomainTrnData(r->m_res_data)+readContactTrnData(r->m_res_data)+readResponseData(r->m_rsp);
 };
 
 reValue rePP::hello (const reValue &a) {
@@ -147,12 +153,10 @@ reValue rePP::domainInfo (const reValue &a) {
 	};
 	if (r->m_registrant!=NULL) res["registrant"] = *r->m_registrant;
 	if (r->m_contacts!=NULL) {
-		reValue &contacts = res["contacts"];
 		for (epp_domain_contact_seq::iterator i = r->m_contacts->begin();i!=r->m_contacts->end();i++) {
-			reValue c;
-			if (i->m_type!=NULL) c["type"] = returnContactType(*i->m_type);
-			if (i->m_id!=NULL) c["id"] = *i->m_id;
-			contacts.push(c);
+			if (i->m_type!=NULL) {
+				res[returnContactType(*i->m_type)] = i->m_id!=NULL ? *i->m_id : "";
+			};
 		};
 	};
 	if (r->m_name_servers!=NULL) {
@@ -295,8 +299,7 @@ reValue rePP::domainUpdate (const reValue &a) {
 	if (err.notNull()) return err;
 	// getting response
 	epp_DomainUpdateRsp_ref r = command->getResponseData();
-	reValue res = readResponseData(r->m_rsp);
-	return res;
+	return readResponseData(r->m_rsp);
 };
 
 reValue rePP::domainDelete (const reValue &a) {
@@ -485,7 +488,167 @@ reValue rePP::contactCheck (const reValue &a) {
 	if (err.notNull()) return err;
 	// getting response
 	epp_ContactCheckRsp_ref r = command->getResponseData();
-	return reValue();
+	reValue res = readResponseData(r->m_rsp);
+	if (r->m_results!=NULL) {
+		for (epp_check_result_seq::iterator i=r->m_results->begin();i!=r->m_results->end();i++) {
+			reValue s;
+			if (i->m_avail!=NULL) s["avail"] = *i->m_avail;
+			if (i->m_lang!=NULL) s["lang"] = *i->m_lang;
+			if (i->m_reason!=NULL) s["reason"] = *i->m_reason;
+			if (i->m_value!=NULL) res[*i->m_value] = s; else res.push(s);
+		};
+	};
+	return res;
+};
+
+reValue rePP::contactCreate (const reValue &a) {
+	// preparing request
+	epp_ContactCreateReq_ref request(new epp_ContactCreateReq());
+	request->m_cmd.ref(newCommand(a,"CC"));
+	request->m_id.ref(new epp_string(a.gl("id")));
+	if (hasContactAddressName(a)) request->m_addresses.ref(newContactNameAddressSeq(a));
+	if (a.has("voice_phone")) request->m_voice.ref(newContactPhone(a.get("voice_phone"),a.get("voice_extension")));
+	if (a.has("fax_phone")) request->m_fax.ref(newContactPhone(a.get("fax_phone"),a.get("fax_extension")));
+	if (a.has("email")) request->m_email.ref(new epp_string(a.gl("email")));
+	if (a.has("password")) request->m_auth_info.ref(newAuthInfo(a));
+	// performing command
+	epp_ContactCreate_ref command(new epp_ContactCreate());
+	command->setRequestData(*request);
+	reValue err = safeProcessAction(command);
+	if (err.notNull()) return err;
+	// getting response
+	epp_ContactCreateRsp_ref r = command->getResponseData();
+	reValue res = readResponseData(r->m_rsp);
+	if (r->m_id!=NULL) res["id"] = *r->m_id;
+	if (r->m_creation_date!=NULL) res["creation_date"] = *r->m_creation_date;
+	return res;
+};
+
+reValue rePP::contactInfo (const reValue &a) {
+	// preparing request
+	epp_ContactInfoReq_ref request(new epp_ContactInfoReq());
+	request->m_cmd.ref(newCommand(a,"CI"));
+	request->m_id.ref(new epp_string(a.gl("id")));
+	// performing command
+	epp_ContactInfo_ref command(new epp_ContactInfo());
+	command->setRequestData(*request);
+	reValue err = safeProcessAction(command);
+	if (err.notNull()) return err;
+	// getting response
+	epp_ContactInfoRsp_ref r = command->getResponseData();
+	reValue res = readResponseData(r->m_rsp);
+	if (r->m_id!=NULL) res["id"] = *r->m_id;
+	if (r->m_roid!=NULL) res["roid"] = *r->m_roid;
+	if (r->m_status!=NULL) {
+		reValue &statuses = res["statuses"];
+		for (epp_contact_status_seq::iterator i=r->m_status->begin();i!=r->m_status->end();i++) {
+			if (i->m_type!=NULL) statuses.set(returnStatusType(*i->m_type),reValue::Null);
+		};
+	};
+	if (r->m_addresses!=NULL) {
+		for (epp_ContactNameAddress_seq::iterator i=r->m_addresses->begin();i!=r->m_addresses->end();i++ ) {
+			if (*i->m_type==LOC) res["postal_info_type"] = "LOC";
+			if (i->m_name!=NULL) res["name"] = *i->m_name;
+			if (i->m_org!=NULL) res["organization"] = *i->m_org;
+			if (i->m_address!=NULL) {
+				if (i->m_address->m_street1!=NULL) res["street1"] = *i->m_address->m_street1;
+				if (i->m_address->m_street2!=NULL) res["street2"] = *i->m_address->m_street2;
+				if (i->m_address->m_street3!=NULL) res["street3"] = *i->m_address->m_street3;
+				if (i->m_address->m_city!=NULL) res["city"] = *i->m_address->m_city;
+				if (i->m_address->m_state_province!=NULL) res["province"] = *i->m_address->m_state_province;
+				if (i->m_address->m_postal_code!=NULL) res["postal_code"] = *i->m_address->m_postal_code;
+				if (i->m_address->m_country_code!=NULL) res["country"] = *i->m_address->m_country_code;
+			};
+		};
+	};
+	if (r->m_voice!=NULL) {
+		if (r->m_voice->m_value!=NULL) res["voice_phone"] = *r->m_voice->m_value;
+		if (r->m_voice->m_extension!=NULL) res["voice_extension"] = *r->m_voice->m_extension;
+	};
+	if (r->m_fax!=NULL) {
+		if (r->m_fax->m_value!=NULL) res["fax_phone"] = *r->m_fax->m_value;
+		if (r->m_fax->m_extension!=NULL) res["fax_extension"] = *r->m_fax->m_extension;
+	};
+	if (r->m_email!=NULL) res["email"] = *r->m_email;
+	if (r->m_client_id!=NULL) res["client_id"] = *r->m_client_id;
+	if (r->m_created_by!=NULL) res["created_by"] = *r->m_created_by;
+	if (r->m_created_date!=NULL) res["created_date"] = *r->m_created_date;
+	if (r->m_updated_by!=NULL) res["updated_by"] = *r->m_updated_by;
+	if (r->m_updated_date!=NULL) res["updated_date"] = *r->m_updated_date;
+	if (r->m_transfer_date!=NULL) res["transfer_date"] = *r->m_transfer_date;
+	if (r->m_auth_info!=NULL && r->m_auth_info->m_value!=NULL) res["password"] = *r->m_auth_info->m_value;
+	return res;
+};
+
+reValue rePP::contactTransfer (const reValue &a) {
+	// preparing request
+	epp_ContactTransferReq_ref request(new epp_ContactTransferReq());
+	request->m_cmd.ref(newCommand(a,"CT"));
+	request->m_id.ref(new epp_string(a.gl("id")));
+	request->m_trans.ref(new epp_TransferRequest());
+	try {
+		request->m_trans->m_op.ref(new epp_TransferOpType(returnTransferType(a.gl("op"))));
+	} catch (const epp_XMLException &ex) {
+		printf("epp_XMLException!!!\n\n");
+		return errorResult(9999,ex.getString());
+	};
+	if (a.has("password")) request->m_trans->m_auth_info.ref(newAuthInfo(a));
+	// performing command
+	epp_ContactTransfer_ref command(new epp_ContactTransfer());
+	command->setRequestData(*request);
+	reValue err = safeProcessAction(command);
+	if (err.notNull()) return err;
+	// getting response
+	epp_ContactTransferRsp_ref r = command->getResponseData();
+	return readResponseData(r->m_rsp)+readContactTrnData(r->m_trn_data);
+};
+
+reValue rePP::contactUpdate (const reValue &a) {
+	// preparing request
+	epp_ContactUpdateReq_ref request(new epp_ContactUpdateReq());
+	request->m_cmd.ref(newCommand(a,"CU"));
+	request->m_id.ref(new epp_string(a.gl("id")));
+	if (a.has("add")) {
+		const reValue &add = a.get("add");
+		request->m_add.ref(new epp_ContactUpdateAddRemove());
+		if (add.has("statuses")) request->m_add->m_status.ref(newContactStatusSeq(add.get("statuses").csplit()));
+	};
+	if (a.has("remove")) {
+		const reValue &remove = a.get("remove");
+		request->m_remove.ref(new epp_ContactUpdateAddRemove());
+		if (remove.has("statuses")) request->m_remove->m_status.ref(newContactStatusSeq(remove.get("statuses").csplit()));
+	};
+	if (hasContactAddressName(a) || a.has("voice_phone") || a.has("fax_phone") || a.has("email") || a.has("password")) {
+		request->m_change.ref(new epp_ContactUpdateChange());
+		if (hasContactAddressName(a))	request->m_change->m_addresses.ref(newContactNameAddressSeq(a));
+		if (a.has("voice_phone"))	request->m_change->m_voice.ref(newContactPhone(a.get("voice_phone"),a.get("voice_extension")));
+		if (a.has("fax_phone"))		request->m_change->m_fax.ref(newContactPhone(a.get("fax_phone"),a.get("fax_extension")));
+		if (a.has("email"))		request->m_change->m_email.ref(new epp_string(a.gl("email")));
+		if (a.has("password"))		request->m_change->m_auth_info.ref(newAuthInfo(a));
+	};
+	// performing command
+	epp_ContactUpdate_ref command(new epp_ContactUpdate());
+	command->setRequestData(*request);
+	reValue err = safeProcessAction(command);
+	if (err.notNull()) return err;
+	// getting response
+	epp_ContactUpdateRsp_ref r = command->getResponseData();
+	return readResponseData(r->m_rsp);
+};
+
+reValue rePP::contactDelete (const reValue &a) {
+	// preparing request
+	epp_ContactDeleteReq_ref request(new epp_ContactDeleteReq());
+	request->m_cmd.ref(newCommand(a,"CD"));
+	request->m_id.ref(new epp_string(a.gl("id")));
+	// performing command
+	epp_ContactDelete_ref command(new epp_ContactDelete());
+	command->setRequestData(*request);
+	reValue err = safeProcessAction(command);
+	if (err.notNull()) return err;
+	// getting response
+	epp_ContactDeleteRsp_ref r = command->getResponseData();
+	return readResponseData(r->m_rsp);
 };
 
 // SMART COMMANDS
@@ -808,6 +971,20 @@ epp_domain_status_seq *rePP::newDomainStatusSeq (const reValue &a) {
 	return res;
 };
 
+epp_ContactStatus rePP::ContactStatus (const reValue &a) {
+	epp_ContactStatus res;
+	res.m_type.ref(new epp_ContactStatusType(eppobject::contact::returnStatusEnumType(a.first("type").toLine())));
+	if (a.has("value")) res.m_value.ref(new epp_string(a.gl("value")));
+	if (a.has("lang")) res.m_lang.ref(new epp_string(a.gl("lang")));
+	return res;
+};
+
+epp_contact_status_seq *rePP::newContactStatusSeq (const reValue &a) {
+	epp_contact_status_seq *res = new epp_contact_status_seq();
+	for (reValue::size_type i=0,n=a.size();i<n;i++) res->push_back(ContactStatus(a.gk(i)));
+	return res;
+};
+
 epp_HostStatus rePP::HostStatus (const reValue &a) {
 	epp_HostStatus res;
 	res.m_type.ref(new epp_HostStatusType(eppobject::host::returnStatusEnumType(a.first("type").toLine())));
@@ -832,6 +1009,40 @@ epp_host_address_seq *rePP::newHostAddressSeq (const reValue &a) {
 	return res;
 };
 
+epp_ContactAddress *rePP::newContactAddress (const reValue &a) {
+	epp_ContactAddress *res = new epp_ContactAddress();
+	if (a.has("street1")) res->m_street1.ref(new epp_string(a.gl("street1")));
+	if (a.has("street2")) res->m_street2.ref(new epp_string(a.gl("street2")));
+	if (a.has("street3")) res->m_street3.ref(new epp_string(a.gl("street3")));
+	if (a.has("city")) res->m_city.ref(new epp_string(a.gl("city")));
+	if (a.has("province")) res->m_state_province.ref(new epp_string(a.gl("province")));
+	if (a.has("postal_code")) res->m_postal_code.ref(new epp_string(a.gl("postal_code")));
+	if (a.has("country")) res->m_country_code.ref(new epp_string(a.gl("country")));
+	return res;
+};
+
+epp_ContactNameAddress rePP::ContactNameAddress (const reValue &a) {
+	epp_ContactNameAddress res;
+	res.m_type.ref(new epp_ContactPostalInfoType(a.gl("postal_info_type")=="LOC" ? LOC : INT));
+	if (a.has("name")) res.m_name.ref(new epp_string(a.gl("name")));
+	if (a.has("organization")) res.m_org.ref(new epp_string(a.gl("organization")));
+	res.m_address.ref(newContactAddress(a));
+	return res;
+};
+
+epp_ContactNameAddress_seq *rePP::newContactNameAddressSeq (const reValue &a) {
+	epp_ContactNameAddress_seq *res = new epp_ContactNameAddress_seq();
+	res->push_back(ContactNameAddress(a));
+	return res;
+};
+
+epp_ContactPhone *rePP::newContactPhone (const reValue &p,const reValue &e) {
+	epp_ContactPhone *res = new epp_ContactPhone();
+	res->m_value.ref(new epp_string(p.toLine()));
+	if (e.notNull()) res->m_extension.ref(new epp_string(e.toLine()));
+	return res;
+};
+
 reValue rePP::readDomainTrnData (const epp_PollResData_ref &p) {
 	if (p==NULL) return reValue::Null;
 	if (p->getType()!="domain:trnData") return reValue::Null;
@@ -844,6 +1055,20 @@ reValue rePP::readDomainTrnData (const epp_PollResData_ref &p) {
 	if (t->m_action_client_id!=NULL) res["action_client_id"] = *t->m_action_client_id;
 	if (t->m_action_date!=NULL) res["action_date"] = *t->m_action_date;
 	if (t->m_expiration_date!=NULL) res["expiration_date"] = *t->m_expiration_date;
+	return res;
+};
+
+reValue rePP::readContactTrnData (const epp_PollResData_ref &p) {
+	if (p==NULL) return reValue::Null;
+	if (p->getType()!="contact:trnData") return reValue::Null;
+	const epp_ContactTrnData_ref &t = p;
+	reValue res;
+	if (t->m_id!=NULL) res["id"] = *t->m_id;
+	if (t->m_transfer_status!=NULL) res["transfer_status"] = returnTransferStatusType(*t->m_transfer_status);
+	if (t->m_request_client_id!=NULL) res["request_client_id"] = *t->m_request_client_id;
+	if (t->m_request_date!=NULL) res["request_date"] = *t->m_request_date;
+	if (t->m_action_client_id!=NULL) res["action_client_id"] = *t->m_action_client_id;
+	if (t->m_action_date!=NULL) res["action_date"] = *t->m_action_date;
 	return res;
 };
 

@@ -10,7 +10,7 @@
 
 class rePPMod : public reMod {
 public:
-	rePPMod () : reMod("rePPMod","init,incBatchNo,poll,hello,login,logout,domainInfo,domainSync,domainCheck,domainRenew,domainCreate,domainUpdate,domainDelete,domainTransfer,hostInfo,hostCheck,hostCreate,hostUpdate,hostDelete,contactCheck,setNamestoreExtension,pollOne,pollAll,domainAllowUpdate,domainProhibitUpdate,domainSmartCheck,domainSmartUpdate,domainSmartLock,domainSmartUnlock,domainSmartHold,domainSmartUnhold,hostSmartCheck,hostSmartUpdate,hostSmartSet") {};
+	rePPMod () : reMod("rePPMod","init,incBatchNo,poll,hello,login,logout,domainInfo,domainSync,domainCheck,domainRenew,domainCreate,domainUpdate,domainDelete,domainTransfer,hostInfo,hostCheck,hostCreate,hostUpdate,hostDelete,contactCheck,contactCreate,contactInfo,contactTransfer,contactUpdate,contactDelete,setNamestoreExtension,pollOne,pollAll,domainAllowUpdate,domainProhibitUpdate,domainSmartCheck,domainSmartUpdate,domainSmartLock,domainSmartUnlock,domainSmartHold,domainSmartUnhold,hostSmartCheck,hostSmartUpdate,hostSmartSet") {};
 
 // 
 	static reValue init			(const reValue &a);
@@ -36,6 +36,11 @@ public:
 	static reValue hostUpdate		(const reValue &a);
 	static reValue hostDelete		(const reValue &a);
 	static reValue contactCheck		(const reValue &a);
+	static reValue contactCreate		(const reValue &a);
+	static reValue contactInfo		(const reValue &a);
+	static reValue contactTransfer		(const reValue &a);
+	static reValue contactUpdate		(const reValue &a);
+	static reValue contactDelete		(const reValue &a);
 
 // SMART COMMANDS
 	static reValue pollOne			(const reValue &a);
