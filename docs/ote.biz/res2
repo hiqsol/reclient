@@ -1,0 +1,399 @@
+(hash:5) {
+	0 'result_msg'	=> (line:26) 'Required parameter missing'
+	1 'result_code'	=> (int8) 2003
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase05res'
+	4 'client_trid'	=> (line:17) 'ote-testcase05cmd'
+}
+(hash:5) {
+	0 'result_msg'	=> (line:26) 'Required parameter missing'
+	1 'result_code'	=> (int8) 2003
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase06res'
+	4 'client_trid'	=> (line:17) 'ote-testcase06cmd'
+}
+(hash:8) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase07res'
+	4 'client_trid'	=> (line:17) 'ote-testcase07cmd'
+	5 'name'	=> (line:11) 'test-07.biz'
+	6 'created_date'	=> (line:22) '2009-05-05T15:05:40.0Z'
+	7 'expiration_date'	=> (line:22) '2003-08-29T09:00:00.0Z'
+}
+(hash:8) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase08res'
+	4 'client_trid'	=> (line:17) 'ote-testcase08cmd'
+	5 'name'	=> (line:11) 'test-08.biz'
+	6 'created_date'	=> (line:22) '2009-05-05T15:05:42.0Z'
+	7 'expiration_date'	=> (line:22) '2011-08-29T09:00:00.0Z'
+}
+(hash:8) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase09res'
+	4 'client_trid'	=> (line:17) 'ote-testcase09cmd'
+	5 'name'	=> (line:11) 'test-09.biz'
+	6 'created_date'	=> (line:22) '2009-05-05T15:05:43.0Z'
+	7 'expiration_date'	=> (line:22) '2011-08-29T09:00:00.0Z'
+}
+(hash:8) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase10res'
+	4 'client_trid'	=> (line:17) 'ote-testcase10cmd'
+	5 'name'	=> (line:67) 'test-10-abcdefghijklmnopqrstuvwxyz-abcdefghijklmnopqrstuvwxyz-a.biz'
+	6 'created_date'	=> (line:22) '2009-05-05T15:05:44.0Z'
+	7 'expiration_date'	=> (line:22) '2003-08-29T09:00:00.0Z'
+}
+(hash:5) {
+	0 'result_msg'	=> (line:28) 'Parameter value syntax error'
+	1 'result_code'	=> (int8) 2005
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase11res'
+	4 'client_trid'	=> (line:17) 'ote-testcase11cmd'
+}
+(hash:8) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase12res'
+	4 'client_trid'	=> (line:17) 'ote-testcase12cmd'
+	5 'test-07.biz'	=> (hash:1) {
+		0 'avail'	=> (int8) 0
+	}
+	6 'test-08.biz'	=> (hash:1) {
+		0 'avail'	=> (int8) 0
+	}
+	7 'test-09.biz'	=> (hash:1) {
+		0 'avail'	=> (int8) 0
+	}
+}
+(hash:8) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase13res'
+	4 'client_trid'	=> (line:17) 'ote-testcase13cmd'
+	5 'test-97.biz'	=> (hash:1) {
+		0 'avail'	=> (int8) 1
+	}
+	6 'test-98.biz'	=> (hash:1) {
+		0 'avail'	=> (int8) 1
+	}
+	7 'test-99.biz'	=> (hash:1) {
+		0 'avail'	=> (int8) 1
+	}
+}
+(hash:6) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase14res'
+	4 'client_trid'	=> (line:17) 'ote-testcase14cmd'
+	5 'test-10-abcdefghijklmnopqrstuvwxyz-abcdefghijklmnopqrstuvwxyz-a.biz'	=> (hash:1) {
+		0 'avail'	=> (int8) 0
+	}
+}
+(hash:22) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase15res'
+	4 'client_trid'	=> (line:17) 'ote-testcase15cmd'
+	5 'name'	=> (line:11) 'test-07.biz'
+	6 'roid'	=> (line:10) 'D12345-BIZ'
+	7 'statuses'	=> (hash:1) {
+		0 'ok'	=> (null)
+	}
+	8 'registrant'	=> (line:11) 'ote-test-07'
+	9 'admin'	=> (line:12) 'ote-admin-07'
+	10 'tech'	=> (line:11) 'ote-tech-07'
+	11 'billing'	=> (line:11) 'ote-bill-07'
+	12 'nameservers'	=> (hash:2) {
+		0 'ns1.test-07.biz'	=> (null)
+		1 'ns2.test-07.biz'	=> (null)
+	}
+	13 'hosts'	=> (hash:2) {
+		0 'ns1.test-07.biz'	=> (null)
+		1 'ns2.test-07.biz'	=> (null)
+	}
+	14 'client_id'	=> (line:10) '1000020000'
+	15 'created_by'	=> (line:10) '1000010000'
+	16 'created_date'	=> (line:22) '2001-08-29T09:00:00.0Z'
+	17 'updated_by'	=> (line:10) '1000020000'
+	18 'updated_date'	=> (line:22) '2001-08-31T09:00:00.0Z'
+	19 'expiration_date'	=> (line:22) '2003-08-29T09:00:00.0Z'
+	20 'transfer_date'	=> (line:22) '2001-08-31T09:00:00.0Z'
+	21 'password'	=> (line:8) 'mysecret'
+}
+(hash:12) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase16res'
+	4 'client_trid'	=> (line:17) 'ote-testcase16cmd'
+	5 'name'	=> (line:11) 'test-07.biz'
+	6 'transfer_status'	=> (line:7) 'pending'
+	7 'request_client_id'	=> (line:10) '1000020000'
+	8 'request_date'	=> (line:22) '2001-08-31T09:00:00.0Z'
+	9 'action_client_id'	=> (line:10) '1000010000'
+	10 'action_date'	=> (line:22) '2001-09-05T09:00:00.0Z'
+	11 'expiration_date'	=> (line:22) '2004-08-29T09:00:00.0Z'
+}
+(hash:5) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase17res'
+	4 'client_trid'	=> (line:17) 'ote-testcase17cmd'
+}
+(hash:7) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase18res'
+	4 'client_trid'	=> (line:17) 'ote-testcase18cmd'
+	5 'name'	=> (line:11) 'test-07.biz'
+	6 'expiration_date'	=> (line:22) '2011-08-29T09:00:00.0Z'
+}
+(hash:7) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase19res'
+	4 'client_trid'	=> (line:17) 'ote-testcase19cmd'
+	5 'name'	=> (line:11) 'test-07.biz'
+	6 'expiration_date'	=> (line:22) '2011-08-29T09:00:00.0Z'
+}
+(hash:12) {
+	0 'result_msg'	=> (line:46) 'Command completed successfully; action pending'
+	1 'result_code'	=> (int8) 1001
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase20res'
+	4 'client_trid'	=> (line:17) 'ote-testcase20cmd'
+	5 'name'	=> (line:11) 'test-07.biz'
+	6 'transfer_status'	=> (line:7) 'pending'
+	7 'request_client_id'	=> (line:10) '1000020000'
+	8 'request_date'	=> (line:22) '2001-08-31T09:00:00.0Z'
+	9 'action_client_id'	=> (line:10) '1000010000'
+	10 'action_date'	=> (line:22) '2001-09-05T09:00:00.0Z'
+	11 'expiration_date'	=> (line:22) '2004-08-29T09:00:00.0Z'
+}
+(hash:5) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase21res'
+	4 'client_trid'	=> (line:17) 'ote-testcase21cmd'
+}
+(hash:5) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase22res'
+	4 'client_trid'	=> (line:17) 'ote-testcase22cmd'
+}
+(hash:5) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase23res'
+	4 'client_trid'	=> (line:17) 'ote-testcase23cmd'
+}
+(hash:7) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase24res'
+	4 'client_trid'	=> (line:17) 'ote-testcase24cmd'
+	5 'name'	=> (line:15) 'ns1.test-07.biz'
+	6 'creation_date'	=> (line:22) '2009-05-05T15:06:01.0Z'
+}
+(hash:7) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase25res'
+	4 'client_trid'	=> (line:17) 'ote-testcase25cmd'
+	5 'name'	=> (line:71) 'ns1.test-25-abcdefghijklmnopqrstuvwxyz-abcdefghijklmnopqrstuvwxyz-a.biz'
+	6 'creation_date'	=> (line:22) '2009-05-05T15:06:02.0Z'
+}
+(hash:6) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase26res'
+	4 'client_trid'	=> (line:17) 'ote-testcase26cmd'
+	5 'ns1.test-07.biz'	=> (hash:1) {
+		0 'avail'	=> (int8) 0
+	}
+}
+(hash:6) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase27res'
+	4 'client_trid'	=> (line:17) 'ote-testcase27cmd'
+	5 'ns1.test-27.biz'	=> (hash:1) {
+		0 'avail'	=> (int8) 1
+	}
+}
+(hash:12) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase28res'
+	4 'client_trid'	=> (line:17) 'ote-testcase28cmd'
+	5 'name'	=> (line:15) 'ns1.test-28.biz'
+	6 'roid'	=> (line:10) 'H12345-BIZ'
+	7 'statuses'	=> (hash:2) {
+		0 'linked'	=> (null)
+		1 'clientUpdateProhibited'	=> (null)
+	}
+	8 'ips'	=> (hash:1) {
+		0 '192.1.2.3'	=> (null)
+	}
+	9 'client_id'	=> (line:9) '100050000'
+	10 'created_by'	=> (line:9) '100050000'
+	11 'created_date'	=> (line:22) '2001-09-04T22:00:00.0Z'
+}
+(hash:5) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase29res'
+	4 'client_trid'	=> (line:17) 'ote-testcase29cmd'
+}
+(hash:5) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase30res'
+	4 'client_trid'	=> (line:17) 'ote-testcase30cmd'
+}
+(hash:5) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase31res'
+	4 'client_trid'	=> (line:17) 'ote-testcase31cmd'
+}
+(hash:7) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase32res'
+	4 'client_trid'	=> (line:17) 'ote-testcase32cmd'
+	5 'id'	=> (line:6) 'sh8013'
+	6 'creation_date'	=> (line:22) '2009-05-05T15:06:10.0Z'
+}
+(hash:6) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase33res'
+	4 'client_trid'	=> (line:17) 'ote-testcase33cmd'
+	5 'sh8013'	=> (hash:1) {
+		0 'avail'	=> (int8) 0
+	}
+}
+(hash:6) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase34res'
+	4 'client_trid'	=> (line:17) 'ote-testcase34cmd'
+	5 'sh8014'	=> (hash:1) {
+		0 'avail'	=> (int8) 1
+	}
+}
+(hash:24) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase35res'
+	4 'client_trid'	=> (line:17) 'ote-testcase35cmd'
+	5 'id'	=> (line:6) 'sh8013'
+	6 'roid'	=> (line:10) 'C12345-BIZ'
+	7 'statuses'	=> (hash:2) {
+		0 'linked'	=> (null)
+		1 'clientDeleteProhibited'	=> (null)
+	}
+	8 'name'	=> (line:15) 'Jim L. Anderson'
+	9 'organization'	=> (line:18) 'Cobolt Boats, Inc.'
+	10 'street1'	=> (line:22) '3375 Clear Creek Drive'
+	11 'street2'	=> (line:12) 'Building One'
+	12 'city'	=> (line:10) 'Clearwater'
+	13 'province'	=> (line:7) 'Florida'
+	14 'postal_code'	=> (line:9) '50398-001'
+	15 'country'	=> (line:2) 'US'
+	16 'voice_phone'	=> (line:13) '+1.7035555555'
+	17 'voice_extension'	=> (line:2) '12'
+	18 'fax_phone'	=> (line:13) '+1.7653455566'
+	19 'email'	=> (line:22) 'janderson@worldnet.biz'
+	20 'client_id'	=> (line:9) '100050000'
+	21 'created_by'	=> (line:9) '100050000'
+	22 'created_date'	=> (line:22) '2001-09-04T22:00:00.0Z'
+	23 'password'	=> (line:8) 'mysecret'
+}
+(hash:11) {
+	0 'result_msg'	=> (line:46) 'Command completed successfully; action pending'
+	1 'result_code'	=> (int8) 1001
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase36res'
+	4 'client_trid'	=> (line:17) 'ote-testcase36cmd'
+	5 'id'	=> (line:6) 'sh8013'
+	6 'transfer_status'	=> (line:7) 'pending'
+	7 'request_client_id'	=> (line:10) 'RegistrarX'
+	8 'request_date'	=> (line:22) '2001-06-08T22:00:00.0Z'
+	9 'action_client_id'	=> (line:10) 'RegistrarY'
+	10 'action_date'	=> (line:22) '2001-06-13T22:00:00.0Z'
+}
+(hash:11) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase37res'
+	4 'client_trid'	=> (line:17) 'ote-testcase37cmd'
+	5 'id'	=> (line:6) 'sh8013'
+	6 'transfer_status'	=> (line:14) 'serverApproved'
+	7 'request_client_id'	=> (line:10) 'RegistrarX'
+	8 'request_date'	=> (line:22) '2001-06-06T22:00:00.0Z'
+	9 'action_client_id'	=> (line:10) 'RegistrarY'
+	10 'action_date'	=> (line:22) '2001-06-11T22:00:00.0Z'
+}
+(hash:5) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase38res'
+	4 'client_trid'	=> (line:17) 'ote-testcase38cmd'
+}
+(hash:5) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase39res'
+	4 'client_trid'	=> (line:17) 'ote-testcase39cmd'
+}
+(hash:5) {
+	0 'result_msg'	=> (line:30) 'Command completed successfully'
+	1 'result_code'	=> (int8) 1000
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:17) 'ote-testcase40res'
+	4 'client_trid'	=> (line:17) 'ote-testcase40cmd'
+}
+(hash:5) {
+	0 'result_msg'	=> (line:46) 'Command completed successfully; ending session'
+	1 'result_code'	=> (int8) 1500
+	2 'result_lang'	=> (line:5) 'en-US'
+	3 'server_trid'	=> (line:14) 'SERVER-ID-9999'
+	4 'client_trid'	=> (line:11) '111-38-1-LO'
+}

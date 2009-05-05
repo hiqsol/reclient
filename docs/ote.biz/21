@@ -1,0 +1,1 @@
+<repp:domainUpdate name="test-08.biz" remove.nameservers="ns1.test-08.biz,ns2.test-08.biz" add.nameservers="ns3.test-08.biz,ns4.test-08.biz" trID="ote-testcase21cmd"/>

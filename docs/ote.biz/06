@@ -1,0 +1,1 @@
+<repp:domainCreate name="test-06.biz" period=2 nameservers="ns1.test-06.biz,ns2.test-06.biz" registrant="ote-test-06" password="mysecret" trID="ote-testcase06cmd"/>
