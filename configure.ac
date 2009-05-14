@@ -21,7 +21,7 @@ AC_ARG_WITH(comnetaddon,	[  --with-comnetaddon      = DIR],
 )
 AC_SUBST(EPPRTK_PATH)
 
-EPPRTK_PATH="/usr/local"
+EPPRTK_PATH="/usr/local/epp-rtk"
 AC_ARG_WITH(epprtk,		[  --with-epprtk           = DIR],
 	EPPRTK_PATH=$withval
 )
@@ -57,10 +57,6 @@ AC_ARG_WITH(ssllibs,		[  --with-ssllibs          = DIR],
 )
 AC_SUBST(SSL_LIBS)
 
-CPPFLAGS="-I../.. -I$OPENSSL_PATH/include -I$XERCES_INCLUDE -I$DOMTOOLS_PATH/include -I$EPPRTK_PATH/include"
-CXXFLAGS="-Wall -g -D__STDC_LIMIT_MACROS"
-#CXXFLAGS="--ansi -Wall -g -O2"
-
 #AC_CHECK_HEADERS(epp-rtk-cpp/config.h epp-rtk-cpp/data/epp_eppdata.h,,
 #	AC_MSG_ERROR("Missing header - probably missing epprtk -- looking for $EPPRTK_PATH/include/epp-rtk-cpp/config.h"))
 #AC_CHECK_HEADERS(domtools/domtools.h,,
@@ -75,6 +71,12 @@ AC_C_CONST
 
 # Checks for library functions.
 
-### Checks for library functions.
+# LLVM config
+AC_SUBST(LLVM_CPPFLAGS, $(llvm-config --cppflags))
+AC_SUBST(LLVM_LDADD, $(llvm-config --ldflags --libs core jit native ipo | tr '\n' ' '))
+
+#CXXFLAGS="-Wall -I../.. -I/usr/local/include -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS"
+
+CPPFLAGS="-Wall -g -I../.. -I$OPENSSL_PATH/include -I$XERCES_INCLUDE -I$DOMTOOLS_PATH/include -I$EPPRTK_PATH/include $LLVM_CPPFLAGS"
 
 AC_OUTPUT(Makefile)

@@ -4,7 +4,7 @@ LDADD =	\
 	-L$(EPPRTK_PATH)/lib -lepprtk -ldata -ltransport -lnpssl \
 	-L$(DOMTOOLS_PATH)/lib -ldomtools \
 	$(XERCES_LIB) $(SSL_LIBS) \
-	-lpthread -lm -lelf -lLLVMipo /usr/local/lib/LLVMX86.o -lLLVMSelectionDAG /usr/local/lib/LLVMExecutionEngine.o /usr/local/lib/LLVMJIT.o -lLLVMCodeGen -lLLVMScalarOpts -lLLVMTransformUtils -lLLVMipa -lLLVMAnalysis -lLLVMTarget -lLLVMCore -lLLVMSupport -lLLVMSystem
+	$(LLVM_LDADD)
 
 bin_PROGRAMS = reClient
 reClient_SOURCES = reClient.cpp rePP.cpp rePPMod.cpp
