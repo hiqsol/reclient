@@ -709,8 +709,8 @@ reValue rePP::domainSmartUpdate (const reValue &a,const reValue &info) {
 		if (add_s.size()) r.let("add").set("statuses",add_s);
 	};
 	if (r.has("nameservers")) {
-		reValue old_n = info.get("nameservers").lowercase();
-		reValue new_n = r.get("nameservers").lowercase().ksplit();
+		reValue old_n = info.get("nameservers").lc();
+		reValue new_n = r.get("nameservers").lc().ksplit();
 		reValue add_n,rem_n;
 		for (reValue::size_type i=0,n=old_n.size();i<n;i++) if (!new_n.has(old_n.key(i))) rem_n.set(old_n.key(i),reValue::Null);
 		for (reValue::size_type i=0,n=new_n.size();i<n;i++) if (!old_n.has(new_n.key(i))) add_n.set(new_n.key(i),reValue::Null);
@@ -911,7 +911,7 @@ bool rePP::isResponseOk (const reValue &r) {
 
 void rePP::setNamestoreExtension (const reLine &ext,const reLine &data) {
 	epp_NamestoreExt_ref e(new epp_NamestoreExt());
-	e->setRequestData(epp_NamestoreExtData(data.size() ? data : "dot"+uppercase(ext.substr(1))));
+	e->setRequestData(epp_NamestoreExtData(data.size() ? data : "dot"+uc(ext.substr(1))));
 	extensions.set(ext,e);
 };
 
