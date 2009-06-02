@@ -96,7 +96,7 @@ int main (int argc,char *argv[]) {
 	writelog("opened");
 
 	// INITIALIZING EPP
-	script.runFunction("repp:init",reValue(
+	script.runFunc("repp.init",reValue(
 		"host",		reBaseMod::get("host"),
 		"port",		reBaseMod::get("port"),
 		"certificate",	reBaseMod::get("certificate"),
@@ -104,11 +104,11 @@ int main (int argc,char *argv[]) {
 		"cacertdir",	reBaseMod::get("cacertdir"),
 		"serial",	THE_SNO
 	));
-	script.runFunction("repp:setNamestoreExtension",reValue(
+	script.runFunc("repp.setNamestoreExtension",reValue(
 		"ext",		".com",
 		"data",		"dotCOM"
 	));
-	script.runFunction("repp:setNamestoreExtension",reValue(
+	script.runFunc("repp.setNamestoreExtension",reValue(
 		"ext",		".net",
 		"data",		"dotNET"
 	));
@@ -118,7 +118,7 @@ int main (int argc,char *argv[]) {
 	);
 	if (reBaseMod::has("new_password").toBool()) loginOptions.set("new_password",reBaseMod::get("new_password"));
 	if (reBaseMod::has("login_trID").toBool()) loginOptions.set("trID",reBaseMod::get("login_trID"));
-	script.runFunction("repp:login",loginOptions);
+	script.runFunc("repp.login",loginOptions);
 	writelog("inited, loggedin");
 
 	bool loggedIn = true;
@@ -130,15 +130,15 @@ int main (int argc,char *argv[]) {
 		time_t nowtime = timestamp();
 		// PREVENTING ABSOLUTE-TIMEOUT (VeriSign - 24 hours)
 		if (nowtime-lastlogin>60*60*23) {
-			script.runFunction("repp:logout");
-			script.runFunction("repp:login",loginOptions);
+			script.runFunc("repp.logout");
+			script.runFunc("repp.login",loginOptions);
 			lastlogin = nowtime;
 			lasthello = nowtime;
 			writelog("relogined");
 		};
 		// PREVENTING IDLE-TIMEOUT (VeriSign - 10 minutes)
 		if (nowtime-lasthello>60*8) {
-			script.runFunction("repp:hello");
+			script.runFunc("repp.hello");
 			lasthello = nowtime;
 			writelog("hello");
 		};
@@ -147,7 +147,7 @@ int main (int argc,char *argv[]) {
 		for (reValue::size_type i=0,n=files.size();i<n;i++) {
 			reLine file = files.gl(i);
 			reLine path = requestDir + file;
-			reLine b_no = script.runFunction("repp:incBatchNo").toLine();
+			reLine b_no = script.runFunc("repp.incBatchNo").toLine();
 			reLine rnam = u2line(THE_SNO)+'-'+b_no+'.'+file;
 			reValue res = script.runFile(path);
 			reLine lres = doSerialize ? reScript::data2text(res) : res.dump2line();
@@ -160,7 +160,7 @@ int main (int argc,char *argv[]) {
 				printf("can't move %s to %s\n",path.c_str(),save.c_str());
 				exit(5);
 			};
-			if (!is_ok) reExec::spawn("cp "+save+" "+errorDir+rnam);
+			if (!is_ok) reExec::system("cp "+save+" "+errorDir+rnam);
 			num++;
 			if (reBaseMod::get("REPP_LOGGEDOUT").toBool()) {
 				loggedIn = false;
