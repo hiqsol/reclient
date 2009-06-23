@@ -59,4 +59,7 @@ reValue rePPMod::domainSmartUnhold	(const reValue &a) { return sessions.let(a.gl
 reValue rePPMod::hostSmartCheck		(const reValue &a) { return sessions.let(a.gl("session",0)).hostSmartCheck(a); };
 reValue rePPMod::hostSmartUpdate	(const reValue &a) { return sessions.let(a.gl("session",0)).hostSmartUpdate(a); };
 reValue rePPMod::hostSmartSet		(const reValue &a) { return sessions.let(a.gl("session",0)).hostSmartSet(a); };
+reValue rePPMod::contactSmartCheck	(const reValue &a) { return sessions.let(a.gl("session",0)).contactSmartCheck(a); };
+reValue rePPMod::contactSmartUpdate	(const reValue &a) { return sessions.let(a.gl("session",0)).contactSmartUpdate(a); };
+reValue rePPMod::contactSmartSet	(const reValue &a) { return sessions.let(a.gl("session",0)).contactSmartSet(a); };
 

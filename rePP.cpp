@@ -709,8 +709,8 @@ reValue rePP::domainSmartUpdate (const reValue &a,const reValue &info) {
 		if (add_s.size()) r.let("add").set("statuses",add_s);
 	};
 	if (r.has("nameservers")) {
-		reValue old_n = info.get("nameservers").lc();
-		reValue new_n = r.get("nameservers").lc().ksplit();
+		reValue old_n = info.get("nameservers").uc();
+		reValue new_n = r.get("nameservers").uc().ksplit();
 		reValue add_n,rem_n;
 		for (reValue::size_type i=0,n=old_n.size();i<n;i++) if (!new_n.has(old_n.key(i))) rem_n.set(old_n.key(i),reValue::Null);
 		for (reValue::size_type i=0,n=new_n.size();i<n;i++) if (!old_n.has(new_n.key(i))) add_n.set(new_n.key(i),reValue::Null);
@@ -877,6 +877,74 @@ reValue rePP::hostSmartSet (const reValue &a,reValue info) {
 		info = r+a;
 	};
 	return hostSmartUpdate(a,info);
+};
+
+reValue rePP::contactAllowUpdate (const reValue &a) {
+	return contactUpdate(a+reValue(
+		"remove",reValue(
+			"statuses","clientUpdateProhibited"
+		)
+	));
+};
+
+reValue rePP::contactProhibitUpdate (const reValue &a) {
+	return contactUpdate(a+reValue(
+		"add",reValue(
+			"statuses","clientUpdateProhibited"
+		)
+	));
+};
+
+reValue rePP::contactSmartCheck (const reValue &a) {
+	const reValue names = a.get("names").csplit();
+	bool check = true;
+	reValue res;
+	reValue b = a;
+	for (reValue::size_type i=0,n=names.size();i<n;i++) {
+		reLine name = names.gl(i);
+		b.set("names",name);
+		reValue h = contactCheck(b);
+		if (h.has(name) && !h.get(name).get("avail").toBool()) check = false;
+		res.incSelf(h);
+	};
+	res.set("check",check);
+	return res;
+};
+
+reValue rePP::contactSmartUpdate (const reValue &a,const reValue &info) {
+	reValue r = a;
+	reValue old_s = info.get("statuses");
+	bool old_u = old_s.del("clientUpdateProhibited");
+	bool new_u = old_u;
+	if (r.has("statuses")) {
+		reValue new_s = r.get("statuses").ksplit();
+		new_u = new_s.del("clientUpdateProhibited");
+		reValue add_s,rem_s;
+		for (reValue::size_type i=0,n=old_s.size();i<n;i++) if (!new_s.has(old_s.key(i))) rem_s.set(old_s.key(i),reValue::Null);
+		for (reValue::size_type i=0,n=new_s.size();i<n;i++) if (!old_s.has(new_s.key(i))) add_s.set(new_s.key(i),reValue::Null);
+		if (rem_s.size()) r.let("remove").set("statuses",rem_s);
+		if (add_s.size()) r.let("add").set("statuses",add_s);
+	};
+	if (r.has("add") || r.has("remove") || r.has("change")) {
+		if (old_u) contactAllowUpdate(a);
+		if (new_u) r.let("add").let("statuses").set("clientUpdateProhibited",reValue::Null);
+		reValue res = contactUpdate(r);
+		if (!isResponseOk(res) && new_u) contactProhibitUpdate(a);
+		return res;
+	} else if (old_u && !new_u) {
+		return contactAllowUpdate(a);
+	} else if (new_u && !old_u) {
+		return contactProhibitUpdate(a);
+	} else return reValue::Null;
+};
+
+reValue rePP::contactSmartSet (const reValue &a,reValue info) {
+	if (!isResponseOk(info)) {
+		reValue r = contactCreate(a);
+		if (!isResponseOk(r)) return r;
+		info = r+a;
+	};
+	return contactSmartUpdate(a,info);
 };
 
 // EPP auxiliary functions

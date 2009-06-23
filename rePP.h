@@ -75,6 +75,7 @@ public:
 // SMART COMMANDS
 	reValue pollOne			(const reValue &a);
 	reValue pollAll			(const reValue &a);
+
 	reValue domainAllowUpdate	(const reValue &a);
 	reValue domainProhibitUpdate	(const reValue &a);
 	reValue domainSmartCheck	(const reValue &a);
@@ -88,6 +89,7 @@ public:
 	reValue domainSmartHold		(const reValue &a) { return domainSmartHold(a,domainInfo(a)); };
 	reValue domainSmartUnhold	(const reValue &a,const reValue &info);
 	reValue domainSmartUnhold	(const reValue &a) { return domainSmartUnhold(a,domainInfo(a)); };
+
 	reValue hostAllowUpdate		(const reValue &a);
 	reValue hostProhibitUpdate	(const reValue &a);
 	reValue hostSmartCheck		(const reValue &a);
@@ -95,6 +97,14 @@ public:
 	reValue hostSmartUpdate		(const reValue &a) { return hostSmartUpdate(a,hostInfo(a)); };
 	reValue hostSmartSet		(const reValue &a,reValue info);
 	reValue hostSmartSet		(const reValue &a) { return hostSmartSet(a,hostInfo(a)); };
+
+	reValue contactAllowUpdate	(const reValue &a);
+	reValue contactProhibitUpdate	(const reValue &a);
+	reValue contactSmartCheck	(const reValue &a);
+	reValue contactSmartUpdate	(const reValue &a,const reValue &info);
+	reValue contactSmartUpdate	(const reValue &a) { return contactSmartUpdate(a,contactInfo(a)); };
+	reValue contactSmartSet		(const reValue &a,reValue info);
+	reValue contactSmartSet		(const reValue &a) { return contactSmartSet(a,contactInfo(a)); };
 
 // EPP auxiliary functions
 public:
