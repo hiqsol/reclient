@@ -6,6 +6,7 @@ AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([reClient.cpp])
 AM_CONFIG_HEADER([config.h])
 
+CXXFLAGS=-O0
 ### Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
