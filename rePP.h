@@ -46,6 +46,8 @@ public:
 	void setSerialNo (const reLine &s) { serialNo = s; };
 	unsigned incBatchNo () { return ++batchNo; };
 
+	void dump () const { printf("rePP: %p\n",this);extensions.dump(); };
+
 // NATIVE EPP COMMANDS
 public:
 	reValue	poll			(const reValue &a=reValue::Null);
