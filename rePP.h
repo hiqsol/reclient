@@ -133,7 +133,7 @@ protected:
 	static epp_PollOpType			*newPollOpType			(const reLine &t);
 	static epp_DomainHostsType		*newDomainHostsType		(const reLine &t);
 	static bool				hasContacts			(const reValue &a) { return a.has("admin") || a.has("tech") || a.has("billing"); };
-	static epp_DomainContact		DomainContact			(epp_DomainContactType t,const reLine &c);
+	static void				addDomainContacts		(epp_domain_contact_seq *seq,const reLine &type,const reValue &ids);
 	static epp_domain_contact_seq		*newDomainContactSeq		(const reValue &a);
 	static epp_DomainStatus			DomainStatus			(const reValue &a);
 	static epp_domain_status_seq		*newDomainStatusSeq		(const reValue &a);
@@ -155,6 +155,10 @@ protected:
 	static reValue			readTransIDData		(const epp_TransID_ref &r);
 	static reValue			readResultsData		(const epp_result_seq_ref &r);
 	static reValue			readResponseData	(const epp_Response_ref &r);
+
+// Other auxiliary functions
+protected:
+	static reValue			diffOldNew2AddRem	(const reValue &old_k,const reValue &new_k);
 
 // PROPERTIES
 private:
