@@ -140,24 +140,18 @@ reValue rePP::domainInfo (const reValue &a) {
 	if (r->m_name!=NULL) res["name"] = *r->m_name;
 	if (r->m_roid!=NULL) res["roid"] = *r->m_roid;
 	if (r->m_status!=NULL) {
-		reValue &s = res["statuses"];
+		reValue &statuses = res["statuses"];
 		for (epp_domain_status_seq::iterator i = r->m_status->begin();i!=r->m_status->end();i++) {
-			if (i->m_type!=NULL) {
-				if (s.size()) s += ",";
-				s += returnStatusType(*i->m_type);
-			};
+			if (statuses.size()) statuses += ",";
+			statuses += returnStatusType(*i->m_type);
 		};
 	};
 	if (r->m_registrant!=NULL) res["registrant"] = *r->m_registrant;
 	if (r->m_contacts!=NULL) {
 		for (epp_domain_contact_seq::iterator i = r->m_contacts->begin();i!=r->m_contacts->end();i++) {
-			if (i->m_type!=NULL) {
-				reValue &c = res.let(returnContactType(*i->m_type));
-				if (i->m_id!=NULL) {
-					if (c.size()) c += ",";
-					c += *i->m_id;
-				};
-			};
+			reValue &c = res.let(returnContactType(*i->m_type));
+			if (c.size()) c += ",";
+			c += *i->m_id;
 		};
 	};
 	if (r->m_name_servers!=NULL) {
@@ -255,7 +249,7 @@ reValue rePP::domainCreate (const reValue &a) {
 	if (a.has("nameservers")) request->m_name_servers.ref(newStringSeq(a.get("nameservers").csplit()));
 	if (a.has("registrant")) request->m_registrant.ref(new epp_string(a.gl("registrant")));
 	if (a.has("password")) request->m_auth_info.ref(newAuthInfo(a));
-	if (hasContacts(a)) request->m_contacts.ref(newDomainContactSeq(a));
+	if (a.hasAny("admin","tech","billing")) request->m_contacts.ref(newDomainContactSeq(a));
 	// performing command
 	epp_DomainCreate_ref command(new epp_DomainCreate());
 	command->setRequestData(*request);
@@ -280,14 +274,14 @@ reValue rePP::domainUpdate (const reValue &a) {
 		request->m_add.ref(new epp_DomainUpdateAddRemove());
 		if (add.has("statuses")) request->m_add->m_status.ref(newDomainStatusSeq(add.get("statuses").csplit()));
 		if (add.has("nameservers")) request->m_add->m_name_servers.ref(newStringSeq(add.get("nameservers").csplit()));
-		if (hasContacts(add)) request->m_add->m_contacts.ref(newDomainContactSeq(add));
+		if (add.hasAny("admin","tech","billing")) request->m_add->m_contacts.ref(newDomainContactSeq(add));
 	};
 	if (a.has("remove")) {
 		const reValue &remove = a.get("remove");
 		request->m_remove.ref(new epp_DomainUpdateAddRemove());
 		if (remove.has("statuses")) request->m_remove->m_status.ref(newDomainStatusSeq(remove.get("statuses").csplit()));
 		if (remove.has("nameservers")) request->m_remove->m_name_servers.ref(newStringSeq(remove.get("nameservers").csplit()));
-		if (hasContacts(remove)) request->m_remove->m_contacts.ref(newDomainContactSeq(remove));
+		if (remove.hasAny("admin","tech","billing")) request->m_remove->m_contacts.ref(newDomainContactSeq(remove));
 	};
 	if (a.has("change")) {
 		const reValue &change = a.get("change");
@@ -362,19 +356,15 @@ reValue rePP::hostInfo (const reValue &a) {
 	if (r->m_status!=NULL) {
 		reValue &statuses = res["statuses"];
 		for (epp_host_status_seq::iterator i = r->m_status->begin();i!=r->m_status->end();i++) {
-			/*
-			reValue s;
-			if (i->m_type!=NULL) s["type"] = returnStatusType(*i->m_type);
-			if (i->m_lang!=NULL) s["lang"] = *i->m_lang;
-			if (i->m_value!=NULL) s["value"] = *i->m_value;
-			*/
-			if (i->m_type!=NULL) statuses.set(returnStatusType(*i->m_type),reValue::Null);
+			if (statuses.size()) statuses += ",";
+			statuses += returnStatusType(*i->m_type);
 		};
 	};
 	if (r->m_addresses!=NULL) {
 		reValue &ips = res["ips"];
 		for (epp_host_address_seq::iterator i=r->m_addresses->begin();i!=r->m_addresses->end();i++) {
-			if (i->m_ip!=NULL) ips.set(*i->m_ip,reValue::Null);
+			if (ips.size()) ips += ",";
+			ips += *i->m_ip;
 		};
 	};
 	if (r->m_client_id!=NULL) res["client_id"] = *r->m_client_id;
@@ -545,7 +535,8 @@ reValue rePP::contactInfo (const reValue &a) {
 	if (r->m_status!=NULL) {
 		reValue &statuses = res["statuses"];
 		for (epp_contact_status_seq::iterator i=r->m_status->begin();i!=r->m_status->end();i++) {
-			if (i->m_type!=NULL) statuses.set(returnStatusType(*i->m_type),reValue::Null);
+			if (statuses.size()) statuses += ",";
+			statuses += returnStatusType(*i->m_type);
 		};
 	};
 	if (r->m_addresses!=NULL) {
@@ -621,13 +612,16 @@ reValue rePP::contactUpdate (const reValue &a) {
 		request->m_remove.ref(new epp_ContactUpdateAddRemove());
 		if (remove.has("statuses")) request->m_remove->m_status.ref(newContactStatusSeq(remove.get("statuses").csplit()));
 	};
-	if (hasContactAddressName(a) || a.has("voice_phone") || a.has("fax_phone") || a.has("email") || a.has("password")) {
-		request->m_change.ref(new epp_ContactUpdateChange());
-		if (hasContactAddressName(a))	request->m_change->m_addresses.ref(newContactNameAddressSeq(a));
-		if (a.has("voice_phone"))	request->m_change->m_voice.ref(newContactPhone(a.get("voice_phone"),a.get("voice_extension")));
-		if (a.has("fax_phone"))		request->m_change->m_fax.ref(newContactPhone(a.get("fax_phone"),a.get("fax_extension")));
-		if (a.has("email"))		request->m_change->m_email.ref(new epp_string(a.gl("email")));
-		if (a.has("password"))		request->m_change->m_auth_info.ref(newAuthInfo(a));
+	if (a.has("change")) {
+		const reValue &change = a.get("change");
+		if (hasContactData(change)) {
+			request->m_change.ref(new epp_ContactUpdateChange());
+			if (hasContactAddressName(change))			request->m_change->m_addresses.ref(newContactNameAddressSeq(change));
+			if (change.hasAny("voice_phone","voice_extension"))	request->m_change->m_voice.ref(newContactPhone(change.get("voice_phone"),change.get("voice_extension")));
+			if (change.hasAny("fax_phone","fax_extension"))		request->m_change->m_fax.ref(newContactPhone(change.get("fax_phone"),change.get("fax_extension")));
+			if (change.has("email"))				request->m_change->m_email.ref(new epp_string(change.gl("email")));
+			if (change.has("password"))				request->m_change->m_auth_info.ref(newAuthInfo(change));
+		};
 	};
 	// performing command
 	epp_ContactUpdate_ref command(new epp_ContactUpdate());
@@ -707,7 +701,6 @@ reValue rePP::diffOldNew2AddRem (const reValue &old_k,const reValue &new_k) {
 reValue rePP::domainSmartUpdate (const reValue &a,const reValue &info) {
 	reValue r = a;
 	reValue old_s = info.get("statuses").ksplit();
-	old_s.del("ok");
 	bool old_u = old_s.del("clientUpdateProhibited");
 	bool new_u = old_u;
 	if (r.has("statuses")) {
@@ -734,15 +727,7 @@ reValue rePP::domainSmartUpdate (const reValue &a,const reValue &info) {
 			};
 		};
 	};
-	if (a.has("new_password")) {
-		reLine pwd = r.pop("new_password").toLine();
-		if (pwd!=info.gl("password")) r.let("change").set("password",pwd);
-	};
-	if (a.has("registrant")) {
-		reLine reg = r.pop("registrant").toLine();
-		if (reg!=info.gl("registrant")) r.let("change").set("registrant",reg);
-	};
-	if (hasContacts(r)) {
+	if (r.hasAny("admin","tech","billing")) {
 		reValue cons = csplit("admin,tech,billing");
 		for (reValue::size_type i=0,n=cons.size();i<n;i++) {
 			reLine con  = cons.gl(i);
@@ -757,8 +742,15 @@ reValue rePP::domainSmartUpdate (const reValue &a,const reValue &info) {
 			};
 		};
 	};
-	printf("\n\n%s\n\n",r.dump2line().c_str());
-	if (r.has("add") || r.has("remove") || r.has("change")) {
+	if (a.has("registrant")) {
+		reLine reg = r.pop("registrant").toLine();
+		if (reg!=info.gl("registrant")) r.let("change").set("registrant",reg);
+	};
+	if (a.has("new_password")) {
+		reLine pwd = r.pop("new_password").toLine();
+		if (pwd!=info.gl("password")) r.let("change").set("password",pwd);
+	};
+	if (r.hasAny("add","remove","change")) {
 		if (old_u) domainAllowUpdate(a);
 		if (new_u) r.let("add").let("statuses").set("clientUpdateProhibited",reValue::Null);
 		reValue res = domainUpdate(r);
@@ -865,18 +857,18 @@ reValue rePP::hostSmartUpdate (const reValue &a,const reValue &info) {
 	if (r.has("statuses")) {
 		reValue new_s = r.pop("statuses").ksplit();
 		new_u = new_s.del("clientUpdateProhibited");
-		reValue add_s,rem_s;
-		for (reValue::size_type i=0,n=old_s.size();i<n;i++) if (!new_s.has(old_s.key(i))) rem_s.set(old_s.key(i),reValue::Null);
-		for (reValue::size_type i=0,n=new_s.size();i<n;i++) if (!old_s.has(new_s.key(i))) add_s.set(new_s.key(i),reValue::Null);
+		reValue dif_s = diffOldNew2AddRem(old_s,new_s);
+		reValue add_s = dif_s.get(0);
+		reValue rem_s = dif_s.get(1);
 		if (rem_s.size()) r.let("remove").set("statuses",rem_s);
 		if (add_s.size()) r.let("add").set("statuses",add_s);
 	};
 	if (r.has("ips")) {
 		reValue old_i = info.get("ips").ksplit();
 		reValue new_i = r.pop("ips").ksplit();
-		reValue add_i,rem_i;
-		for (reValue::size_type i=0,n=old_i.size();i<n;i++) if (!new_i.has(old_i.key(i))) rem_i.set(old_i.key(i),reValue::Null);
-		for (reValue::size_type i=0,n=new_i.size();i<n;i++) if (!old_i.has(new_i.key(i))) add_i.set(new_i.key(i),reValue::Null);
+		reValue dif_i = diffOldNew2AddRem(old_i,new_i);
+		reValue add_i = dif_i.get(0);
+		reValue rem_i = dif_i.get(1);
 		if (rem_i.size()) r.let("remove").set("ips",rem_i);
 		if (add_i.size()) r.let("add").set("ips",add_i);
 	};
@@ -884,7 +876,7 @@ reValue rePP::hostSmartUpdate (const reValue &a,const reValue &info) {
 		reLine name = r.pop("new_name").toLine();
 		if (name!=info.gl("name")) r.let("change").set("name",name);
 	};
-	if (r.has("add") || r.has("remove") || r.has("change")) {
+	if (r.hasAny("add","remove","change")) {
 		if (old_u) hostAllowUpdate(a);
 		if (new_u) r.let("add").let("statuses").set("clientUpdateProhibited",reValue::Null);
 		reValue res = hostUpdate(r);
@@ -940,19 +932,29 @@ reValue rePP::contactSmartCheck (const reValue &a) {
 
 reValue rePP::contactSmartUpdate (const reValue &a,const reValue &info) {
 	reValue r = a;
-	reValue old_s = info.get("statuses");
+	reValue old_s = info.get("statuses").ksplit();
 	bool old_u = old_s.del("clientUpdateProhibited");
 	bool new_u = old_u;
 	if (r.has("statuses")) {
-		reValue new_s = r.get("statuses").ksplit();
+		reValue new_s = r.pop("statuses").ksplit();
 		new_u = new_s.del("clientUpdateProhibited");
-		reValue add_s,rem_s;
-		for (reValue::size_type i=0,n=old_s.size();i<n;i++) if (!new_s.has(old_s.key(i))) rem_s.set(old_s.key(i),reValue::Null);
-		for (reValue::size_type i=0,n=new_s.size();i<n;i++) if (!old_s.has(new_s.key(i))) add_s.set(new_s.key(i),reValue::Null);
+		reValue dif_s = diffOldNew2AddRem(old_s,new_s);
+		reValue add_s = dif_s.get(0);
+		reValue rem_s = dif_s.get(1);
 		if (rem_s.size()) r.let("remove").set("statuses",rem_s);
 		if (add_s.size()) r.let("add").set("statuses",add_s);
 	};
-	if (r.has("add") || r.has("remove") || r.has("change")) {
+	if (hasContactData(r)) {
+		reValue vars = csplit("street1,street2,street3,city,province,postal_code,country,name,organization,voice_phone,voice_extension,fax_phone,fax_extension,email,password");
+		for (reValue::size_type i=0,n=vars.size();i<n;i++) {
+			reLine var = vars.gl(i);
+			if (r.has(var)) {
+				reLine val = r.pop(var).toLine();
+				if (val!=info.gl(var)) r.let("change").set(var,val);
+			};
+		};
+	};
+	if (r.hasAny("add","remove","change")) {
 		if (old_u) contactAllowUpdate(a);
 		if (new_u) r.let("add").let("statuses").set("clientUpdateProhibited",reValue::Null);
 		reValue res = contactUpdate(r);
@@ -1012,7 +1014,7 @@ void rePP::setNamestoreExtension (const reLine &ext,const reLine &data) {
 
 epp_string_seq *rePP::newStringSeq (const reValue &a) {
 	epp_string_seq *res = new epp_string_seq();
-	for (reValue::size_type i=0,n=a.size();i<n;i++) res->push_back(a.gk(i));
+	for (reValue::size_type i=0,n=a.size();i<n;i++) res->push_back(a.gk(i).toLine());
 	return res;
 };
 
@@ -1041,7 +1043,7 @@ void rePP::addDomainContacts (epp_domain_contact_seq *seq,const reLine &type,con
 	for (reValue::size_type i=0,n=ids.hashSize();i<n;i++) {
 		epp_DomainContact res;
 		res.m_type.ref(new epp_DomainContactType(returnContactEnumType(type)));
-		res.m_id.ref(new epp_string(ids.gl(i)));
+		res.m_id.ref(new epp_string(ids.gk(i).toLine()));
 		seq->push_back(res);
 	};
 };
@@ -1058,7 +1060,7 @@ epp_domain_contact_seq *rePP::newDomainContactSeq (const reValue &a) {
 
 epp_DomainStatus rePP::DomainStatus (const reValue &a) {
 	epp_DomainStatus res;
-	res.m_type.ref(new epp_DomainStatusType(eppobject::domain::returnStatusEnumType(a.first("type").toLine())));
+	res.m_type.ref(new epp_DomainStatusType(eppobject::domain::returnStatusEnumType(statusType(a))));
 	if (a.has("value")) res.m_value.ref(new epp_string(a.gl("value")));
 	if (a.has("lang")) res.m_lang.ref(new epp_string(a.gl("lang")));
 	return res;
@@ -1066,13 +1068,16 @@ epp_DomainStatus rePP::DomainStatus (const reValue &a) {
 
 epp_domain_status_seq *rePP::newDomainStatusSeq (const reValue &a) {
 	epp_domain_status_seq *res = new epp_domain_status_seq();
-	for (reValue::size_type i=0,n=a.size();i<n;i++) res->push_back(DomainStatus(a.gk(i)));
+	for (reValue::size_type i=0,n=a.size();i<n;i++) {
+		reValue status = a.gk(i);
+		if (isClientStatus(status)) res->push_back(DomainStatus(status));
+	};
 	return res;
 };
 
 epp_ContactStatus rePP::ContactStatus (const reValue &a) {
 	epp_ContactStatus res;
-	res.m_type.ref(new epp_ContactStatusType(eppobject::contact::returnStatusEnumType(a.first("type").toLine())));
+	res.m_type.ref(new epp_ContactStatusType(eppobject::contact::returnStatusEnumType(statusType(a))));
 	if (a.has("value")) res.m_value.ref(new epp_string(a.gl("value")));
 	if (a.has("lang")) res.m_lang.ref(new epp_string(a.gl("lang")));
 	return res;
@@ -1080,13 +1085,16 @@ epp_ContactStatus rePP::ContactStatus (const reValue &a) {
 
 epp_contact_status_seq *rePP::newContactStatusSeq (const reValue &a) {
 	epp_contact_status_seq *res = new epp_contact_status_seq();
-	for (reValue::size_type i=0,n=a.size();i<n;i++) res->push_back(ContactStatus(a.gk(i)));
+	for (reValue::size_type i=0,n=a.size();i<n;i++) {
+		reValue status = a.gk(i);
+		if (isClientStatus(status)) res->push_back(ContactStatus(status));
+	};
 	return res;
 };
 
 epp_HostStatus rePP::HostStatus (const reValue &a) {
 	epp_HostStatus res;
-	res.m_type.ref(new epp_HostStatusType(eppobject::host::returnStatusEnumType(a.first("type").toLine())));
+	res.m_type.ref(new epp_HostStatusType(eppobject::host::returnStatusEnumType(statusType(a))));
 	if (a.has("value")) res.m_value.ref(new epp_string(a.gl("value")));
 	if (a.has("lang")) res.m_lang.ref(new epp_string(a.gl("lang")));
 	return res;
@@ -1094,14 +1102,17 @@ epp_HostStatus rePP::HostStatus (const reValue &a) {
 
 epp_host_status_seq *rePP::newHostStatusSeq (const reValue &a) {
 	epp_host_status_seq *res = new epp_host_status_seq();
-	for (reValue::size_type i=0,n=a.size();i<n;i++) res->push_back(HostStatus(a.gk(i)));
+	for (reValue::size_type i=0,n=a.size();i<n;i++) {
+		reValue status = a.gk(i);
+		if (isClientStatus(status)) res->push_back(HostStatus(status));
+	};
 	return res;
 };
 
 epp_host_address_seq *rePP::newHostAddressSeq (const reValue &a) {
 	epp_host_address_seq *res = new epp_host_address_seq();
 	for (reValue::size_type i=0,n=a.size();i<n;i++) {
-		reLine ip = a.gk(i);
+		reLine ip = a.gk(i).toLine();
 		epp_HostAddress address(ip.find(".")==reLine::npos ? IPV6 : IPV4,epp_string(ip));
 		res->push_back(address);
 	};

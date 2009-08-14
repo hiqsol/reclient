@@ -132,8 +132,10 @@ protected:
 	static epp_AuthInfo			*newAuthInfo			(const reValue &a);
 	static epp_PollOpType			*newPollOpType			(const reLine &t);
 	static epp_DomainHostsType		*newDomainHostsType		(const reLine &t);
-	static bool				hasContacts			(const reValue &a) { return a.has("admin") || a.has("tech") || a.has("billing"); };
 	static void				addDomainContacts		(epp_domain_contact_seq *seq,const reLine &type,const reValue &ids);
+	static reLine				statusType			(const reValue &a) { return a.first("type").toLine(); };
+	static bool				isClientStatus			(const reLine &s) { return s.substr(0,6)=="client"; };
+	static bool				isClientStatus			(const reValue &a) { return isClientStatus(statusType(a)); };
 	static epp_domain_contact_seq		*newDomainContactSeq		(const reValue &a);
 	static epp_DomainStatus			DomainStatus			(const reValue &a);
 	static epp_domain_status_seq		*newDomainStatusSeq		(const reValue &a);
@@ -142,23 +144,24 @@ protected:
 	static epp_HostStatus			HostStatus			(const reValue &a);
 	static epp_host_status_seq		*newHostStatusSeq		(const reValue &a);
 	static epp_host_address_seq		*newHostAddressSeq		(const reValue &a);
-	static bool				hasContactAddressName		(const reValue &a) { return a.has("name") || a.has("organization") || hasContactAddress(a); };
-	static bool				hasContactAddress		(const reValue &a) { return a.has("street1") || a.has("street2") || a.has("street3") || a.has("city") || a.has("province") || a.has("postal_code") || a.has("country"); };
+	static bool				hasContactAddress		(const reValue &a) { return a.hasAny("street1","street2","street3","city","province","postal_code","country"); };
+	static bool				hasContactAddressName		(const reValue &a) { return a.hasAny("name","organization") || hasContactAddress(a); };
+	static bool				hasContactData			(const reValue &a) { return a.hasAny("voice_phone","fax_phone","email","password") || hasContactAddressName(a); };
 	static epp_ContactAddress		*newContactAddress		(const reValue &a);
 	static epp_ContactNameAddress		ContactNameAddress		(const reValue &a);
 	static epp_ContactNameAddress_seq	*newContactNameAddressSeq	(const reValue &a);
 	static epp_ContactPhone			*newContactPhone		(const reValue &p,const reValue &e);
 
-	static reValue			readDomainTrnData	(const epp_PollResData_ref &t);
-	static reValue			readContactTrnData	(const epp_PollResData_ref &t);
-	static reValue			readMessageQueueData	(const epp_MessageQueue_ref &r);
-	static reValue			readTransIDData		(const epp_TransID_ref &r);
-	static reValue			readResultsData		(const epp_result_seq_ref &r);
-	static reValue			readResponseData	(const epp_Response_ref &r);
+	static reValue				readDomainTrnData		(const epp_PollResData_ref &t);
+	static reValue				readContactTrnData		(const epp_PollResData_ref &t);
+	static reValue				readMessageQueueData		(const epp_MessageQueue_ref &r);
+	static reValue				readTransIDData			(const epp_TransID_ref &r);
+	static reValue				readResultsData			(const epp_result_seq_ref &r);
+	static reValue				readResponseData		(const epp_Response_ref &r);
 
 // Other auxiliary functions
 protected:
-	static reValue			diffOldNew2AddRem	(const reValue &old_k,const reValue &new_k);
+	static reValue				diffOldNew2AddRem		(const reValue &old_k,const reValue &new_k);
 
 // PROPERTIES
 private:
