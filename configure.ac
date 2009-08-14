@@ -76,6 +76,6 @@ AC_C_CONST
 AC_SUBST(LLVM_CPPFLAGS, $(llvm-config --cppflags))
 AC_SUBST(LLVM_LDADD, $(llvm-config --ldflags --libs core jit native ipo | tr '\n' ' '))
 
-CPPFLAGS="-Wall -g -I../.. -I$OPENSSL_PATH/include -I$XERCES_INCLUDE -I$DOMTOOLS_PATH/include -I$EPPRTK_PATH/include -I$COMNETADDON_PATH/include $LLVM_CPPFLAGS"
+CPPFLAGS="-Wall -g -I../.. -I$OPENSSL_PATH/include -I$XERCES_INCLUDE -I$DOMTOOLS_PATH/include -I$EPPRTK_PATH/include -I$COMNETADDON_PATH/include/comnetaddon $LLVM_CPPFLAGS"
 
 AC_OUTPUT(Makefile)
