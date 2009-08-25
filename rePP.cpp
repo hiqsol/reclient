@@ -760,7 +760,7 @@ reValue rePP::domainSmartUpdate (const reValue &a,const reValue &info) {
 		return domainAllowUpdate(a);
 	} else if (new_u && !old_u) {
 		return domainProhibitUpdate(a);
-	} else return reValue::Null;
+	} else return info;
 };
 
 reValue rePP::domainSmartLock (const reValue &a,const reValue &info) {
@@ -917,7 +917,7 @@ reValue rePP::contactSmartUpdate (const reValue &a,const reValue &info) {
 		return contactAllowUpdate(a);
 	} else if (new_u && !old_u) {
 		return contactProhibitUpdate(a);
-	} else return reValue::Null;
+	} else return info;
 };
 
 reValue rePP::contactSmartSet (const reValue &a,reValue info) {
