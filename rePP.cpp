@@ -700,11 +700,11 @@ reValue rePP::diffOldNew2AddRem (const reValue &old_k,const reValue &new_k) {
 
 reValue rePP::domainSmartUpdate (const reValue &a,const reValue &info) {
 	reValue r = a;
-	reValue old_s = info.get("statuses").ksplit();
+	reValue old_s = checkClientStatuses(info.get("statuses").ksplit());
 	bool old_u = old_s.del("clientUpdateProhibited");
 	bool new_u = old_u;
 	if (r.has("statuses")) {
-		reValue new_s = r.pop("statuses").ksplit();
+		reValue new_s = checkClientStatuses(r.pop("statuses").ksplit());
 		new_u = new_s.del("clientUpdateProhibited");
 		reValue dif_s = diffOldNew2AddRem(old_s,new_s);
 		reValue add_s = dif_s.get(0);
@@ -763,22 +763,6 @@ reValue rePP::domainSmartUpdate (const reValue &a,const reValue &info) {
 	} else return reValue::Null;
 };
 
-reValue rePP::domainAllowUpdate (const reValue &a) {
-	return domainUpdate(a+reValue(
-		"remove",reValue(
-			"statuses","clientUpdateProhibited"
-		)
-	));
-};
-
-reValue rePP::domainProhibitUpdate (const reValue &a) {
-	return domainUpdate(a+reValue(
-		"add",reValue(
-			"statuses","clientUpdateProhibited"
-		)
-	));
-};
-
 reValue rePP::domainSmartLock (const reValue &a,const reValue &info) {
 	reValue o_s = info.get("statuses");
 	reValue n_s = o_s;
@@ -833,29 +817,13 @@ reValue rePP::hostSmartCheck (const reValue &a) {
 	return res;
 };
 
-reValue rePP::hostAllowUpdate (const reValue &a) {
-	return hostUpdate(a+reValue(
-		"remove",reValue(
-			"statuses","clientUpdateProhibited"
-		)
-	));
-};
-
-reValue rePP::hostProhibitUpdate (const reValue &a) {
-	return hostUpdate(a+reValue(
-		"add",reValue(
-			"statuses","clientUpdateProhibited"
-		)
-	));
-};
-
 reValue rePP::hostSmartUpdate (const reValue &a,const reValue &info) {
 	reValue r = a;
-	reValue old_s = info.get("statuses").ksplit();
+	reValue old_s = checkClientStatuses(info.get("statuses").ksplit());
 	bool old_u = old_s.del("clientUpdateProhibited");
 	bool new_u = old_u;
 	if (r.has("statuses")) {
-		reValue new_s = r.pop("statuses").ksplit();
+		reValue new_s = checkClientStatuses(r.pop("statuses").ksplit());
 		new_u = new_s.del("clientUpdateProhibited");
 		reValue dif_s = diffOldNew2AddRem(old_s,new_s);
 		reValue add_s = dif_s.get(0);
@@ -872,10 +840,11 @@ reValue rePP::hostSmartUpdate (const reValue &a,const reValue &info) {
 		if (rem_i.size()) r.let("remove").set("ips",rem_i);
 		if (add_i.size()) r.let("add").set("ips",add_i);
 	};
-	if (a.has("new_name")) {
+	if (r.has("new_name")) {
 		reLine name = r.pop("new_name").toLine();
 		if (name!=info.gl("name")) r.let("change").set("name",name);
 	};
+	printf("\n\nr: %s\n\n",r.dump2line().c_str());
 	if (r.hasAny("add","remove","change")) {
 		if (old_u) hostAllowUpdate(a);
 		if (new_u) r.let("add").let("statuses").set("clientUpdateProhibited",reValue::Null);
@@ -898,32 +867,16 @@ reValue rePP::hostSmartSet (const reValue &a,reValue info) {
 	return hostSmartUpdate(a,info);
 };
 
-reValue rePP::contactAllowUpdate (const reValue &a) {
-	return contactUpdate(a+reValue(
-		"remove",reValue(
-			"statuses","clientUpdateProhibited"
-		)
-	));
-};
-
-reValue rePP::contactProhibitUpdate (const reValue &a) {
-	return contactUpdate(a+reValue(
-		"add",reValue(
-			"statuses","clientUpdateProhibited"
-		)
-	));
-};
-
 reValue rePP::contactSmartCheck (const reValue &a) {
-	const reValue names = a.get("names").csplit();
+	const reValue ids = a.get("ids").csplit();
 	bool check = true;
 	reValue res;
 	reValue b = a;
-	for (reValue::size_type i=0,n=names.size();i<n;i++) {
-		reLine name = names.gl(i);
-		b.set("names",name);
+	for (reValue::size_type i=0,n=ids.size();i<n;i++) {
+		reLine id = ids.gl(i);
+		b.set("ids",id);
 		reValue h = contactCheck(b);
-		if (h.has(name) && !h.get(name).get("avail").toBool()) check = false;
+		if (h.has(id) && !h.get(id).get("avail").toBool()) check = false;
 		res.incSelf(h);
 	};
 	res.set("check",check);
@@ -932,11 +885,11 @@ reValue rePP::contactSmartCheck (const reValue &a) {
 
 reValue rePP::contactSmartUpdate (const reValue &a,const reValue &info) {
 	reValue r = a;
-	reValue old_s = info.get("statuses").ksplit();
+	reValue old_s = checkClientStatuses(info.get("statuses").ksplit());
 	bool old_u = old_s.del("clientUpdateProhibited");
 	bool new_u = old_u;
 	if (r.has("statuses")) {
-		reValue new_s = r.pop("statuses").ksplit();
+		reValue new_s = checkClientStatuses(r.pop("statuses").ksplit());
 		new_u = new_s.del("clientUpdateProhibited");
 		reValue dif_s = diffOldNew2AddRem(old_s,new_s);
 		reValue add_s = dif_s.get(0);
@@ -1066,12 +1019,11 @@ epp_DomainStatus rePP::DomainStatus (const reValue &a) {
 	return res;
 };
 
-epp_domain_status_seq *rePP::newDomainStatusSeq (const reValue &a) {
-	epp_domain_status_seq *res = new epp_domain_status_seq();
-	for (reValue::size_type i=0,n=a.size();i<n;i++) {
-		reValue status = a.gk(i);
-		if (isClientStatus(status)) res->push_back(DomainStatus(status));
-	};
+epp_HostStatus rePP::HostStatus (const reValue &a) {
+	epp_HostStatus res;
+	res.m_type.ref(new epp_HostStatusType(eppobject::host::returnStatusEnumType(statusType(a))));
+	if (a.has("value")) res.m_value.ref(new epp_string(a.gl("value")));
+	if (a.has("lang")) res.m_lang.ref(new epp_string(a.gl("lang")));
 	return res;
 };
 
@@ -1083,29 +1035,33 @@ epp_ContactStatus rePP::ContactStatus (const reValue &a) {
 	return res;
 };
 
-epp_contact_status_seq *rePP::newContactStatusSeq (const reValue &a) {
-	epp_contact_status_seq *res = new epp_contact_status_seq();
+reValue rePP::checkClientStatuses (const reValue &a) {
+	reValue res;
 	for (reValue::size_type i=0,n=a.size();i<n;i++) {
-		reValue status = a.gk(i);
-		if (isClientStatus(status)) res->push_back(ContactStatus(status));
+		reLine status = a.gk(i).toLine();
+		if (isClientStatus(status)) res.set(status,reValue::Null);
 	};
 	return res;
 };
 
-epp_HostStatus rePP::HostStatus (const reValue &a) {
-	epp_HostStatus res;
-	res.m_type.ref(new epp_HostStatusType(eppobject::host::returnStatusEnumType(statusType(a))));
-	if (a.has("value")) res.m_value.ref(new epp_string(a.gl("value")));
-	if (a.has("lang")) res.m_lang.ref(new epp_string(a.gl("lang")));
+epp_domain_status_seq *rePP::newDomainStatusSeq (const reValue &a) {
+	reValue s = checkClientStatuses(a);
+	epp_domain_status_seq *res = new epp_domain_status_seq();
+	for (reValue::size_type i=0,n=s.size();i<n;i++) res->push_back(DomainStatus(s.gk(i)));
 	return res;
 };
 
 epp_host_status_seq *rePP::newHostStatusSeq (const reValue &a) {
+	reValue s = checkClientStatuses(a);
 	epp_host_status_seq *res = new epp_host_status_seq();
-	for (reValue::size_type i=0,n=a.size();i<n;i++) {
-		reValue status = a.gk(i);
-		if (isClientStatus(status)) res->push_back(HostStatus(status));
-	};
+	for (reValue::size_type i=0,n=s.size();i<n;i++) res->push_back(HostStatus(s.gk(i)));
+	return res;
+};
+
+epp_contact_status_seq *rePP::newContactStatusSeq (const reValue &a) {
+	reValue s = checkClientStatuses(a);
+	epp_contact_status_seq *res = new epp_contact_status_seq();
+	for (reValue::size_type i=0,n=s.size();i<n;i++) res->push_back(ContactStatus(s.gk(i)));
 	return res;
 };
 

@@ -78,8 +78,8 @@ public:
 	reValue pollOne			(const reValue &a);
 	reValue pollAll			(const reValue &a);
 
-	reValue domainAllowUpdate	(const reValue &a);
-	reValue domainProhibitUpdate	(const reValue &a);
+	reValue domainAllowUpdate	(const reValue &a) { return domainUpdate(a+allowUpdate()); };
+	reValue domainProhibitUpdate	(const reValue &a) { return domainUpdate(a+prohibitUpdate()); };
 	reValue domainSmartCheck	(const reValue &a);
 	reValue domainSmartUpdate	(const reValue &a,const reValue &info);
 	reValue domainSmartUpdate	(const reValue &a) { return domainSmartUpdate(a,domainInfo(a)); };
@@ -92,16 +92,16 @@ public:
 	reValue domainSmartUnhold	(const reValue &a,const reValue &info);
 	reValue domainSmartUnhold	(const reValue &a) { return domainSmartUnhold(a,domainInfo(a)); };
 
-	reValue hostAllowUpdate		(const reValue &a);
-	reValue hostProhibitUpdate	(const reValue &a);
+	reValue hostAllowUpdate		(const reValue &a) { return hostUpdate(a+allowUpdate()); };
+	reValue hostProhibitUpdate	(const reValue &a) { return hostUpdate(a+prohibitUpdate()); };
 	reValue hostSmartCheck		(const reValue &a);
 	reValue hostSmartUpdate		(const reValue &a,const reValue &info);
 	reValue hostSmartUpdate		(const reValue &a) { return hostSmartUpdate(a,hostInfo(a)); };
 	reValue hostSmartSet		(const reValue &a,reValue info);
 	reValue hostSmartSet		(const reValue &a) { return hostSmartSet(a,hostInfo(a)); };
 
-	reValue contactAllowUpdate	(const reValue &a);
-	reValue contactProhibitUpdate	(const reValue &a);
+	reValue contactAllowUpdate	(const reValue &a) { return contactUpdate(a+allowUpdate()); };
+	reValue contactProhibitUpdate	(const reValue &a) { return contactUpdate(a+prohibitUpdate()); };
 	reValue contactSmartCheck	(const reValue &a);
 	reValue contactSmartUpdate	(const reValue &a,const reValue &info);
 	reValue contactSmartUpdate	(const reValue &a) { return contactSmartUpdate(a,contactInfo(a)); };
@@ -136,6 +136,7 @@ protected:
 	static reLine				statusType			(const reValue &a) { return a.first("type").toLine(); };
 	static bool				isClientStatus			(const reLine &s) { return s.substr(0,6)=="client"; };
 	static bool				isClientStatus			(const reValue &a) { return isClientStatus(statusType(a)); };
+	static reValue				checkClientStatuses		(const reValue &a);
 	static epp_domain_contact_seq		*newDomainContactSeq		(const reValue &a);
 	static epp_DomainStatus			DomainStatus			(const reValue &a);
 	static epp_domain_status_seq		*newDomainStatusSeq		(const reValue &a);
@@ -162,6 +163,8 @@ protected:
 // Other auxiliary functions
 protected:
 	static reValue				diffOldNew2AddRem		(const reValue &old_k,const reValue &new_k);
+	static reValue				allowUpdate			() { return reValue("remove",reValue("statuses","clientUpdateProhibited")); };
+	static reValue				prohibitUpdate			() { return reValue("add",   reValue("statuses","clientUpdateProhibited")); };
 
 // PROPERTIES
 private:
