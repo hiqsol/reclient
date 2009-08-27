@@ -764,7 +764,7 @@ reValue rePP::domainSmartUpdate (const reValue &a,const reValue &info) {
 };
 
 reValue rePP::domainSmartLock (const reValue &a,const reValue &info) {
-	reValue o_s = info.get("statuses");
+	reValue o_s = info.get("statuses").ksplit();
 	reValue n_s = o_s;
 	reValue s_s = ksplit("clientUpdateProhibited,clientDeleteProhibited,clientTransferProhibited");
 	int go = 0;
@@ -772,11 +772,11 @@ reValue rePP::domainSmartLock (const reValue &a,const reValue &info) {
 		n_s.set(s_s.key(i),reValue::Null);
 		go++;
 	};
-	return go ? domainSmartUpdate(reValue("name",a.gl("name"),"statuses",n_s),info) : reValue::Null;
+	return go ? domainSmartUpdate(reValue("name",a.gl("name"),"statuses",n_s),info) : info;
 };
 
 reValue rePP::domainSmartUnlock (const reValue &a,const reValue &info) {
-	reValue o_s = info.get("statuses");
+	reValue o_s = info.get("statuses").ksplit();
 	reValue n_s(o_s.size(),true);
 	reValue s_s = ksplit("clientUpdateProhibited,clientDeleteProhibited,clientTransferProhibited");
 	int go = 0;
@@ -784,19 +784,19 @@ reValue rePP::domainSmartUnlock (const reValue &a,const reValue &info) {
 		if (s_s.has(o_s.key(i))) go++;
 		else n_s.set(o_s.key(i),reValue::Null);
 	};
-	return go ? domainSmartUpdate(reValue("name",a.gl("name"),"statuses",n_s),info) : reValue::Null;
+	return go ? domainSmartUpdate(reValue("name",a.gl("name"),"statuses",n_s),info) : info;
 };
 
 reValue rePP::domainSmartHold (const reValue &a,const reValue &info) {
-	reValue o_s = info.get("statuses");
-	if (o_s.has("clientHold")) return reValue::Null;
+	reValue o_s = info.get("statuses").ksplit();
+	if (o_s.has("clientHold")) return info;
 	o_s.set("clientHold",reValue::Null);
 	return domainSmartUpdate(reValue("name",a.gl("name"),"statuses",o_s),info);
 };
 
 reValue rePP::domainSmartUnhold (const reValue &a,const reValue &info) {
-	reValue o_s = info.get("statuses");
-	if (!o_s.has("clientHold")) return reValue::Null;
+	reValue o_s = info.get("statuses").ksplit();
+	if (!o_s.has("clientHold")) return info;
 	o_s.del("clientHold");
 	return domainSmartUpdate(reValue("name",a.gl("name"),"statuses",o_s),info);
 };
