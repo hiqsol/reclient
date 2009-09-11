@@ -43,17 +43,8 @@ void writelog (const char *s) {
 };
 void writelog (const reLine &s) { writelog(s.c_str()); };
 
-void minUse () {
-	reValue jbb(1,false,false);
-	reValue i = (int64_t)1;
-	reValue n = reBaseMod::set(reValue("a","b"));
-	reValue a = reBaseMod::get(reValue(1,false));
-	a.set("asdasd",123);
-	reBaseMod::inc(n);
-	reBaseMod::sum(a);
-};
-
 int main (int argc,char *argv[]) {
+	RE_COMPILER_MINUSE();
 	// INITIALIZING reScript
 	reScript script;
 	reBaseMod base;
