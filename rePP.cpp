@@ -858,6 +858,12 @@ reValue rePP::hostSmartUpdate (const reValue &a,const reValue &info) {
 	} else return info;
 };
 
+reValue rePP::domainSmartRenew (const reValue &a) {
+	reValue r = a;
+	if (!r.hasNotNull("expires")) r.set("expires",domainInfo(a).gl("expiration_date").substr(0,10));
+	return domainRenew(r);
+};
+
 reValue rePP::hostSmartSet (const reValue &a,reValue info) {
 	if (!isResponseOk(info)) {
 		reValue r = hostCreate(a);

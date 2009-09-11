@@ -91,6 +91,7 @@ public:
 	reValue domainSmartHold		(const reValue &a) { return domainSmartHold(a,domainInfo(a)); };
 	reValue domainSmartUnhold	(const reValue &a,const reValue &info);
 	reValue domainSmartUnhold	(const reValue &a) { return domainSmartUnhold(a,domainInfo(a)); };
+	reValue domainSmartRenew	(const reValue &a);
 
 	reValue hostAllowUpdate		(const reValue &a) { return hostUpdate(a+allowUpdate()); };
 	reValue hostProhibitUpdate	(const reValue &a) { return hostUpdate(a+prohibitUpdate()); };
