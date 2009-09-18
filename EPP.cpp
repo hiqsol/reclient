@@ -729,17 +729,16 @@ data_type EPP::domainSmartUpdate (data_cref a,data_cref info) {
 		};
 	};
 	if (r.hasAny("admin","tech","billing")) {
-		data_type cons = csplit("admin,tech,billing");
-		for (size_type i=0,n=cons.size();i<n;i++) {
-			line_type con  = cons.getLine(i);
-			if (r.has(con)) {
-				data_type old_c = info.get(con).ksplit();
-				data_type new_c = r.pop(con).ksplit();
+		char_cptr cons[] = {"admin","tech","billing"};
+		for (size_type i=0,n=sizeof(cons)/sizeof(*cons);i<n;i++) {
+			if (r.has(cons[i])) {
+				data_type old_c = info.get(cons[i]).ksplit();
+				data_type new_c = r.pop(cons[i]).ksplit();
 				data_type dif_c = diffOldNew2AddRem(old_c,new_c);
 				data_type add_c = dif_c.get(0);
 				data_type rem_c = dif_c.get(1);
-				if (rem_c.size()) r.let("remove").set(con,rem_c.keys());
-				if (add_c.size()) r.let("add").set(con,add_c.keys());
+				if (rem_c.size()) r.let("remove").set(cons[i],rem_c.keys());
+				if (add_c.size()) r.let("add").set(cons[i],add_c.keys());
 			};
 		};
 	};
@@ -963,8 +962,8 @@ data_type EPP::safeProcessAction (epp_Action_ref command) {
 };
 
 bool_type EPP::isDomainUpdatable (data_cref statuses) {
-	data_type f_stats = csplit("pendingTransfer,clientUpdateProhibited,serverUpdateProhibited");
-	for (size_type i=0,n=f_stats.size();i<n;i++) if (statuses.has(f_stats.get(i))) return false;
+	char_cptr vars[] = {"pendingTransfer","clientUpdateProhibited","serverUpdateProhibited"};
+	for (size_type i=0,n=sizeof(vars)/sizeof(*vars);i<n;i++) if (statuses.has(vars[i])) return false;
 	return true;
 };
 
@@ -1018,10 +1017,9 @@ void_type EPP::addDomainContacts (epp_domain_contact_seq *seq,line_cref type,dat
 
 epp_domain_contact_seq *EPP::newDomainContactSeq (data_cref a) {
 	epp_domain_contact_seq *res = new epp_domain_contact_seq();
-	data_type cons = csplit("admin,tech,billing");
-	for (size_type i=0,n=cons.hashSize();i<n;i++) {
-		line_type con = cons.getLine(i);
-		if (a.has(con)) addDomainContacts(res,con,a.get(con).csplit());
+	char_cptr cons[] = {"admin","tech","billing"};
+	for (size_type i=0,n=sizeof(cons)/sizeof(*cons);i<n;i++) {
+		if (a.has(cons[i])) addDomainContacts(res,cons[i],a.get(cons[i]).csplit());
 	};
 	return res;
 };
