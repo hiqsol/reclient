@@ -905,13 +905,21 @@ data_type EPP::contactSmartUpdate (data_cref a,data_cref info) {
 		if (add_s.size()) r.let("add").set("statuses",add_s);
 	};
 	if (hasContactData(r)) {
-		data_type vars = csplit("street1,street2,street3,city,province,postal_code,country,name,organization,voice_phone,voice_extension,fax_phone,fax_extension,email,password");
-		for (size_type i=0,n=vars.size();i<n;i++) {
-			line_type var = vars.getLine(i);
-			if (r.has(var)) {
-				line_type val = r.pop(var).toLine();
-				if (val!=info.getLine(var)) r.let("change").set(var,val);
+		char_cptr vars[] = {
+			"name","organization","email","password",
+			"street1","street2","street3","city","province","postal_code","country",
+			"voice_phone","voice_extension","fax_phone","fax_extension"
+		};
+		for (size_type i=0,n=sizeof(vars)/sizeof(*vars);i<n;i++) {
+			if (r.has(vars[i])) {
+				line_type val = r.pop(vars[i]).toLine();
+				if (val!=info.getLine(vars[i])) r.let("change").set(vars[i],val);
 			};
+		};
+		if (hasContactAddress(r.get("change"))) {
+			data_vref c = r.let("change");
+			char_cptr vars[] = {"street1","country","city"};
+			for (size_type i=0,n=sizeof(vars)/sizeof(*vars);i<n;i++) if (!c.has(vars[i])) c.set(vars[i],info.get(vars[i]));
 		};
 	};
 	if (r.hasAny("add","remove","change")) {
