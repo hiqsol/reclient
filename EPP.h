@@ -105,6 +105,7 @@ public:
 	data_type contactAllowUpdate		(data_cref a) { return contactUpdate(a+allowUpdate()); };
 	data_type contactProhibitUpdate		(data_cref a) { return contactUpdate(a+prohibitUpdate()); };
 	data_type contactSmartCheck		(data_cref a);
+	data_type contactSmartCreate		(data_cref a) { return contactCreate(a.has("password") ? a : data_type(a,"password",genPass())); };
 	data_type contactSmartUpdate		(data_cref a,data_cref info);
 	data_type contactSmartUpdate		(data_cref a) { return contactSmartUpdate(a,contactInfo(a)); };
 	data_type contactSmartSet		(data_cref a,data_type info);
@@ -123,6 +124,7 @@ protected:
 		epp_Command *			newCommand			(data_cref a,line_cref op) { return newCommand(getExt(a),trID(a.getLine("trID"),op)); };
 		line_type			trID				(line_cref id,line_cref op) { return id.size() ? id : genTrID(op); };
 		line_type			genTrID				(line_cref op) { return serialNo+'-'+size2line(batchNo)+'-'+size2line(commandNo++)+'-'+op; };
+		line_type			genPass				() { return "av3SsWd4"; };
 
 	static	line_type			getExt				(data_cref a);
 	static	line_type			getExt				(line_cref a);

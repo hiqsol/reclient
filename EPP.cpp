@@ -917,7 +917,7 @@ data_type EPP::contactSmartUpdate (data_cref a,data_cref info) {
 		};
 		if (hasContactAddress(r.get("change"))) {
 			data_vref c = r.let("change");
-			char_cptr vars[] = {"street1","country","city"};
+			char_cptr vars[] = {"street1","street2","street3","city","province","postal_code","country"};
 			for (size_type i=0,n=sizeof(vars)/sizeof(*vars);i<n;i++) if (!c.has(vars[i])) c.set(vars[i],info.get(vars[i]));
 		};
 	};
@@ -936,7 +936,7 @@ data_type EPP::contactSmartUpdate (data_cref a,data_cref info) {
 
 data_type EPP::contactSmartSet (data_cref a,data_type info) {
 	if (!isResponseOk(info)) {
-		data_type r = contactCreate(a);
+		data_type r = contactSmartCreate(a);
 		if (!isResponseOk(r)) return r;
 		info = r+a;
 	};
