@@ -8,7 +8,9 @@
 #include "rebase/Sys/File.h"
 #include "epp-rtk-cpp/data/epp_Exception.h"
 #include "epp-rtk-cpp/data/epp_XMLException.h"
-#include "epp-rtk-cpp/testTools.h"
+#include "epp-rtk-cpp/data/epp_PollResFactory.h"
+#include "comnetaddon/data/epp_LowBalancePollResData.h"
+#include "comnetaddon/data/epp_RGPPollResData.h"
 #include <sys/time.h>
 #include <signal.h>
 
@@ -123,6 +125,9 @@ int main (int argc,char *argv[]) {
 	if (ModBase::has("login_trID").toBool()) loginOptions.set("trID",ModBase::get("login_trID"));
 	script.runFunc("repp.login",loginOptions);
 	writelog("inited, loggedin");
+	// Register poll response handler
+	epp_PollResFactory::addClass("lowbalance-poll","pollData",eppobject::lowbalancePoll::createLowBalancePollResData);
+	epp_PollResFactory::addClass("rgp-poll","pollData",eppobject::rgpPoll::createRGPPollResData);
 
 	bool_type loggedIn = true;
 	time_t logintime = timestamp();
