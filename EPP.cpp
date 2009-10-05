@@ -200,7 +200,7 @@ data_type EPP::domainCheck (data_cref a) {
 	// preparing request
 	epp_DomainCheckReq_ref request(new epp_DomainCheckReq());
 	request->m_cmd.ref(newCommand(a,"DH"));
-	request->m_names.ref(newStringSeq(a.get("names").csplit()));
+	request->m_names.ref(newStringSeq(a.get("names").csplited()));
 	// performing command
 	epp_DomainCheck_ref command(new epp_DomainCheck());
 	command->setRequestData(*request);
@@ -247,7 +247,7 @@ data_type EPP::domainCreate (data_cref a) {
 	request->m_cmd.ref(newCommand(a,"DC"));
 	request->m_name.ref(new epp_string(a.getLine("name")));
 	request->m_period.ref(new epp_DomainPeriod(YEAR,a.get("period").toIntN(1)));
-	if (a.has("nameservers")) request->m_name_servers.ref(newStringSeq(a.get("nameservers").csplit()));
+	if (a.has("nameservers")) request->m_name_servers.ref(newStringSeq(a.get("nameservers").csplited()));
 	if (a.has("registrant")) request->m_registrant.ref(new epp_string(a.getLine("registrant")));
 	if (a.has("password")) request->m_auth_info.ref(newAuthInfo(a));
 	if (a.hasAny("admin","tech","billing")) request->m_contacts.ref(newDomainContactSeq(a));
@@ -273,15 +273,15 @@ data_type EPP::domainUpdate (data_cref a) {
 	if (a.has("add")) {
 		data_cref add = a.get("add");
 		request->m_add.ref(new epp_DomainUpdateAddRemove());
-		if (add.has("statuses")) request->m_add->m_status.ref(newDomainStatusSeq(add.get("statuses").csplit()));
-		if (add.has("nameservers")) request->m_add->m_name_servers.ref(newStringSeq(add.get("nameservers").csplit()));
+		if (add.has("statuses")) request->m_add->m_status.ref(newDomainStatusSeq(add.get("statuses").csplited()));
+		if (add.has("nameservers")) request->m_add->m_name_servers.ref(newStringSeq(add.get("nameservers").csplited()));
 		if (add.hasAny("admin","tech","billing")) request->m_add->m_contacts.ref(newDomainContactSeq(add));
 	};
 	if (a.has("remove")) {
 		data_cref remove = a.get("remove");
 		request->m_remove.ref(new epp_DomainUpdateAddRemove());
-		if (remove.has("statuses")) request->m_remove->m_status.ref(newDomainStatusSeq(remove.get("statuses").csplit()));
-		if (remove.has("nameservers")) request->m_remove->m_name_servers.ref(newStringSeq(remove.get("nameservers").csplit()));
+		if (remove.has("statuses")) request->m_remove->m_status.ref(newDomainStatusSeq(remove.get("statuses").csplited()));
+		if (remove.has("nameservers")) request->m_remove->m_name_servers.ref(newStringSeq(remove.get("nameservers").csplited()));
 		if (remove.hasAny("admin","tech","billing")) request->m_remove->m_contacts.ref(newDomainContactSeq(remove));
 	};
 	if (a.has("change")) {
@@ -381,7 +381,7 @@ data_type EPP::hostCheck (data_cref a) {
 	// preparing request
 	epp_HostCheckReq_ref request(new epp_HostCheckReq());
 	request->m_cmd.ref(newCommand(a,"HH"));
-	request->m_names.ref(newStringSeq(a.get("names").csplit()));
+	request->m_names.ref(newStringSeq(a.get("names").csplited()));
 	// performing command
 	epp_HostCheck_ref command(new epp_HostCheck());
 	command->setRequestData(*request);
@@ -407,7 +407,7 @@ data_type EPP::hostCreate (data_cref a) {
 	epp_HostCreateReq_ref request(new epp_HostCreateReq());
 	request->m_cmd.ref(newCommand(a,"HC"));
 	request->m_name.ref(new epp_string(a.getLine("name")));
-	request->m_addresses.ref(newHostAddressSeq(a.get("ips").csplit()));
+	request->m_addresses.ref(newHostAddressSeq(a.get("ips").csplited()));
 	// performing command
 	epp_HostCreate_ref command(new epp_HostCreate());
 	command->setRequestData(*request);
@@ -429,14 +429,14 @@ data_type EPP::hostUpdate (data_cref a) {
 	if (a.has("add")) {
 		data_cref add = a.get("add");
 		request->m_add.ref(new epp_HostUpdateAddRemove());
-		if (add.has("statuses")) request->m_add->m_status.ref(newHostStatusSeq(add.get("statuses").csplit()));
-		if (add.has("ips")) request->m_add->m_addresses.ref(newHostAddressSeq(add.get("ips").csplit()));
+		if (add.has("statuses")) request->m_add->m_status.ref(newHostStatusSeq(add.get("statuses").csplited()));
+		if (add.has("ips")) request->m_add->m_addresses.ref(newHostAddressSeq(add.get("ips").csplited()));
 	};
 	if (a.has("remove")) {
 		data_cref remove = a.get("remove");
 		request->m_remove.ref(new epp_HostUpdateAddRemove());
-		if (remove.has("statuses")) request->m_remove->m_status.ref(newHostStatusSeq(remove.get("statuses").csplit()));
-		if (remove.has("ips")) request->m_remove->m_addresses.ref(newHostAddressSeq(remove.get("ips").csplit()));
+		if (remove.has("statuses")) request->m_remove->m_status.ref(newHostStatusSeq(remove.get("statuses").csplited()));
+		if (remove.has("ips")) request->m_remove->m_addresses.ref(newHostAddressSeq(remove.get("ips").csplited()));
 	};
 	if (a.has("change")) {
 		data_cref change = a.get("change");
@@ -474,7 +474,7 @@ data_type EPP::contactCheck (data_cref a) {
 	// preparing request
 	epp_ContactCheckReq_ref request(new epp_ContactCheckReq());
 	request->m_cmd.ref(newCommand(a,"CH"));
-	request->m_ids.ref(newStringSeq(a.get("ids").csplit()));
+	request->m_ids.ref(newStringSeq(a.get("ids").csplited()));
 	// performing command
 	epp_ContactCheck_ref command(new epp_ContactCheck());
 	command->setRequestData(*request);
@@ -606,12 +606,12 @@ data_type EPP::contactUpdate (data_cref a) {
 	if (a.has("add")) {
 		data_cref add = a.get("add");
 		request->m_add.ref(new epp_ContactUpdateAddRemove());
-		if (add.has("statuses")) request->m_add->m_status.ref(newContactStatusSeq(add.get("statuses").csplit()));
+		if (add.has("statuses")) request->m_add->m_status.ref(newContactStatusSeq(add.get("statuses").csplited()));
 	};
 	if (a.has("remove")) {
 		data_cref remove = a.get("remove");
 		request->m_remove.ref(new epp_ContactUpdateAddRemove());
-		if (remove.has("statuses")) request->m_remove->m_status.ref(newContactStatusSeq(remove.get("statuses").csplit()));
+		if (remove.has("statuses")) request->m_remove->m_status.ref(newContactStatusSeq(remove.get("statuses").csplited()));
 	};
 	if (a.has("change")) {
 		data_cref change = a.get("change");
@@ -677,7 +677,7 @@ data_type EPP::pollAll (data_cref a) {
 };
 
 data_type EPP::domainSmartCheck (data_cref a) {
-	data_cnst names = a.get("names").csplit();
+	data_cnst names = a.get("names").csplited();
 	bool_type check = true;
 	data_type res;
 	data_type b = a;
@@ -701,11 +701,11 @@ data_type EPP::diffOldNew2AddRem (data_cref old_k,data_cref new_k) {
 
 data_type EPP::domainSmartUpdate (data_cref a,data_cref info) {
 	data_type r = a;
-	data_type old_s = checkClientStatuses(info.get("statuses").ksplit());
+	data_type old_s = checkClientStatuses(info.get("statuses").ksplited());
 	bool_type old_u = old_s.del("clientUpdateProhibited");
 	bool_type new_u = old_u;
 	if (r.has("statuses")) {
-		data_type new_s = checkClientStatuses(r.pop("statuses").ksplit());
+		data_type new_s = checkClientStatuses(r.pop("statuses").ksplited());
 		new_u = new_s.del("clientUpdateProhibited");
 		data_type dif_s = diffOldNew2AddRem(old_s,new_s);
 		data_type add_s = dif_s.get(0);
@@ -714,8 +714,8 @@ data_type EPP::domainSmartUpdate (data_cref a,data_cref info) {
 		if (add_s.size()) r.let("add").set("statuses",add_s);
 	};
 	if (r.has("nameservers")) {
-		data_type old_n = info.get("nameservers").uc().ksplit();
-		data_type new_n = r.pop("nameservers").uc().ksplit();
+		data_type old_n = info.get("nameservers").uced().ksplited();
+		data_type new_n = r.pop("nameservers").uced().ksplited();
 		data_type dif_n = diffOldNew2AddRem(old_n,new_n);
 		data_type add_n = dif_n.get(0);
 		data_type rem_n = dif_n.get(1);
@@ -732,8 +732,8 @@ data_type EPP::domainSmartUpdate (data_cref a,data_cref info) {
 		char_cptr cons[] = {"admin","tech","billing"};
 		for (size_type i=0,n=sizeof(cons)/sizeof(*cons);i<n;i++) {
 			if (r.has(cons[i])) {
-				data_type old_c = info.get(cons[i]).ksplit();
-				data_type new_c = r.pop(cons[i]).ksplit();
+				data_type old_c = info.get(cons[i]).ksplited();
+				data_type new_c = r.pop(cons[i]).ksplited();
 				data_type dif_c = diffOldNew2AddRem(old_c,new_c);
 				data_type add_c = dif_c.get(0);
 				data_type rem_c = dif_c.get(1);
@@ -764,7 +764,7 @@ data_type EPP::domainSmartUpdate (data_cref a,data_cref info) {
 };
 
 data_type EPP::domainSmartLock (data_cref a,data_cref info) {
-	data_type o_s = info.get("statuses").ksplit();
+	data_type o_s = info.get("statuses").ksplited();
 	data_type n_s = o_s;
 	data_type s_s = ksplit("clientUpdateProhibited,clientDeleteProhibited,clientTransferProhibited");
 	size_type go = 0;
@@ -776,7 +776,7 @@ data_type EPP::domainSmartLock (data_cref a,data_cref info) {
 };
 
 data_type EPP::domainSmartUnlock (data_cref a,data_cref info) {
-	data_type o_s = info.get("statuses").ksplit();
+	data_type o_s = info.get("statuses").ksplited();
 	data_type n_s(o_s.size(),true);
 	data_type s_s = ksplit("clientUpdateProhibited,clientDeleteProhibited,clientTransferProhibited");
 	size_type go = 0;
@@ -788,21 +788,21 @@ data_type EPP::domainSmartUnlock (data_cref a,data_cref info) {
 };
 
 data_type EPP::domainSmartHold (data_cref a,data_cref info) {
-	data_type o_s = info.get("statuses").ksplit();
+	data_type o_s = info.get("statuses").ksplited();
 	if (o_s.has("clientHold")) return info;
 	o_s.set("clientHold",data_null);
 	return domainSmartUpdate(data_type("name",a.getLine("name"),"statuses",o_s),info);
 };
 
 data_type EPP::domainSmartUnhold (data_cref a,data_cref info) {
-	data_type o_s = info.get("statuses").ksplit();
+	data_type o_s = info.get("statuses").ksplited();
 	if (!o_s.has("clientHold")) return info;
 	o_s.del("clientHold");
 	return domainSmartUpdate(data_type("name",a.getLine("name"),"statuses",o_s),info);
 };
 
 data_type EPP::hostSmartCheck (data_cref a) {
-	data_cnst names = a.get("names").csplit();
+	data_cnst names = a.get("names").csplited();
 	bool_type check = true;
 	data_type res;
 	data_type b = a;
@@ -819,11 +819,11 @@ data_type EPP::hostSmartCheck (data_cref a) {
 
 data_type EPP::hostSmartUpdate (data_cref a,data_cref info) {
 	data_type r = a;
-	data_type old_s = checkClientStatuses(info.get("statuses").ksplit());
+	data_type old_s = checkClientStatuses(info.get("statuses").ksplited());
 	bool_type old_u = old_s.del("clientUpdateProhibited");
 	bool_type new_u = old_u;
 	if (r.has("statuses")) {
-		data_type new_s = checkClientStatuses(r.pop("statuses").ksplit());
+		data_type new_s = checkClientStatuses(r.pop("statuses").ksplited());
 		new_u = new_s.del("clientUpdateProhibited");
 		data_type dif_s = diffOldNew2AddRem(old_s,new_s);
 		data_type add_s = dif_s.get(0);
@@ -832,8 +832,8 @@ data_type EPP::hostSmartUpdate (data_cref a,data_cref info) {
 		if (add_s.size()) r.let("add").set("statuses",add_s);
 	};
 	if (r.has("ips")) {
-		data_type old_i = info.get("ips").ksplit();
-		data_type new_i = r.pop("ips").ksplit();
+		data_type old_i = info.get("ips").ksplited();
+		data_type new_i = r.pop("ips").ksplited();
 		data_type dif_i = diffOldNew2AddRem(old_i,new_i);
 		data_type add_i = dif_i.get(0);
 		data_type rem_i = dif_i.get(1);
@@ -874,7 +874,7 @@ data_type EPP::hostSmartSet (data_cref a,data_type info) {
 };
 
 data_type EPP::contactSmartCheck (data_cref a) {
-	data_cnst ids = a.get("ids").csplit();
+	data_cnst ids = a.get("ids").csplited();
 	bool_type check = true;
 	data_type res;
 	data_type b = a;
@@ -891,11 +891,11 @@ data_type EPP::contactSmartCheck (data_cref a) {
 
 data_type EPP::contactSmartUpdate (data_cref a,data_cref info) {
 	data_type r = a;
-	data_type old_s = checkClientStatuses(info.get("statuses").ksplit());
+	data_type old_s = checkClientStatuses(info.get("statuses").ksplited());
 	bool_type old_u = old_s.del("clientUpdateProhibited");
 	bool_type new_u = old_u;
 	if (r.has("statuses")) {
-		data_type new_s = checkClientStatuses(r.pop("statuses").ksplit());
+		data_type new_s = checkClientStatuses(r.pop("statuses").ksplited());
 		new_u = new_s.del("clientUpdateProhibited");
 		data_type dif_s = diffOldNew2AddRem(old_s,new_s);
 		data_type add_s = dif_s.get(0);
@@ -1019,7 +1019,7 @@ epp_domain_contact_seq *EPP::newDomainContactSeq (data_cref a) {
 	epp_domain_contact_seq *res = new epp_domain_contact_seq();
 	char_cptr cons[] = {"admin","tech","billing"};
 	for (size_type i=0,n=sizeof(cons)/sizeof(*cons);i<n;i++) {
-		if (a.has(cons[i])) addDomainContacts(res,cons[i],a.get(cons[i]).csplit());
+		if (a.has(cons[i])) addDomainContacts(res,cons[i],a.get(cons[i]).csplited());
 	};
 	return res;
 };
