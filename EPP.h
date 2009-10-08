@@ -159,6 +159,8 @@ protected:
 
 	static	data_type			readDomainTrnData		(const epp_PollResData_ref &t);
 	static	data_type			readContactTrnData		(const epp_PollResData_ref &t);
+	static	data_type			readLowBalancePollData		(const epp_PollResData_ref &t);
+	static	data_type			readRGPPollData			(const epp_PollResData_ref &t); // Redemption Grace Period
 	static	data_type			readMessageQueueData		(const epp_MessageQueue_ref &r);
 	static	data_type			readTransIDData			(const epp_TransID_ref &r);
 	static	data_type			readResultsData			(const epp_result_seq_ref &r);

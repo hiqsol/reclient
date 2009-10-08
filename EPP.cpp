@@ -32,11 +32,15 @@
 #include "epp-rtk-cpp/data/epp_Exception.h"
 #include "epp-rtk-cpp/data/epp_XMLException.h"
 #include "comnetaddon/epp_DomainSync.h"
+#include "comnetaddon/data/epp_LowBalancePollResData.h"
+#include "comnetaddon/data/epp_RGPPollResData.h"
 
 using namespace eppobject::domain;
 using namespace eppobject::sync;
 using namespace eppobject::host;
 using namespace eppobject::contact;
+using namespace eppobject::rgpPoll;
+using namespace eppobject::lowbalancePoll;
 
 namespace re {
 
@@ -53,7 +57,11 @@ data_type EPP::poll (data_cref a) {
 	if (err.notNull()) return err;
 	// getting response
 	epp_PollRsp_ref r = command->getResponseData();
-	return readDomainTrnData(r->m_res_data)+readContactTrnData(r->m_res_data)+readResponseData(r->m_rsp);
+	return	readDomainTrnData(r->m_res_data)+
+		readContactTrnData(r->m_res_data)+
+		readLowBalancePollData(r->m_res_data)+
+		readRGPPollData(r->m_res_data)+
+		readResponseData(r->m_rsp);
 };
 
 data_type EPP::hello (data_cref a) {
@@ -844,7 +852,6 @@ data_type EPP::hostSmartUpdate (data_cref a,data_cref info) {
 		line_type name = r.pop("new_name").toLine();
 		if (name!=info.getLine("name")) r.let("change").set("name",name);
 	};
-	printf("\n\nr: %s\n\n",r.dump2line().c_str());
 	if (r.hasAny("add","remove","change")) {
 		if (old_u) hostAllowUpdate(a);
 		if (new_u) r.let("add").let("statuses").set("clientUpdateProhibited",data_null);
@@ -1126,7 +1133,7 @@ data_type EPP::readDomainTrnData (const epp_PollResData_ref &p) {
 	if (p==NULL) return data_null;
 	if (p->getType()!="domain:trnData") return data_null;
 	const epp_DomainTrnData_ref &t = p;
-	data_type res;
+	data_type res("poll_type","domain");
 	if (t->m_name!=NULL) res["name"] = *t->m_name;
 	if (t->m_transfer_status!=NULL) res["transfer_status"] = returnTransferStatusType(*t->m_transfer_status);
 	if (t->m_request_client_id!=NULL) res["request_client_id"] = *t->m_request_client_id;
@@ -1141,13 +1148,36 @@ data_type EPP::readContactTrnData (const epp_PollResData_ref &p) {
 	if (p==NULL) return data_null;
 	if (p->getType()!="contact:trnData") return data_null;
 	const epp_ContactTrnData_ref &t = p;
-	data_type res;
+	data_type res("poll_type","contact");
 	if (t->m_id!=NULL) res["id"] = *t->m_id;
 	if (t->m_transfer_status!=NULL) res["transfer_status"] = returnTransferStatusType(*t->m_transfer_status);
 	if (t->m_request_client_id!=NULL) res["request_client_id"] = *t->m_request_client_id;
 	if (t->m_request_date!=NULL) res["request_date"] = *t->m_request_date;
 	if (t->m_action_client_id!=NULL) res["action_client_id"] = *t->m_action_client_id;
 	if (t->m_action_date!=NULL) res["action_date"] = *t->m_action_date;
+	return res;
+};
+
+data_type EPP::readLowBalancePollData (const epp_PollResData_ref &p) {
+	if (p==NULL || p->getType()!="lowbalance-poll:pollData") return data_null;
+	const epp_LowBalancePollResData_ref &t = p;
+	data_type res("poll_type","lowbalance");
+	if (t->m_registrar_name!=NULL) res["registrar_name"] = *t->m_registrar_name;
+	if (t->m_credit_limit!=NULL) res["credit_limit"] = *t->m_credit_limit;
+	if (t->m_available_credit!=NULL) res["available_credit"] = *t->m_available_credit;
+	if (t->m_threshold_type!=NULL) res["threshold_type"] = *t->m_threshold_type;
+	if (t->m_threshold_value!=NULL) res["threshold_value"] = *t->m_threshold_value;
+	return res;
+};
+
+data_type EPP::readRGPPollData (const epp_PollResData_ref &p) {
+	if (p==NULL || p->getType()!="rgp-poll:pollData") return data_null;
+	const epp_RGPPollResData_ref &t = p;
+	data_type res("poll_type","rgp");
+	if (t->m_name!=NULL) res["name"] = *t->m_name; // domain name that is candidate for restoration
+	if (t->m_status!=NULL) res["status"] = returnRGPStatusType(*t->m_status); // RGP status of the domain
+	if (t->m_req_date!=NULL) res["req_date"] = *t->m_req_date; // date the server is requesting the client's restore report
+	if (t->m_report_due_date!=NULL) res["report_due_date"] = *t->m_report_due_date; // date the client's restore report must be received by the server
 	return res;
 };
 
