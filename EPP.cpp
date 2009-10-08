@@ -764,27 +764,27 @@ data_type EPP::domainSmartUpdate (data_cref a,data_cref info) {
 };
 
 data_type EPP::domainSmartLock (data_cref a,data_cref info) {
-	data_type o_s = info.get("statuses").ksplited();
-	data_type n_s = o_s;
-	data_type s_s = ksplit("clientUpdateProhibited,clientDeleteProhibited,clientTransferProhibited");
+	data_type old_s = info.get("statuses").ksplited();
+	data_type new_s = old_s;
+	char_cptr stats[] = {"clientUpdateProhibited","clientDeleteProhibited","clientTransferProhibited"};
 	size_type go = 0;
-	for (size_type i=0,n=s_s.size();i<n;i++) if (!o_s.has(s_s.key(i))) {
-		n_s.set(s_s.key(i),data_null);
+	for (size_type i=0,n=sizeof(stats)/sizeof(*stats);i<n;i++) if (!old_s.has(stats[i])) {
+		new_s.set(stats[i],data_null);
 		go++;
 	};
-	return go ? domainSmartUpdate(data_type("name",a.getLine("name"),"statuses",n_s),info) : info;
+	return go ? domainSmartUpdate(data_type("name",a.getLine("name"),"statuses",new_s),info) : info;
 };
 
 data_type EPP::domainSmartUnlock (data_cref a,data_cref info) {
-	data_type o_s = info.get("statuses").ksplited();
-	data_type n_s(o_s.size(),true);
-	data_type s_s = ksplit("clientUpdateProhibited,clientDeleteProhibited,clientTransferProhibited");
+	data_type old_s = info.get("statuses").ksplited();
+	data_type new_s(old_s.size(),true);
+	data_type stats = ksplit(line_stat("clientUpdateProhibited,clientDeleteProhibited,clientTransferProhibited"));
 	size_type go = 0;
-	for (size_type i=0,n=o_s.size();i<n;i++) {
-		if (s_s.has(o_s.key(i))) go++;
-		else n_s.set(o_s.key(i),data_null);
+	for (size_type i=0,n=old_s.size();i<n;i++) {
+		if (stats.has(old_s.key(i))) go++;
+		else new_s.set(old_s.key(i),data_null);
 	};
-	return go ? domainSmartUpdate(data_type("name",a.getLine("name"),"statuses",n_s),info) : info;
+	return go ? domainSmartUpdate(data_type("name",a.getLine("name"),"statuses",new_s),info) : info;
 };
 
 data_type EPP::domainSmartHold (data_cref a,data_cref info) {
@@ -953,7 +953,7 @@ data_type EPP::safeProcessAction (epp_Action_ref command) {
 		printf("epp_XMLException!!!\n\n");
 		return data_type(
 			"result_code",		9999,
-			"result_msg",		ex.getString()
+			"result_msg",		line_type(ex.getString())
 		);
 	} catch (const epp_Exception &ex) {
 		printf("epp_Exception!!!\n\n");
