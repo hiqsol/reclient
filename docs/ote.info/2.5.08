@@ -1,0 +1,1 @@
+<:repp.domainUpdate name="domain.info" remove.nameservers="ns1.example.info,ns2.example.info" add.nameservers="ns3.example.info,ns4.example.info"/>

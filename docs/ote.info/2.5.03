@@ -1,0 +1,1 @@
+<:repp.domainCreate name="trademark.info" nameservers="ns1.example.info,ns2.example.info" registrant="OTE-C1" admin="OTE-C2" billing="OTE-C3" tech="OTE-C4" period=1 password="my secret" trademark="Test Trademark" trademark_date="2000-01-01" trademark_number="998877" trademark_owner_country="CA" trademark_country="CA"/>

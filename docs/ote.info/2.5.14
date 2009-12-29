@@ -1,0 +1,2 @@
+<:repp.domainTransfer op=query name="transfer2.info" password="my secretX"/>
+<:repp.domainTransfer op=approve name="transfer2.info" password="my secretX"/>

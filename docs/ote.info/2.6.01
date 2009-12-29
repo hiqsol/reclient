@@ -1,0 +1,1 @@
+<:repp.domainCreate name="exception.info" nameservers="ns1.example.info,ns2.example.info" registrant="OTE-C1" admin="OTE-C2" billing="OTE-C3" tech="OTE-C4"/>
