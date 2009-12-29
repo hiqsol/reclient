@@ -134,7 +134,8 @@ line_type EPP::getExt (data_cref a) {
 data_type EPP::domainInfo (data_cref a) {
 	// preparing request
 	epp_DomainInfoReq_ref request(new epp_DomainInfoReq());
-	request->m_cmd.ref(newCommand(a,"DI"));
+	request->m_cmd.ref(newCommand(a,"DI",epp_Extension_ref(new epp_Extension)));
+		//l_req->m_cmd.ref(new epp_Command(NULL,epp_Unspec_ref(new epp_Unspec()),epp_trid("ABC-12346")));
 	request->m_name.ref(new epp_string(a.getLine("name")));
 	if (a.has("type")) request->m_hosts_type.ref(newDomainHostsType(a.getLine("type")));
 	if (a.has("password")) request->m_auth_info.ref(newAuthInfo(a));
@@ -185,6 +186,19 @@ data_type EPP::domainInfo (data_cref a) {
 	if (r->m_expiration_date!=NULL) res["expiration_date"] = *r->m_expiration_date;
 	if (r->m_transfer_date!=NULL) res["transfer_date"] = *r->m_transfer_date;
 	if (r->m_auth_info!=NULL && r->m_auth_info->m_value!=NULL) res["password"] = *r->m_auth_info->m_value;
+	// getting extensions info
+	if(r->m_rsp->m_ext_strings != NULL) {
+		DomainTrademark_ref trademark(new DomainTrademark());
+		eppobject::epp::epp_xml_string_seq_ref extension_strings;
+		extension_strings = r->m_rsp->m_ext_strings;
+		eppobject::epp::epp_xml_string first_extension = extension_strings->front();
+		trademark->fromXML(first_extension);
+		if (trademark->m_name!=NULL)		res["trademark"]		= *trademark->m_name;
+		if (trademark->m_date!=NULL)		res["trademark_date"]		= *trademark->m_date;
+		if (trademark->m_number!=NULL)		res["trademark_number"]		= *trademark->m_number;
+		if (trademark->m_country!=NULL)		res["trademark_country"]	= *trademark->m_country;
+		if (trademark->m_owner_country!=NULL)	res["trademark_owner_country"]	= *trademark->m_owner_country;
+	};
 	return res;
 };
 
@@ -252,7 +266,7 @@ data_type EPP::domainRenew (data_cref a) {
 data_type EPP::domainCreate (data_cref a) {
 	// preparing request
 	epp_DomainCreateReq_ref request(new epp_DomainCreateReq());
-	request->m_cmd.ref(newCommand(a,"DC"));
+	request->m_cmd.ref(newCommand(a,"DC",domainTrademark("create",a)));
 	request->m_name.ref(new epp_string(a.getLine("name")));
 	request->m_period.ref(new epp_DomainPeriod(YEAR,a.get("period").toIntN(1)));
 	if (a.has("nameservers")) request->m_name_servers.ref(newStringSeq(a.get("nameservers").csplited()));
@@ -273,10 +287,22 @@ data_type EPP::domainCreate (data_cref a) {
 	return res;
 };
 
+epp_Extension_ref EPP::domainTrademark (line_cref op,data_cref a) {
+	if (!a.has("trademark")) return NULL;
+	DomainTrademark_ref trademark(new DomainTrademark());
+						trademark->m_op.ref		(new epp_string(op));
+						trademark->m_name.ref		(new epp_string(a.getLine("trademark")));
+	if (a.has("trademark_date"))		trademark->m_date.ref		(new epp_string(a.getLine("trademark_date")));
+	if (a.has("trademark_number"))		trademark->m_number.ref		(new epp_string(a.getLine("trademark_number")));
+	if (a.has("trademark_country"))		trademark->m_country.ref	(new epp_string(a.getLine("trademark_country")));
+	if (a.has("trademark_owner_country"))	trademark->m_owner_country.ref	(new epp_string(a.getLine("trademark_owner_country")));
+	return trademark;
+};
+
 data_type EPP::domainUpdate (data_cref a) {
 	// preparing request
 	epp_DomainUpdateReq_ref request(new epp_DomainUpdateReq());
-	request->m_cmd.ref(newCommand(a,"DU"));
+	request->m_cmd.ref(newCommand(a,"DU",domainTrademark("update",a)));
 	request->m_name.ref(new epp_string(a.getLine("name")));
 	if (a.has("add")) {
 		data_cref add = a.get("add");
@@ -1112,7 +1138,7 @@ epp_ContactNameAddress EPP::ContactNameAddress (data_cref a) {
 	res.m_type.ref(new epp_ContactPostalInfoType(a.getLine("postal_info_type")=="LOC" ? LOC : INT));
 	if (a.has("name")) res.m_name.ref(new epp_string(a.getLine("name")));
 	if (a.has("organization")) res.m_org.ref(new epp_string(a.getLine("organization")));
-	res.m_address.ref(newContactAddress(a));
+	if (hasContactAddress(a)) res.m_address.ref(newContactAddress(a));
 	return res;
 };
 

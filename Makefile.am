@@ -1,4 +1,5 @@
 LDADD =	\
+	libeppextensions.a \
 	-lreScript -lreParsing -lreTypes -lreSys \
 	-L$(COMNETADDON_PATH)/lib -lcomnetaddon -lcomnetdata \
 	-L$(EPPRTK_PATH)/lib -lepprtk -ldata -ltransport -lnpssl \
@@ -11,4 +12,7 @@ reClient_SOURCES = reClient.cpp EPP.cpp ModEPP.cpp
 reClient_LDFLAGS = -rdynamic
 
 check_PROGRAMS = testEPP
-testPP_SOURCES = testEPP.cpp EPP.cpp
+testEPP_SOURCES = testEPP.cpp EPP.cpp
+
+lib_LIBRARIES = libeppextensions.a
+libeppextensions_a_SOURCES = DomainTrademark.cc
