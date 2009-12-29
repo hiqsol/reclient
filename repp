@@ -48,3 +48,5 @@ while (<REP>) {
 	print $_;
 };
 close(REP);
+
+unlink($repfile);
