@@ -47,6 +47,10 @@ void writelog (const char *s) {
 };
 void writelog (line_cref s) { writelog(s.c_str()); };
 
+void sigalrm (int a) {
+	printf("catched\n");
+};
+
 int main (int argc,char *argv[]) {
 	RE_COMPILER_MINUSE();
 	// INITIALIZING Script
@@ -87,7 +91,6 @@ int main (int argc,char *argv[]) {
 		printf("Already running\n");
 		exit(1);
 	};
-	printf("lastlog: '%s' '%i'\n",lastlog.getLine(0).c_str(),lastpid);
 	THE_SNO = lastlog.getIntN(1)+1;
 	THE_PID = getpid();
 	THE_EXT = "."+size2line(THE_SNO);
@@ -98,6 +101,7 @@ int main (int argc,char *argv[]) {
 		printf("can't open log: %s\n",THE_LOG.c_str());
 		exit(1);
 	};
+	printf("LastLog:%s LastPID:%i THE_SNO:%i' \n",lastlog.getLine(0).c_str(),lastpid,THE_SNO);
 	writelog("opened");
 
 	// INITIALIZING EPP
@@ -128,6 +132,9 @@ int main (int argc,char *argv[]) {
 	// Register poll response handler
 	epp_PollResFactory::addClass("lowbalance-poll","pollData",eppobject::lowbalancePoll::createLowBalancePollResData);
 	epp_PollResFactory::addClass("rgp-poll","pollData",eppobject::rgpPoll::createRGPPollResData);
+
+	// SETTING HANDLER FOR SIGNAL
+	signal(SIGALRM,sigalrm);
 
 	bool_type loggedIn = true;
 	time_t logintime = timestamp();
