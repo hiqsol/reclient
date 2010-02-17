@@ -48,7 +48,7 @@ void writelog (const char *s) {
 void writelog (line_cref s) { writelog(s.c_str()); };
 
 void sigalrm (int a) {
-	printf("catched\n");
+	//printf("catched\n");
 };
 
 int main (int argc,char *argv[]) {
@@ -103,6 +103,7 @@ int main (int argc,char *argv[]) {
 	};
 	printf("LastLog:%s LastPID:%i THE_SNO:%i' \n",lastlog.getLine(0).c_str(),lastpid,THE_SNO);
 	writelog("opened");
+	File::writeln(logDir+"pid",size2line(THE_PID));
 
 	// INITIALIZING EPP
 	script.runFunc("repp.init",data_type(
@@ -182,7 +183,7 @@ int main (int argc,char *argv[]) {
 				break;
 			};
 		};
-		if (!num) sleep(1);
+		if (!num) sleep(10);
 		else lasthello = nowtime;
 	};
 	fclose(LOGFILE);
