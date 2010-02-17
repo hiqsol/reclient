@@ -42,7 +42,7 @@ public:
 		session.setTransport(tref);
 	};
 
-	epp_Extension_ref getExtension (line_cref ext) { return extensions.has(ext) ? extensions.let(ext) : NULL; };
+	epp_Extension_ref getExtension		(data_cref a);
 
 	void_type setCredentials		(line_cref u,line_cref p) { username = u;password = p; };
 	void_type setNamestoreExtension		(line_cref ext,line_cref data);
@@ -120,10 +120,8 @@ public:
 
 // RTK auxiliary functions
 protected:
-		epp_Command *			newCommand			(line_cref ext,line_cref trID) { return new epp_Command(NULL,getExtension(ext),epp_trid(trID)); };
-		epp_Command *			newCommand			(line_cref ext,line_cref id,line_cref op) { return newCommand(ext,trID(id,op)); };
-		epp_Command *			newCommand			(data_cref a,line_cref op) { return newCommand(getExt(a),trID(a.getLine("trID"),op)); };
-		epp_Command *			newCommand			(data_cref a,line_cref op,const epp_Extension_ref &ext) { return new epp_Command(NULL,ext,trID(a.getLine("trID"),op)); };
+		epp_Command *			newCommand			(const epp_Extension_ref &ext,line_cref trID)	{ return new epp_Command(NULL,ext,epp_trid(trID)); };
+		epp_Command *			newCommand			(data_cref a,line_cref op)			{ return newCommand(getExtension(a),trID(a.getLine("trID"),op)); };
 		line_type			trID				(line_cref id,line_cref op) { return id.size() ? id : genTrID(op); };
 		line_type			genTrID				(line_cref op) { return serialNo+'-'+size2line(batchNo)+'-'+size2line(commandNo++)+'-'+op; };
 		line_type			genPass				() { return "Jiwynn-Op8"; };
@@ -158,7 +156,7 @@ protected:
 	static	epp_ContactNameAddress		ContactNameAddress		(data_cref a);
 	static	epp_ContactNameAddress_seq *	newContactNameAddressSeq	(data_cref a);
 	static	epp_ContactPhone *		newContactPhone			(data_cref p,data_cref e);
-	static	epp_Extension_ref		domainTrademark			(line_cref op,data_cref a);
+	static	epp_Extension_ref		domainTrademark			(data_cref a);
 
 	static	data_type			readDomainTrnData		(const epp_PollResData_ref &t);
 	static	data_type			readContactTrnData		(const epp_PollResData_ref &t);
