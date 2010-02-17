@@ -122,6 +122,7 @@ line_type EPP::getExt (line_cref a) {
 
 line_type EPP::getExt (data_cref a) {
 	if (a.has("ext")) return a.getLine("ext");
+	if (a.has("trademark")) return "trademark";
 	if (a.has("zone")) return a.getLine("zone");
 	if (a.has("name")) return getExt(a.getLine("name"));
 	if (a.has("names")) {
@@ -131,10 +132,16 @@ line_type EPP::getExt (data_cref a) {
 	return "";
 };
 
+epp_Extension_ref EPP::getExtension (data_cref a) {
+	line_cref ext = getExt(a);
+	if ("trademark"==ext) return domainTrademark(a);
+	return extensions.has(ext) ? extensions.let(ext) : NULL;
+};
+
 data_type EPP::domainInfo (data_cref a) {
 	// preparing request
 	epp_DomainInfoReq_ref request(new epp_DomainInfoReq());
-	request->m_cmd.ref(newCommand(a,"DI",epp_Extension_ref(new epp_Extension)));
+	request->m_cmd.ref(newCommand(a,"DI"));
 		//l_req->m_cmd.ref(new epp_Command(NULL,epp_Unspec_ref(new epp_Unspec()),epp_trid("ABC-12346")));
 	request->m_name.ref(new epp_string(a.getLine("name")));
 	if (a.has("type")) request->m_hosts_type.ref(newDomainHostsType(a.getLine("type")));
@@ -147,7 +154,7 @@ data_type EPP::domainInfo (data_cref a) {
 	// getting response
 	epp_DomainInfoRsp_ref r = command->getResponseData();
 	data_type res = readResponseData(r->m_rsp);
-	if (r->m_name!=NULL) res["name"] = *r->m_name;
+	if (r->m_name!=NULL) res["name"] = lc(*r->m_name);
 	if (r->m_roid!=NULL) res["roid"] = *r->m_roid;
 	if (r->m_status!=NULL) {
 		data_type &statuses = res["statuses"];
@@ -168,14 +175,14 @@ data_type EPP::domainInfo (data_cref a) {
 		data_type &nses = res["nameservers"];
 		for (epp_string_seq::iterator i = r->m_name_servers->begin();i!=r->m_name_servers->end();i++) {
 			if (nses.size()) nses += ",";
-			nses += *i;
+			nses += lc(*i);
 		};
 	};
 	if (r->m_hosts!=NULL) {
 		data_type &hosts = res["hosts"];
 		for (epp_string_seq::iterator i = r->m_hosts->begin();i!=r->m_hosts->end();i++) {
 			if (hosts.size()) hosts += ",";
-			hosts += *i;
+			hosts += lc(*i);
 		};
 	};
 	if (r->m_client_id!=NULL) res["client_id"] = *r->m_client_id;
@@ -237,7 +244,7 @@ data_type EPP::domainCheck (data_cref a) {
 			if (i->m_avail!=NULL) s["avail"] = *i->m_avail;
 			if (i->m_lang!=NULL) s["lang"] = *i->m_lang;
 			if (i->m_reason!=NULL) s["reason"] = *i->m_reason;
-			if (i->m_value!=NULL) res[*i->m_value] = s; else res.push(s);
+			if (i->m_value!=NULL) res[lc(*i->m_value)] = s; else res.push(s);
 		};
 	};
 	return res;
@@ -258,7 +265,7 @@ data_type EPP::domainRenew (data_cref a) {
 	// getting response
 	epp_DomainRenewRsp_ref r = command->getResponseData();
 	data_type res = readResponseData(r->m_rsp);
-	if (r->m_name!=NULL) res["name"] = *r->m_name;
+	if (r->m_name!=NULL) res["name"] = lc(*r->m_name);
 	if (r->m_expiration_date!=NULL) res["expiration_date"] = *r->m_expiration_date;
 	return res;
 };
@@ -266,7 +273,7 @@ data_type EPP::domainRenew (data_cref a) {
 data_type EPP::domainCreate (data_cref a) {
 	// preparing request
 	epp_DomainCreateReq_ref request(new epp_DomainCreateReq());
-	request->m_cmd.ref(newCommand(a,"DC",domainTrademark("create",a)));
+	request->m_cmd.ref(newCommand(a,"DC"));
 	request->m_name.ref(new epp_string(a.getLine("name")));
 	request->m_period.ref(new epp_DomainPeriod(YEAR,a.get("period").toIntN(1)));
 	if (a.has("nameservers")) request->m_name_servers.ref(newStringSeq(a.get("nameservers").csplited()));
@@ -287,10 +294,10 @@ data_type EPP::domainCreate (data_cref a) {
 	return res;
 };
 
-epp_Extension_ref EPP::domainTrademark (line_cref op,data_cref a) {
+epp_Extension_ref EPP::domainTrademark (data_cref a) {
 	if (!a.has("trademark")) return NULL;
 	DomainTrademark_ref trademark(new DomainTrademark());
-						trademark->m_op.ref		(new epp_string(op));
+						trademark->m_op.ref		(new epp_string(a.getLine("trademark_op")));
 						trademark->m_name.ref		(new epp_string(a.getLine("trademark")));
 	if (a.has("trademark_date"))		trademark->m_date.ref		(new epp_string(a.getLine("trademark_date")));
 	if (a.has("trademark_number"))		trademark->m_number.ref		(new epp_string(a.getLine("trademark_number")));
@@ -302,7 +309,7 @@ epp_Extension_ref EPP::domainTrademark (line_cref op,data_cref a) {
 data_type EPP::domainUpdate (data_cref a) {
 	// preparing request
 	epp_DomainUpdateReq_ref request(new epp_DomainUpdateReq());
-	request->m_cmd.ref(newCommand(a,"DU",domainTrademark("update",a)));
+	request->m_cmd.ref(newCommand(a,"DU"));
 	request->m_name.ref(new epp_string(a.getLine("name")));
 	if (a.has("add")) {
 		data_cref add = a.get("add");
@@ -386,7 +393,7 @@ data_type EPP::hostInfo (data_cref a) {
 	// getting response
 	epp_HostInfoRsp_ref r = command->getResponseData();
 	data_type res = readResponseData(r->m_rsp);
-	if (r->m_name!=NULL) res["name"] = *r->m_name;
+	if (r->m_name!=NULL) res["name"] = lc(*r->m_name);
 	if (r->m_roid!=NULL) res["roid"] = *r->m_roid;
 	if (r->m_status!=NULL) {
 		data_type &statuses = res["statuses"];
@@ -430,7 +437,7 @@ data_type EPP::hostCheck (data_cref a) {
 			if (i->m_avail!=NULL) s["avail"] = *i->m_avail;
 			if (i->m_lang!=NULL) s["lang"] = *i->m_lang;
 			if (i->m_reason!=NULL) s["reason"] = *i->m_reason;
-			if (i->m_value!=NULL) res[*i->m_value] = s; else res.push(s);
+			if (i->m_value!=NULL) res[lc(*i->m_value)] = s; else res.push(s);
 		};
 	};
 	return res;
@@ -450,7 +457,7 @@ data_type EPP::hostCreate (data_cref a) {
 	// getting response
 	epp_HostCreateRsp_ref r = command->getResponseData();
 	data_type res = readResponseData(r->m_rsp);
-	if (r->m_name!=NULL) res["name"] = *r->m_name;
+	if (r->m_name!=NULL) res["name"] = lc(*r->m_name);
 	if (r->m_creation_date!=NULL) res["creation_date"] = *r->m_creation_date;
 	return res;
 };
@@ -748,8 +755,9 @@ data_type EPP::domainSmartUpdate (data_cref a,data_cref info) {
 		if (add_s.size()) r.let("add").set("statuses",add_s);
 	};
 	if (r.has("nameservers")) {
-		data_type old_n = info.get("nameservers").uced().ksplited();
-		data_type new_n = r.pop("nameservers").uced().ksplited();
+		r.set("nameservers",r.get("nameservers").lced());
+		data_type old_n = info.get("nameservers").ksplited();
+		data_type new_n = r.pop("nameservers").ksplited();
 		data_type dif_n = diffOldNew2AddRem(old_n,new_n);
 		data_type add_n = dif_n.get(0);
 		data_type rem_n = dif_n.get(1);
