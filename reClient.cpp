@@ -183,7 +183,7 @@ int main (int argc,char *argv[]) {
 				break;
 			};
 		};
-		if (!num) sleep(10);
+		if (!num) sleep(1);
 		else lasthello = nowtime;
 	};
 	fclose(LOGFILE);
