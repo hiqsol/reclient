@@ -31,7 +31,7 @@ namespace re {
 class EPP {
 public:
 	EPP () {};
-	EPP (line_cref h,size_type p,line_cref c,line_cref f,line_cref d)
+	EPP (line_cref h,size_type p,line_cref c,line_cref f="",line_cref d="")
 		: host(h),port(p),certificate(c),cacertfile(f),cacertdir(d),serialNo("0"),batchNo(1),commandNo(1)
 	{
 		transport = new epp_TransportSSL(certificate,cacertfile,cacertdir);
