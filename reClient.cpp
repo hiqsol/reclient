@@ -114,14 +114,15 @@ int main (int argc,char *argv[]) {
 		"cacertdir",	ModBase::get("cacertdir"),
 		"serial",	THE_SNO
 	));
-	script.runFunc("repp.setNamestoreExtension",data_type(
-		"ext",		".com",
-		"data",		"dotCOM"
-	));
-	script.runFunc("repp.setNamestoreExtension",data_type(
-		"ext",		".net",
-		"data",		"dotNET"
-	));
+	if (ModBase::has("namestores").toBool()) {
+		data_type namestores = csplit(ModBase::get("namestores"));
+		for (size_type i=0,n=namestores.size();i<n;i++) {
+			script.runFunc("repp.setNamestoreExtension",data_type(
+				"ext",		"."+namestores.get(i),
+				"data",		"dot"+uc(namestores.get(i))
+			));
+		};
+	};
 	data_type loginOptions = data_type(
 		"username",	ModBase::get("username"),
 		"password",	ModBase::get("password")
