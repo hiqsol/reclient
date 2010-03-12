@@ -81,7 +81,7 @@ int main (int argc,char *argv[]) {
 	));
 
 	// PREPARING REGISTRATION REQUEST
-	data_type regRequest("password",config.getLine("regPassword"));
+	data_type regRequest("password",Exec::backtick(config.getLine("passgen")));
 	line_type regRegistrant	= config.getLine("regRegistrant");
 	if (regRegistrant.size()) {
 		line_type regAdmin		= config.getLine("regAdmin");
