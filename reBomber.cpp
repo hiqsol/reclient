@@ -67,8 +67,7 @@ int main (int argc,char *argv[]) {
 	line_type regDomains = config.getLine("regDomains");
 	size_type regNum = config.getIntN("regNum");
 	if (!regNum) regNum = 10;
-	size_type wait = config.getIntN("wait");
-	if (!wait) wait = 100;
+	size_type wait = config.has("wait") ? config.getIntN("wait") : 100;
 
 	// INITIALIZING EPP
 	EPP session(config.getLine("host"),config.getIntN("port"),config.getLine("certificate"));
