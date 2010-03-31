@@ -80,7 +80,8 @@ int main (int argc,char *argv[]) {
 	));
 
 	// PREPARING REGISTRATION REQUEST
-	data_type regRequest("password",Exec::backtick(config.getLine("passgen")));
+	line_type regPassword = chomp(Exec::backtick(config.getLine("passgen")));
+	data_type regRequest("password",regPassword);
 	line_type regRegistrant	= config.getLine("regRegistrant");
 	if (regRegistrant.size()) {
 		line_type regAdmin		= config.getLine("regAdmin");
@@ -146,7 +147,7 @@ int main (int argc,char *argv[]) {
 				fprintf(stderr,"%s: %s\n",domain.c_str(),regResult.dump2line().c_str());
 			*/
 			if (strcmp(regCode.c_str(),"2302"))
-				fprintf(stderr,"%s: %s\n",domain.c_str(),regCode.c_str());
+				fprintf(stderr,"%s: %s (%s)\n",domain.c_str(),regCode.c_str(),regPassword.c_str());
 		};
 		sleep(wait);
 	};
