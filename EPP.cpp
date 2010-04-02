@@ -805,6 +805,28 @@ data_type EPP::domainSmartUpdate (data_cref a,data_cref info) {
 	} else return info;
 };
 
+data_type EPP::domainSmartDelete (data_cref a) {
+	data_type p = domainDelete(a);
+	return isResponseOk(p) ? p : domainSmartDelete(a,domainInfo(a));
+};
+
+data_type EPP::domainSmartDelete (data_cref a,data_cref info) {
+	if (info.getLine("statuses").find("pendingDelete")!=line_npos) return info;
+	data_type r("name",a.get("name"));
+	if (info.getLine("statuses").find("clientDeleteProhibited")!=line_npos) {
+		line_type news = "clientDeleteProhibited";
+		if (info.getLine("statuses").find("clientUpdateProhibited")!=line_npos) news += ",clientUpdateProhibited";
+		r.let("remove").set("statuses",news);
+	};
+	if (info.getLine("nameservers").find(a.getLine("name"))!=line_npos) r.let("remove").set("nameservers",info.getLine("nameservers"));
+	if (r.has("remove")) domainUpdate(r);
+	data_type p = domainDelete(a);
+	if (isResponseOk(p)) return p;
+	data_type hosts = csplit(info.getLine("hosts"));
+	for (size_type i=0,n=hosts.size();i<n;i++) hostSmartDelete(data_type("name",hosts.getLine(i)));
+	return domainDelete(a);
+};
+
 data_type EPP::domainSmartLock (data_cref a,data_cref info) {
 	data_type old_s = info.get("statuses").ksplited();
 	data_type new_s = old_s;
@@ -897,6 +919,15 @@ data_type EPP::hostSmartUpdate (data_cref a,data_cref info) {
 	} else if (new_u && !old_u) {
 		return hostProhibitUpdate(a);
 	} else return info;
+};
+
+data_type EPP::hostSmartDelete (data_cref a) {
+	data_type p = hostDelete(a);
+	return isResponseOk(p) ? p : hostRename(a.getLine("name"));
+};
+
+data_type EPP::hostRename (line_cref oldn,line_cref newn,line_cref pfix) {
+	return hostUpdate(data_type("name",oldn,"change",data_type("name",newn.size() ? newn : oldn+pfix)));
 };
 
 data_type EPP::domainSmartRenew (data_cref a) {

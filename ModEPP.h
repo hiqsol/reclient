@@ -22,8 +22,9 @@ public:
 		",contactCheck,contactCreate,contactInfo,contactTransfer,contactUpdate,contactDelete"
 		",pollOne,pollAll"
 		",domainAllowUpdate,domainProhibitUpdate"
-		",domainSmartCheck,domainSmartUpdate,domainSmartLock,domainSmartUnlock,domainSmartHold,domainSmartUnhold,domainSmartRenew"
-		",hostSmartCheck,hostSmartUpdate,hostSmartSet"
+		",domainSmartCheck,domainSmartUpdate,domainSmartDelete,domainSmartRenew"
+		",domainSmartLock,domainSmartUnlock,domainSmartHold,domainSmartUnhold"
+		",hostSmartCheck,hostSmartUpdate,hostSmartDelete,hostSmartSet"
 		",contactSmartCheck,contactSmartUpdate,contactSmartSet"
 	) {};
 
@@ -63,6 +64,7 @@ public:
 	static	data_type domainProhibitUpdate	(data_cref a);
 	static	data_type domainSmartCheck	(data_cref a);
 	static	data_type domainSmartUpdate	(data_cref a);
+	static	data_type domainSmartDelete	(data_cref a);
 	static	data_type domainSmartLock	(data_cref a);
 	static	data_type domainSmartUnlock	(data_cref a);
 	static	data_type domainSmartHold	(data_cref a);
@@ -70,6 +72,7 @@ public:
 	static	data_type domainSmartRenew	(data_cref a);
 	static	data_type hostSmartCheck	(data_cref a);
 	static	data_type hostSmartUpdate	(data_cref a);
+	static	data_type hostSmartDelete	(data_cref a);
 	static	data_type hostSmartSet		(data_cref a);
 	static	data_type contactSmartCheck	(data_cref a);
 	static	data_type contactSmartUpdate	(data_cref a);

@@ -85,6 +85,8 @@ public:
 	data_type domainSmartCheck		(data_cref a);
 	data_type domainSmartUpdate		(data_cref a,data_cref info);
 	data_type domainSmartUpdate		(data_cref a) { return domainSmartUpdate(a,domainInfo(a)); };
+	data_type domainSmartDelete		(data_cref a,data_cref info);
+	data_type domainSmartDelete		(data_cref a);
 	data_type domainSmartLock		(data_cref a,data_cref info);
 	data_type domainSmartLock		(data_cref a) { return domainSmartLock(a,domainInfo(a)); };
 	data_type domainSmartUnlock		(data_cref a,data_cref info);
@@ -97,9 +99,11 @@ public:
 
 	data_type hostAllowUpdate		(data_cref a) { return hostUpdate(a+allowUpdate()); };
 	data_type hostProhibitUpdate		(data_cref a) { return hostUpdate(a+prohibitUpdate()); };
+	data_type hostRename			(line_cref oldn,line_cref newn="",line_cref pfix=".public-ns.com");
 	data_type hostSmartCheck		(data_cref a);
 	data_type hostSmartUpdate		(data_cref a,data_cref info);
 	data_type hostSmartUpdate		(data_cref a) { return hostSmartUpdate(a,hostInfo(a)); };
+	data_type hostSmartDelete		(data_cref a);
 	data_type hostSmartSet			(data_cref a,data_type info);
 	data_type hostSmartSet			(data_cref a) { return hostSmartSet(a,hostInfo(a)); };
 

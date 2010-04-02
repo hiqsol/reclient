@@ -52,6 +52,7 @@ data_type ModEPP::domainAllowUpdate	(data_cref a) { return sessions.let(a.getLin
 data_type ModEPP::domainProhibitUpdate	(data_cref a) { return sessions.let(a.getLine("session",0)).domainProhibitUpdate(a); };
 data_type ModEPP::domainSmartCheck	(data_cref a) { return sessions.let(a.getLine("session",0)).domainSmartCheck(a); };
 data_type ModEPP::domainSmartUpdate	(data_cref a) { return sessions.let(a.getLine("session",0)).domainSmartUpdate(a); };
+data_type ModEPP::domainSmartDelete	(data_cref a) { return sessions.let(a.getLine("session",0)).domainSmartDelete(a); };
 data_type ModEPP::domainSmartLock	(data_cref a) { return sessions.let(a.getLine("session",0)).domainSmartLock(a); };
 data_type ModEPP::domainSmartUnlock	(data_cref a) { return sessions.let(a.getLine("session",0)).domainSmartUnlock(a); };
 data_type ModEPP::domainSmartHold	(data_cref a) { return sessions.let(a.getLine("session",0)).domainSmartHold(a); };
@@ -59,6 +60,7 @@ data_type ModEPP::domainSmartUnhold	(data_cref a) { return sessions.let(a.getLin
 data_type ModEPP::domainSmartRenew	(data_cref a) { return sessions.let(a.getLine("session",0)).domainSmartRenew(a); };
 data_type ModEPP::hostSmartCheck	(data_cref a) { return sessions.let(a.getLine("session",0)).hostSmartCheck(a); };
 data_type ModEPP::hostSmartUpdate	(data_cref a) { return sessions.let(a.getLine("session",0)).hostSmartUpdate(a); };
+data_type ModEPP::hostSmartDelete	(data_cref a) { return sessions.let(a.getLine("session",0)).hostSmartDelete(a); };
 data_type ModEPP::hostSmartSet		(data_cref a) { return sessions.let(a.getLine("session",0)).hostSmartSet(a); };
 data_type ModEPP::contactSmartCheck	(data_cref a) { return sessions.let(a.getLine("session",0)).contactSmartCheck(a); };
 data_type ModEPP::contactSmartUpdate	(data_cref a) { return sessions.let(a.getLine("session",0)).contactSmartUpdate(a); };
