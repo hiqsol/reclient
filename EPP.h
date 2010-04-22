@@ -62,6 +62,7 @@ public:
 	data_type domainInfo			(data_cref a);
 	data_type domainSync			(data_cref a);
 	data_type domainCheck			(data_cref a);
+	data_type domainSimpleCheck		(data_cref a);
 	data_type domainRenew			(data_cref a);
 	data_type domainCreate			(data_cref a);
 	data_type domainUpdate			(data_cref a);
@@ -95,6 +96,7 @@ public:
 
 	data_type domainAllowUpdate		(data_cref a) { return domainUpdate(a+allowUpdate()); };
 	data_type domainProhibitUpdate		(data_cref a) { return domainUpdate(a+prohibitUpdate()); };
+	data_type domainMassCheck		(data_cref a);
 	data_type domainSmartCheck		(data_cref a);
 	data_type domainSmartUpdate		(data_cref a,data_cref info);
 	data_type domainSmartUpdate		(data_cref a) { return domainSmartUpdate(a,domainInfo(a)); };

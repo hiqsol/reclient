@@ -259,6 +259,27 @@ data_type EPP::domainCheck (data_cref a) {
 	return res;
 };
 
+data_type EPP::domainSimpleCheck (data_cref a) {
+	// preparing request
+	epp_DomainCheckReq_ref request(new epp_DomainCheckReq());
+	request->m_cmd.ref(newCommand(a,"DH"));
+	request->m_names.ref(newStringSeq(a.get("names").csplited()));
+	// performing command
+	epp_DomainCheck_ref command(new epp_DomainCheck());
+	command->setRequestData(*request);
+	data_type err = safeProcessAction(command);
+	if (err.notNull()) return err;
+	// getting response
+	epp_DomainCheckRsp_ref r = command->getResponseData();
+	data_type res = readResponseData(r->m_rsp);
+	if (r->m_results!=NULL) {
+		for (epp_check_result_seq::iterator i=r->m_results->begin();i!=r->m_results->end();i++) {
+			if (i->m_value!=NULL && i->m_avail!=NULL) res[lc(*i->m_value)] = *i->m_avail;
+		};
+	};
+	return res;
+};
+
 data_type EPP::domainRenew (data_cref a) {
 	// preparing request
 	epp_DomainRenewReq_ref request(new epp_DomainRenewReq());
@@ -911,6 +932,23 @@ data_type EPP::pollAll (data_cref a) {
 		pollAck(p.get("msgQ_id"));
 		p = poll(a);
 	} while (p.has("msgQ_id"));
+	return res;
+};
+
+data_type EPP::domainMassCheck (data_cref a) {
+	data_cnst names = a.get("names").csplited();
+	data_type res(names.size()+4,false);
+	size_type k = 0;
+	line_type list;
+	for (size_type i=0,n=names.size()-1;i<=n;i++) {
+		list += (k ? "," : "")+names.getLine(i);
+		k++;
+		if (k==5 || i==n) {
+			res += domainSimpleCheck(data_type("names",list));
+			k = 0;
+			list.clear();
+		};
+	};
 	return res;
 };
 

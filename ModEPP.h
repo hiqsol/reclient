@@ -17,13 +17,13 @@ public:
 	ModEPP () : Mod("ModEPP",
 		"incBatchNo,setNamestoreExtension,"
 		",init,hello,login,logout,poll"
-		",domainInfo,domainSync,domainCheck,domainRenew,domainCreate,domainUpdate,domainDelete,domainTransfer"
+		",domainInfo,domainSync,domainSimpleCheck,domainCheck,domainRenew,domainCreate,domainUpdate,domainDelete,domainTransfer"
 		",emailFwdInfo,emailFwdCheck,emailFwdRenew,emailFwdCreate,emailFwdUpdate,emailFwdDelete,emailFwdTransfer"
 		",hostInfo,hostCheck,hostCreate,hostUpdate,hostDelete"
 		",contactCheck,contactCreate,contactInfo,contactTransfer,contactUpdate,contactDelete"
 		",pollOne,pollAll"
 		",domainAllowUpdate,domainProhibitUpdate"
-		",domainSmartCheck,domainSmartUpdate,domainSmartDelete,domainSmartRenew"
+		",domainMassCheck,domainSmartCheck,domainSmartUpdate,domainSmartDelete,domainSmartRenew"
 		",domainSmartLock,domainSmartUnlock,domainSmartHold,domainSmartUnhold"
 		",emailFwdSmartRenew"
 		",hostSmartCheck,hostSmartUpdate,hostSmartDelete,hostSmartSet"
@@ -42,6 +42,7 @@ public:
 	static	data_type domainInfo		(data_cref a);
 	static	data_type domainSync		(data_cref a);
 	static	data_type domainCheck		(data_cref a);
+	static	data_type domainSimpleCheck	(data_cref a);
 	static	data_type domainRenew		(data_cref a);
 	static	data_type domainCreate		(data_cref a);
 	static	data_type domainUpdate		(data_cref a);
@@ -71,6 +72,7 @@ public:
 	static	data_type pollAll		(data_cref a);
 	static	data_type domainAllowUpdate	(data_cref a);
 	static	data_type domainProhibitUpdate	(data_cref a);
+	static	data_type domainMassCheck	(data_cref a);
 	static	data_type domainSmartCheck	(data_cref a);
 	static	data_type domainSmartUpdate	(data_cref a);
 	static	data_type domainSmartDelete	(data_cref a);

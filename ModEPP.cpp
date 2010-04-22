@@ -27,6 +27,7 @@ data_type ModEPP::login			(data_cref a) { return sessions.let(a.getLine("session
 data_type ModEPP::logout		(data_cref a) { return sessions.let(a.getLine("session",0)).logout(a); };
 data_type ModEPP::domainInfo		(data_cref a) { return sessions.let(a.getLine("session",0)).domainInfo(a); };
 data_type ModEPP::domainSync		(data_cref a) { return sessions.let(a.getLine("session",0)).domainSync(a); };
+data_type ModEPP::domainSimpleCheck	(data_cref a) { return sessions.let(a.getLine("session",0)).domainSimpleCheck(a); };
 data_type ModEPP::domainCheck		(data_cref a) { return sessions.let(a.getLine("session",0)).domainCheck(a); };
 data_type ModEPP::domainRenew		(data_cref a) { return sessions.let(a.getLine("session",0)).domainRenew(a); };
 data_type ModEPP::domainCreate		(data_cref a) { return sessions.let(a.getLine("session",0)).domainCreate(a); };
@@ -57,6 +58,7 @@ data_type ModEPP::pollOne		(data_cref a) { return sessions.let(a.getLine("sessio
 data_type ModEPP::pollAll		(data_cref a) { return sessions.let(a.getLine("session",0)).pollAll(a); };
 data_type ModEPP::domainAllowUpdate	(data_cref a) { return sessions.let(a.getLine("session",0)).domainAllowUpdate(a); };
 data_type ModEPP::domainProhibitUpdate	(data_cref a) { return sessions.let(a.getLine("session",0)).domainProhibitUpdate(a); };
+data_type ModEPP::domainMassCheck	(data_cref a) { return sessions.let(a.getLine("session",0)).domainMassCheck(a); };
 data_type ModEPP::domainSmartCheck	(data_cref a) { return sessions.let(a.getLine("session",0)).domainSmartCheck(a); };
 data_type ModEPP::domainSmartUpdate	(data_cref a) { return sessions.let(a.getLine("session",0)).domainSmartUpdate(a); };
 data_type ModEPP::domainSmartDelete	(data_cref a) { return sessions.let(a.getLine("session",0)).domainSmartDelete(a); };
