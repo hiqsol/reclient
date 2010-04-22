@@ -18,12 +18,14 @@ public:
 		"incBatchNo,setNamestoreExtension,"
 		",init,hello,login,logout,poll"
 		",domainInfo,domainSync,domainCheck,domainRenew,domainCreate,domainUpdate,domainDelete,domainTransfer"
+		",emailFwdInfo,emailFwdCheck,emailFwdRenew,emailFwdCreate,emailFwdUpdate,emailFwdDelete,emailFwdTransfer"
 		",hostInfo,hostCheck,hostCreate,hostUpdate,hostDelete"
 		",contactCheck,contactCreate,contactInfo,contactTransfer,contactUpdate,contactDelete"
 		",pollOne,pollAll"
 		",domainAllowUpdate,domainProhibitUpdate"
 		",domainSmartCheck,domainSmartUpdate,domainSmartDelete,domainSmartRenew"
 		",domainSmartLock,domainSmartUnlock,domainSmartHold,domainSmartUnhold"
+		",emailFwdSmartRenew"
 		",hostSmartCheck,hostSmartUpdate,hostSmartDelete,hostSmartSet"
 		",contactSmartCheck,contactSmartUpdate,contactSmartSet"
 	) {};
@@ -45,6 +47,13 @@ public:
 	static	data_type domainUpdate		(data_cref a);
 	static	data_type domainDelete		(data_cref a);
 	static	data_type domainTransfer	(data_cref a);
+	static	data_type emailFwdInfo		(data_cref a);
+	static	data_type emailFwdCheck		(data_cref a);
+	static	data_type emailFwdRenew		(data_cref a);
+	static	data_type emailFwdCreate	(data_cref a);
+	static	data_type emailFwdUpdate	(data_cref a);
+	static	data_type emailFwdDelete	(data_cref a);
+	static	data_type emailFwdTransfer	(data_cref a);
 	static	data_type hostInfo		(data_cref a);
 	static	data_type hostCheck		(data_cref a);
 	static	data_type hostCreate		(data_cref a);
@@ -70,6 +79,7 @@ public:
 	static	data_type domainSmartHold	(data_cref a);
 	static	data_type domainSmartUnhold	(data_cref a);
 	static	data_type domainSmartRenew	(data_cref a);
+	static	data_type emailFwdSmartRenew	(data_cref a);
 	static	data_type hostSmartCheck	(data_cref a);
 	static	data_type hostSmartUpdate	(data_cref a);
 	static	data_type hostSmartDelete	(data_cref a);

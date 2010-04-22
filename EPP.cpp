@@ -14,6 +14,13 @@
 #include "epp-rtk-cpp/epp_DomainUpdate.h"
 #include "epp-rtk-cpp/epp_DomainDelete.h"
 #include "epp-rtk-cpp/epp_DomainTransfer.h"
+#include "nameaddon/epp_EmailFwdInfo.h"
+#include "nameaddon/epp_EmailFwdCheck.h"
+#include "nameaddon/epp_EmailFwdRenew.h"
+#include "nameaddon/epp_EmailFwdCreate.h"
+#include "nameaddon/epp_EmailFwdUpdate.h"
+#include "nameaddon/epp_EmailFwdDelete.h"
+#include "nameaddon/epp_EmailFwdTransfer.h"
 #include "epp-rtk-cpp/epp_HostInfo.h"
 #include "epp-rtk-cpp/epp_HostCheck.h"
 #include "epp-rtk-cpp/epp_HostCreate.h"
@@ -27,6 +34,7 @@
 #include "epp-rtk-cpp/epp_ContactDelete.h"
 #include "epp-rtk-cpp/data/epp_Greeting.h"
 #include "epp-rtk-cpp/data/epp_domainXMLbase.h"
+#include "nameaddon/data/epp_emailFwdXMLbase.h"
 #include "epp-rtk-cpp/data/epp_hostXMLbase.h"
 #include "epp-rtk-cpp/data/epp_contactXMLbase.h"
 #include "epp-rtk-cpp/data/epp_Exception.h"
@@ -36,6 +44,7 @@
 #include "comnetaddon/data/epp_RGPPollResData.h"
 
 using namespace eppobject::domain;
+using namespace eppobject::emailFwd;
 using namespace eppobject::sync;
 using namespace eppobject::host;
 using namespace eppobject::contact;
@@ -256,7 +265,7 @@ data_type EPP::domainRenew (data_cref a) {
 	request->m_cmd.ref(newCommand(a,"DR"));
 	request->m_name.ref(new epp_string(a.getLine("name")));
 	request->m_current_expiration_date.ref(new epp_date(a.getLine("expires")));
-	request->m_period.ref(new epp_DomainPeriod(YEAR,a.get("period").toIntN(1)));
+	request->m_period.ref(new epp_DomainPeriod(eppobject::domain::YEAR,a.get("period").toIntN(1)));
 	// performing command
 	epp_DomainRenew_ref command(new epp_DomainRenew());
 	command->setRequestData(*request);
@@ -275,7 +284,7 @@ data_type EPP::domainCreate (data_cref a) {
 	epp_DomainCreateReq_ref request(new epp_DomainCreateReq());
 	request->m_cmd.ref(newCommand(a,"DC"));
 	request->m_name.ref(new epp_string(a.getLine("name")));
-	request->m_period.ref(new epp_DomainPeriod(YEAR,a.get("period").toIntN(1)));
+	request->m_period.ref(new epp_DomainPeriod(eppobject::domain::YEAR,a.get("period").toIntN(1)));
 	if (a.has("nameservers")) request->m_name_servers.ref(newStringSeq(a.get("nameservers").csplited()));
 	if (a.has("registrant")) request->m_registrant.ref(new epp_string(a.getLine("registrant")));
 	if (a.has("password")) request->m_auth_info.ref(newAuthInfo(a));
@@ -361,7 +370,7 @@ data_type EPP::domainTransfer (data_cref a) {
 	epp_DomainTransferReq_ref request(new epp_DomainTransferReq());
 	request->m_cmd.ref(newCommand(a,"DT"));
 	request->m_name.ref(new epp_string(a.getLine("name")));
-	if (a.has("period")) request->m_period.ref(new epp_DomainPeriod(YEAR,a.get("period").toIntN()));
+	if (a.has("period")) request->m_period.ref(new epp_DomainPeriod(eppobject::domain::YEAR,a.get("period").toIntN()));
 	request->m_trans.ref(new epp_TransferRequest());
 	try {
 		request->m_trans->m_op.ref(new epp_TransferOpType(returnTransferType(a.getLine("op"))));
@@ -690,6 +699,194 @@ data_type EPP::contactDelete (data_cref a) {
 	return readResponseData(r->m_rsp);
 };
 
+// EMAIL FORWARD COMMANDS
+
+data_type EPP::emailFwdInfo (data_cref a) {
+	// preparing request
+	epp_EmailFwdInfoReq_ref request(new epp_EmailFwdInfoReq());
+	request->m_cmd.ref(newCommand(a,"EI"));
+		//l_req->m_cmd.ref(new epp_Command(NULL,epp_Unspec_ref(new epp_Unspec()),epp_trid("ABC-12346")));
+	request->m_name.ref(new epp_string(a.getLine("name")));
+	if (a.has("password")) request->m_auth_info.ref(newAuthInfo(a));
+	// performing command
+	epp_EmailFwdInfo_ref command(new epp_EmailFwdInfo());
+	command->setRequestData(*request);
+	data_type err = safeProcessAction(command);
+	if (err.notNull()) return err;
+	// getting response
+	epp_EmailFwdInfoRsp_ref r = command->getResponseData();
+	data_type res = readResponseData(r->m_rsp);
+	if (r->m_name!=NULL) res["name"] = lc(*r->m_name);
+	if (r->m_roid!=NULL) res["roid"] = *r->m_roid;
+	if (r->m_status!=NULL) {
+		data_type &statuses = res["statuses"];
+		for (epp_emailFwd_status_seq::iterator i = r->m_status->begin();i!=r->m_status->end();i++) {
+			if (statuses.size()) statuses += ",";
+			statuses += returnStatusType(*i->m_type);
+		};
+	};
+	if (r->m_registrant!=NULL) res["registrant"] = *r->m_registrant;
+	if (r->m_contacts!=NULL) {
+		for (epp_emailFwd_contact_seq::iterator i = r->m_contacts->begin();i!=r->m_contacts->end();i++) {
+			data_type &c = res.let(returnContactType(*i->m_type));
+			if (c.size()) c += ",";
+			c += *i->m_id;
+		};
+	};
+	if (r->m_fwdto!=NULL) res["fwdTo"] = *r->m_fwdto;
+	if (r->m_client_id!=NULL) res["client_id"] = *r->m_client_id;
+	if (r->m_created_by!=NULL) res["created_by"] = *r->m_created_by;
+	if (r->m_created_date!=NULL) res["created_date"] = *r->m_created_date;
+	if (r->m_updated_by!=NULL) res["updated_by"] = *r->m_updated_by;
+	if (r->m_updated_date!=NULL) res["updated_date"] = *r->m_updated_date;
+	if (r->m_expiration_date!=NULL) res["expiration_date"] = *r->m_expiration_date;
+	if (r->m_transfer_date!=NULL) res["transfer_date"] = *r->m_transfer_date;
+	if (r->m_auth_info!=NULL && r->m_auth_info->m_value!=NULL) res["password"] = *r->m_auth_info->m_value;
+	return res;
+};
+
+data_type EPP::emailFwdCheck (data_cref a) {
+	// preparing request
+	epp_EmailFwdCheckReq_ref request(new epp_EmailFwdCheckReq());
+	request->m_cmd.ref(newCommand(a,"EH"));
+	request->m_names.ref(newStringSeq(a.get("names").csplited()));
+	// performing command
+	epp_EmailFwdCheck_ref command(new epp_EmailFwdCheck());
+	command->setRequestData(*request);
+	data_type err = safeProcessAction(command);
+	if (err.notNull()) return err;
+	// getting response
+	epp_EmailFwdCheckRsp_ref r = command->getResponseData();
+	data_type res = readResponseData(r->m_rsp);
+	if (r->m_results!=NULL) {
+		for (epp_check_result_seq::iterator i=r->m_results->begin();i!=r->m_results->end();i++) {
+			data_type s;
+			if (i->m_avail!=NULL) s["avail"] = *i->m_avail;
+			if (i->m_lang!=NULL) s["lang"] = *i->m_lang;
+			if (i->m_reason!=NULL) s["reason"] = *i->m_reason;
+			if (i->m_value!=NULL) res[lc(*i->m_value)] = s; else res.push(s);
+		};
+	};
+	return res;
+};
+
+data_type EPP::emailFwdRenew (data_cref a) {
+	// preparing request
+	epp_EmailFwdRenewReq_ref request(new epp_EmailFwdRenewReq());
+	request->m_cmd.ref(newCommand(a,"ER"));
+	request->m_name.ref(new epp_string(a.getLine("name")));
+	request->m_current_expiration_date.ref(new epp_date(a.getLine("expires")));
+	request->m_period.ref(new epp_EmailFwdPeriod(eppobject::emailFwd::YEAR,a.get("period").toIntN(1)));
+	// performing command
+	epp_EmailFwdRenew_ref command(new epp_EmailFwdRenew());
+	command->setRequestData(*request);
+	data_type err = safeProcessAction(command);
+	if (err.notNull()) return err;
+	// getting response
+	epp_EmailFwdRenewRsp_ref r = command->getResponseData();
+	data_type res = readResponseData(r->m_rsp);
+	if (r->m_name!=NULL) res["name"] = lc(*r->m_name);
+	if (r->m_expiration_date!=NULL) res["expiration_date"] = *r->m_expiration_date;
+	return res;
+};
+
+data_type EPP::emailFwdCreate (data_cref a) {
+	// preparing request
+	epp_EmailFwdCreateReq_ref request(new epp_EmailFwdCreateReq());
+	request->m_cmd.ref(newCommand(a,"EC"));
+	request->m_name.ref(new epp_string(a.getLine("name")));
+	request->m_period.ref(new epp_EmailFwdPeriod(eppobject::emailFwd::YEAR,a.get("period").toIntN(1)));
+	if (a.has("fwdTo")) request->m_fwdto.ref(new epp_string(a.getLine("fwdTo")));
+	if (a.has("registrant")) request->m_registrant.ref(new epp_string(a.getLine("registrant")));
+	if (a.has("password")) request->m_auth_info.ref(newAuthInfo(a));
+	if (a.hasAny("admin","tech","billing")) request->m_contacts.ref(newEmailFwdContactSeq(a));
+	// performing command
+	epp_EmailFwdCreate_ref command(new epp_EmailFwdCreate());
+	command->setRequestData(*request);
+	data_type err = safeProcessAction(command);
+	if (err.notNull()) return err;
+	// getting response
+	epp_EmailFwdCreateRsp_ref r = command->getResponseData();
+	data_type res = readResponseData(r->m_rsp);
+	if (r->m_name!=NULL) res["name"] = *r->m_name;
+	if (r->m_creation_date!=NULL) res["created_date"] = *r->m_creation_date;
+	if (r->m_expiration_date!=NULL) res["expiration_date"] = *r->m_expiration_date;
+	return res;
+};
+
+data_type EPP::emailFwdUpdate (data_cref a) {
+	// preparing request
+	epp_EmailFwdUpdateReq_ref request(new epp_EmailFwdUpdateReq());
+	request->m_cmd.ref(newCommand(a,"EU"));
+	request->m_name.ref(new epp_string(a.getLine("name")));
+	if (a.has("add")) {
+		data_cref add = a.get("add");
+		request->m_add.ref(new epp_EmailFwdUpdateAddRemove());
+		if (add.has("statuses")) request->m_add->m_status.ref(newEmailFwdStatusSeq(add.get("statuses").csplited()));
+		if (add.hasAny("admin","tech","billing")) request->m_add->m_contacts.ref(newEmailFwdContactSeq(add));
+	};
+	if (a.has("remove")) {
+		data_cref remove = a.get("remove");
+		request->m_remove.ref(new epp_EmailFwdUpdateAddRemove());
+		if (remove.has("statuses")) request->m_remove->m_status.ref(newEmailFwdStatusSeq(remove.get("statuses").csplited()));
+		if (remove.hasAny("admin","tech","billing")) request->m_remove->m_contacts.ref(newEmailFwdContactSeq(remove));
+	};
+	if (a.has("change")) {
+		data_cref change = a.get("change");
+		request->m_change.ref(new epp_EmailFwdUpdateChange());
+		if (change.has("fwdTo")) request->m_change->m_fwdto.ref(new epp_string(change.getLine("fwdTo")));
+		if (change.has("password")) request->m_change->m_auth_info.ref(newAuthInfo(change));
+		if (change.has("registrant")) request->m_change->m_registrant.ref(new epp_string(change.getLine("registrant")));
+	};
+	// performing command
+	epp_EmailFwdUpdate_ref command(new epp_EmailFwdUpdate());
+	command->setRequestData(*request);
+	data_type err = safeProcessAction(command);
+	if (err.notNull()) return err;
+	// getting response
+	epp_EmailFwdUpdateRsp_ref r = command->getResponseData();
+	return readResponseData(r->m_rsp);
+};
+
+data_type EPP::emailFwdDelete (data_cref a) {
+	// preparing request
+	epp_EmailFwdDeleteReq_ref request(new epp_EmailFwdDeleteReq());
+	request->m_cmd.ref(newCommand(a,"ED"));
+	request->m_name.ref(new epp_string(a.getLine("name")));
+	// performing command
+	epp_EmailFwdDelete_ref command(new epp_EmailFwdDelete());
+	command->setRequestData(*request);
+	data_type err = safeProcessAction(command);
+	if (err.notNull()) return err;
+	// getting response
+	epp_EmailFwdDeleteRsp_ref r = command->getResponseData();
+	return readResponseData(r->m_rsp);
+};
+
+data_type EPP::emailFwdTransfer (data_cref a) {
+	// preparing request
+	epp_EmailFwdTransferReq_ref request(new epp_EmailFwdTransferReq());
+	request->m_cmd.ref(newCommand(a,"ET"));
+	request->m_name.ref(new epp_string(a.getLine("name")));
+	if (a.has("period")) request->m_period.ref(new epp_EmailFwdPeriod(eppobject::emailFwd::YEAR,a.get("period").toIntN()));
+	request->m_trans.ref(new epp_TransferRequest());
+	try {
+		request->m_trans->m_op.ref(new epp_TransferOpType(returnTransferType(a.getLine("op"))));
+	} catch (const epp_XMLException &ex) {
+		printf("epp_XMLException!!!\n\n");
+		return errorResult(9999,ex.getString());
+	};
+	if (a.has("password")) request->m_trans->m_auth_info.ref(newAuthInfo(a));
+	// performing command
+	epp_EmailFwdTransfer_ref command(new epp_EmailFwdTransfer());
+	command->setRequestData(*request);
+	data_type err = safeProcessAction(command);
+	if (err.notNull()) return err;
+	// getting response
+	epp_EmailFwdTransferRsp_ref r = command->getResponseData();
+	return readResponseData(r->m_rsp)+readDomainTrnData(r->m_trn_data);
+};
+
 // SMART COMMANDS
 
 void_type EPP::pollAck (data_cref id) {
@@ -936,6 +1133,12 @@ data_type EPP::domainSmartRenew (data_cref a) {
 	return domainRenew(r);
 };
 
+data_type EPP::emailFwdSmartRenew (data_cref a) {
+	data_type r = a;
+	if (!r.hasNotNull("expires")) r.set("expires",emailFwdInfo(a).getLine("expiration_date").substr(0,10));
+	return emailFwdRenew(r);
+};
+
 data_type EPP::hostSmartSet (data_cref a,data_type info) {
 	if (!isResponseOk(info)) {
 		data_type r = hostCreate(a);
@@ -1081,7 +1284,7 @@ epp_DomainHostsType *EPP::newDomainHostsType (line_cref t) {
 void_type EPP::addDomainContacts (epp_domain_contact_seq *seq,line_cref type,data_cref ids) {
 	for (size_type i=0,n=ids.hashSize();i<n;i++) {
 		epp_DomainContact res;
-		res.m_type.ref(new epp_DomainContactType(returnContactEnumType(type)));
+		res.m_type.ref(new epp_DomainContactType(eppobject::domain::returnContactEnumType(type)));
 		res.m_id.ref(new epp_string(ids.gk(i).toLine()));
 		seq->push_back(res);
 	};
@@ -1101,6 +1304,46 @@ epp_DomainStatus EPP::DomainStatus (data_cref a) {
 	res.m_type.ref(new epp_DomainStatusType(eppobject::domain::returnStatusEnumType(statusType(a))));
 	if (a.has("value")) res.m_value.ref(new epp_string(a.getLine("value")));
 	if (a.has("lang")) res.m_lang.ref(new epp_string(a.getLine("lang")));
+	return res;
+};
+
+epp_domain_status_seq *EPP::newDomainStatusSeq (data_cref a) {
+	data_type s = checkClientStatuses(a);
+	epp_domain_status_seq *res = new epp_domain_status_seq();
+	for (size_type i=0,n=s.size();i<n;i++) res->push_back(DomainStatus(s.gk(i)));
+	return res;
+};
+
+void_type EPP::addEmailFwdContacts (epp_emailFwd_contact_seq *seq,line_cref type,data_cref ids) {
+	for (size_type i=0,n=ids.hashSize();i<n;i++) {
+		epp_EmailFwdContact res;
+		res.m_type.ref(new epp_EmailFwdContactType(eppobject::emailFwd::returnContactEnumType(type)));
+		res.m_id.ref(new epp_string(ids.gk(i).toLine()));
+		seq->push_back(res);
+	};
+};
+
+epp_emailFwd_contact_seq *EPP::newEmailFwdContactSeq (data_cref a) {
+	epp_emailFwd_contact_seq *res = new epp_emailFwd_contact_seq();
+	char_cptr cons[] = {"admin","tech","billing"};
+	for (size_type i=0,n=sizeof(cons)/sizeof(*cons);i<n;i++) {
+		if (a.has(cons[i])) addEmailFwdContacts(res,cons[i],a.get(cons[i]).csplited());
+	};
+	return res;
+};
+
+epp_EmailFwdStatus EPP::EmailFwdStatus (data_cref a) {
+	epp_EmailFwdStatus res;
+	res.m_type.ref(new epp_EmailFwdStatusType(eppobject::emailFwd::returnStatusEnumType(statusType(a))));
+	if (a.has("value")) res.m_value.ref(new epp_string(a.getLine("value")));
+	if (a.has("lang")) res.m_lang.ref(new epp_string(a.getLine("lang")));
+	return res;
+};
+
+epp_emailFwd_status_seq *EPP::newEmailFwdStatusSeq (data_cref a) {
+	data_type s = checkClientStatuses(a);
+	epp_emailFwd_status_seq *res = new epp_emailFwd_status_seq();
+	for (size_type i=0,n=s.size();i<n;i++) res->push_back(EmailFwdStatus(s.gk(i)));
 	return res;
 };
 
@@ -1126,13 +1369,6 @@ data_type EPP::checkClientStatuses (data_cref a) {
 		line_type status = a.gk(i).toLine();
 		if (isClientStatus(status)) res.set(status,data_null);
 	};
-	return res;
-};
-
-epp_domain_status_seq *EPP::newDomainStatusSeq (data_cref a) {
-	data_type s = checkClientStatuses(a);
-	epp_domain_status_seq *res = new epp_domain_status_seq();
-	for (size_type i=0,n=s.size();i<n;i++) res->push_back(DomainStatus(s.gk(i)));
 	return res;
 };
 

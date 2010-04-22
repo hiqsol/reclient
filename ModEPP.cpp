@@ -33,6 +33,13 @@ data_type ModEPP::domainCreate		(data_cref a) { return sessions.let(a.getLine("s
 data_type ModEPP::domainUpdate		(data_cref a) { return sessions.let(a.getLine("session",0)).domainUpdate(a); };
 data_type ModEPP::domainDelete		(data_cref a) { return sessions.let(a.getLine("session",0)).domainDelete(a); };
 data_type ModEPP::domainTransfer	(data_cref a) { return sessions.let(a.getLine("session",0)).domainTransfer(a); };
+data_type ModEPP::emailFwdInfo		(data_cref a) { return sessions.let(a.getLine("session",0)).emailFwdInfo(a); };
+data_type ModEPP::emailFwdCheck		(data_cref a) { return sessions.let(a.getLine("session",0)).emailFwdCheck(a); };
+data_type ModEPP::emailFwdRenew		(data_cref a) { return sessions.let(a.getLine("session",0)).emailFwdRenew(a); };
+data_type ModEPP::emailFwdCreate	(data_cref a) { return sessions.let(a.getLine("session",0)).emailFwdCreate(a); };
+data_type ModEPP::emailFwdUpdate	(data_cref a) { return sessions.let(a.getLine("session",0)).emailFwdUpdate(a); };
+data_type ModEPP::emailFwdDelete	(data_cref a) { return sessions.let(a.getLine("session",0)).emailFwdDelete(a); };
+data_type ModEPP::emailFwdTransfer	(data_cref a) { return sessions.let(a.getLine("session",0)).emailFwdTransfer(a); };
 data_type ModEPP::hostInfo		(data_cref a) { return sessions.let(a.getLine("session",0)).hostInfo(a); };
 data_type ModEPP::hostCheck		(data_cref a) { return sessions.let(a.getLine("session",0)).hostCheck(a); };
 data_type ModEPP::hostCreate		(data_cref a) { return sessions.let(a.getLine("session",0)).hostCreate(a); };
@@ -58,6 +65,7 @@ data_type ModEPP::domainSmartUnlock	(data_cref a) { return sessions.let(a.getLin
 data_type ModEPP::domainSmartHold	(data_cref a) { return sessions.let(a.getLine("session",0)).domainSmartHold(a); };
 data_type ModEPP::domainSmartUnhold	(data_cref a) { return sessions.let(a.getLine("session",0)).domainSmartUnhold(a); };
 data_type ModEPP::domainSmartRenew	(data_cref a) { return sessions.let(a.getLine("session",0)).domainSmartRenew(a); };
+data_type ModEPP::emailFwdSmartRenew	(data_cref a) { return sessions.let(a.getLine("session",0)).emailFwdSmartRenew(a); };
 data_type ModEPP::hostSmartCheck	(data_cref a) { return sessions.let(a.getLine("session",0)).hostSmartCheck(a); };
 data_type ModEPP::hostSmartUpdate	(data_cref a) { return sessions.let(a.getLine("session",0)).hostSmartUpdate(a); };
 data_type ModEPP::hostSmartDelete	(data_cref a) { return sessions.let(a.getLine("session",0)).hostSmartDelete(a); };

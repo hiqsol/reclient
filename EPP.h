@@ -11,6 +11,7 @@
 #include "epp-rtk-cpp/data/epp_Command.h"
 #include "epp-rtk-cpp/data/epp_AuthInfo.h"
 #include "epp-rtk-cpp/data/epp_domaindata.h"
+#include "nameaddon/data/epp_emailFwddata.h"
 #include "epp-rtk-cpp/data/epp_hostdata.h"
 #include "epp-rtk-cpp/data/epp_ContactNameAddress.h"
 #include "epp-rtk-cpp/data/epp_ContactPhone.h"
@@ -22,6 +23,7 @@
 using namespace epptransport;
 using namespace eppobject::epp;
 using namespace eppobject::domain;
+using namespace eppobject::emailFwd;
 using namespace eppobject::host;
 using namespace eppobject::contact;
 using namespace eppobject::namestoreExt;
@@ -56,6 +58,7 @@ public:
 	data_type hello				(data_cref a=data_null);
 	data_type login				(data_cref a=data_null);
 	data_type logout			(data_cref a=data_null);
+
 	data_type domainInfo			(data_cref a);
 	data_type domainSync			(data_cref a);
 	data_type domainCheck			(data_cref a);
@@ -64,11 +67,21 @@ public:
 	data_type domainUpdate			(data_cref a);
 	data_type domainDelete			(data_cref a);
 	data_type domainTransfer		(data_cref a);
+
+	data_type emailFwdInfo			(data_cref a);
+	data_type emailFwdCheck			(data_cref a);
+	data_type emailFwdRenew			(data_cref a);
+	data_type emailFwdCreate		(data_cref a);
+	data_type emailFwdUpdate		(data_cref a);
+	data_type emailFwdDelete		(data_cref a);
+	data_type emailFwdTransfer		(data_cref a);
+
 	data_type hostInfo			(data_cref a);
 	data_type hostCheck			(data_cref a);
 	data_type hostCreate			(data_cref a);
 	data_type hostUpdate			(data_cref a);
 	data_type hostDelete			(data_cref a);
+
 	data_type contactCheck			(data_cref a);
 	data_type contactCreate			(data_cref a);
 	data_type contactInfo			(data_cref a);
@@ -96,6 +109,8 @@ public:
 	data_type domainSmartUnhold		(data_cref a,data_cref info);
 	data_type domainSmartUnhold		(data_cref a) { return domainSmartUnhold(a,domainInfo(a)); };
 	data_type domainSmartRenew		(data_cref a);
+
+	data_type emailFwdSmartRenew		(data_cref a);
 
 	data_type hostAllowUpdate		(data_cref a) { return hostUpdate(a+allowUpdate()); };
 	data_type hostProhibitUpdate		(data_cref a) { return hostUpdate(a+prohibitUpdate()); };
@@ -140,14 +155,21 @@ protected:
 	static	epp_AuthInfo *			newAuthInfo			(data_cref a);
 	static	epp_PollOpType *		newPollOpType			(line_cref t);
 	static	epp_DomainHostsType *		newDomainHostsType		(line_cref t);
-	static	void_type			addDomainContacts		(epp_domain_contact_seq *seq,line_cref type,data_cref ids);
 	static	line_type			statusType			(data_cref a) { return a.first("type").toLine(); };
 	static	bool_type			isClientStatus			(line_cref s) { return s.substr(0,6)=="client"; };
 	static	bool_type			isClientStatus			(data_cref a) { return isClientStatus(statusType(a)); };
 	static	data_type			checkClientStatuses		(data_cref a);
+
+	static	void_type			addDomainContacts		(epp_domain_contact_seq *seq,line_cref type,data_cref ids);
 	static	epp_domain_contact_seq *	newDomainContactSeq		(data_cref a);
 	static	epp_DomainStatus		DomainStatus			(data_cref a);
 	static	epp_domain_status_seq *		newDomainStatusSeq		(data_cref a);
+
+	static	void_type			addEmailFwdContacts		(epp_emailFwd_contact_seq *seq,line_cref type,data_cref ids);
+	static	epp_emailFwd_contact_seq *	newEmailFwdContactSeq		(data_cref a);
+	static	epp_EmailFwdStatus		EmailFwdStatus			(data_cref a);
+	static	epp_emailFwd_status_seq *	newEmailFwdStatusSeq		(data_cref a);
+
 	static	epp_ContactStatus		ContactStatus			(data_cref a);
 	static	epp_contact_status_seq *	newContactStatusSeq		(data_cref a);
 	static	epp_HostStatus			HostStatus			(data_cref a);
