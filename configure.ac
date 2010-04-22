@@ -17,6 +17,12 @@ AC_PROG_RANLIB
 ### Checks for header files.
 AC_HEADER_STDC
 
+NAMEADDON_PATH="/usr/local"
+AC_ARG_WITH(nameaddon,		[  --with-nameaddon      = DIR],
+	NAMEADDON_PATH=$withval
+)
+AC_SUBST(EPPRTK_PATH)
+
 COMNETADDON_PATH="/usr/local"
 AC_ARG_WITH(comnetaddon,	[  --with-comnetaddon      = DIR],
 	COMNETADDON_PATH=$withval
