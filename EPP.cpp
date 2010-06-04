@@ -1167,8 +1167,17 @@ data_type EPP::hostRename (line_cref oldn,line_cref newn,line_cref pfix) {
 
 data_type EPP::domainSmartRenew (data_cref a) {
 	data_type r = a;
-	if (!r.hasNotNull("expires")) r.set("expires",domainInfo(a).getLine("expiration_date").substr(0,10));
-	return domainRenew(r);
+	data_type i = domainInfo(a);
+	line_type act_e = i.getLine("expiration_date").substr(0,10);
+	line_type req_e = r.getLine("expires").substr(0,10);
+	if (req_e!=act_e) {
+		if (req_e.size()) {
+			// XXX TODO atol -> line2intN
+			r.set("period",(intN_type)(r.getIntN("period")+atol(req_e.substr(0,4).c_str())-atol(act_e.substr(0,4).c_str())));
+		};
+		r.set("expires",act_e);
+	};
+	return r.getIntN("period")>0 ? domainRenew(r) : i;
 };
 
 data_type EPP::emailFwdSmartRenew (data_cref a) {
