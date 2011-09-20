@@ -92,14 +92,17 @@ data_type EPP::login (data_cref a) {
 	request->m_client_id.ref(new epp_string(username));
 	request->m_password.ref(new epp_string(password));
 	if (a.has("new_password")) request->m_new_password.ref(new epp_string(a.getLine("new_password")));
-	// filling services info
+	// getting greeting and filling services info
 	request->m_services.ref(new epp_objuri_seq());
-	request->m_services->push_back("urn:ietf:params:xml:ns:contact-1.0"); // COM,NET don't support contacts
-	request->m_services->push_back("urn:ietf:params:xml:ns:domain-1.0");
-	request->m_services->push_back("urn:ietf:params:xml:ns:host-1.0");
-	// getting greeting
-	session.connectAndGetGreeting();
-	// TODO read Greeting
+	epp_Greeting_ref rsp = session.connectAndGetGreeting();
+	if (rsp->m_svc_menu != NULL && rsp->m_svc_menu->m_services != NULL) {
+		for (epp_objuri_seq::iterator i=rsp->m_svc_menu->m_services->begin();i!=rsp->m_svc_menu->m_services->end();i++) {
+			request->m_services->push_back(*i); // COM,NET don't support contacts
+		};
+	};
+	//request->m_services->push_back("urn:ietf:params:xml:ns:contact-1.0"); // COM,NET don't support contacts
+	//request->m_services->push_back("urn:ietf:params:xml:ns:domain-1.0");
+	//request->m_services->push_back("urn:ietf:params:xml:ns:host-1.0");
 	// performing command
 	epp_Login_ref command(new epp_Login());
 	command->setRequestData(*request);
@@ -594,6 +597,7 @@ data_type EPP::contactInfo (data_cref a) {
 	epp_ContactInfoReq_ref request(new epp_ContactInfoReq());
 	request->m_cmd.ref(newCommand(a,"CI"));
 	request->m_id.ref(new epp_string(a.getLine("id")));
+	if (a.has("password")) request->m_auth_info.ref(newAuthInfo(a));
 	// performing command
 	epp_ContactInfo_ref command(new epp_ContactInfo());
 	command->setRequestData(*request);
@@ -1482,7 +1486,7 @@ data_type EPP::readDomainTrnData (const epp_PollResData_ref &p) {
 	if (p->getType()!="domain:trnData") return data_null;
 	const epp_DomainTrnData_ref &t = p;
 	data_type res("poll_type","domain");
-	if (t->m_name!=NULL) res["name"] = *t->m_name;
+	if (t->m_name!=NULL) res["name"] = lc(*t->m_name);
 	if (t->m_transfer_status!=NULL) res["transfer_status"] = returnTransferStatusType(*t->m_transfer_status);
 	if (t->m_request_client_id!=NULL) res["request_client_id"] = *t->m_request_client_id;
 	if (t->m_request_date!=NULL) res["request_date"] = *t->m_request_date;
