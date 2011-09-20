@@ -70,7 +70,10 @@ int main (int argc,char *argv[]) {
 	size_type wait = config.has("wait") ? config.getIntN("wait") : 100;
 
 	// INITIALIZING EPP
-	EPP session(config.getLine("host"),config.getIntN("port"),config.getLine("certificate"));
+	EPP session(
+		config.getLine("host"),config.getIntN("port"),config.getLine("certificate"),
+		config.getLine("cacertfile"),config.getLine("cacertdir")
+	);
 	session.setSerialNo("1");
 	session.setNamestoreExtension(".com","dotCOM");
 	session.setNamestoreExtension(".net","dotNET");
