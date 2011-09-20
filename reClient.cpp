@@ -53,6 +53,10 @@ void sigalrm (int a) {
 
 int main (int argc,char *argv[]) {
 	RE_COMPILER_MINUSE();
+
+	// SETTING HANDLER FOR SIGNAL
+	signal(SIGALRM,sigalrm);
+
 	// INITIALIZING Script
 	Script script;
 	ModBase base;
@@ -135,9 +139,6 @@ int main (int argc,char *argv[]) {
 	epp_PollResFactory::addClass("lowbalance-poll","pollData",eppobject::lowbalancePoll::createLowBalancePollResData);
 	epp_PollResFactory::addClass("rgp-poll","pollData",eppobject::rgpPoll::createRGPPollResData);
 
-	// SETTING HANDLER FOR SIGNAL
-	signal(SIGALRM,sigalrm);
-
 	bool_type loggedIn = true;
 	time_t logintime = timestamp();
 	time_t lastlogin = logintime;
@@ -180,6 +181,7 @@ int main (int argc,char *argv[]) {
 			if (!is_ok) Exec::system("cp "+save+" "+errorDir+rnam);
 			num++;
 			if (ModBase::get("REPP_LOGGEDOUT").toBool()) {
+				printf("\nLogged OUT\n");
 				loggedIn = false;
 				break;
 			};
