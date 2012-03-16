@@ -13,6 +13,7 @@
 #include "comnetaddon/data/epp_RGPPollResData.h"
 #include <sys/time.h>
 #include <signal.h>
+#include <dirent.h>
 
 using namespace re;
 
@@ -161,7 +162,16 @@ int main (int argc,char *argv[]) {
 			writelog("hello");
 		};
 		size_type num = 0;
-		data_type files = csplit(Exec::backtick("ls -rt "+requestDir),"\n");
+		//data_type files = csplit(Exec::backtick("ls -rt "+requestDir),"\n");
+		data_type files(20,true);
+		DIR *dir = opendir(requestDir.c_str());
+		if (dir) {
+			struct dirent *ent;
+			while ( (ent = readdir(dir)) != NULL ) {
+				if (strncmp(ent->d_name,".",2) && strncmp(ent->d_name,"..",3)) files.push(ent->d_name);
+			};
+			closedir(dir);
+		};
 		for (size_type i=0,n=files.size();i<n;i++) {
 			line_type file = files.getLine(i);
 			line_type path = requestDir + file;
@@ -170,15 +180,18 @@ int main (int argc,char *argv[]) {
 			data_type res = script.runFile(path);
 			line_type lres = doSerialize ? Script::data2text(res) : res.dump2line();
 			File::writeln(reportDir+file,lres);
-			File::appendln(path,"\n\n"+lres);
 			bool_type is_ok = EPP::isResponseOk(res);
 			writelog(rnam+" "+(is_ok ? "ok" : "error"));
+			if (unlink(path.c_str())) printf("failed remove %s",path.c_str());
+		/* Disabled because of too many files
+			File::appendln(path,"\n\n"+lres);
 			line_type save = storeDir+rnam;
 			if (File::rename(path,save)) {
 				printf("can't move %s to %s\n",path.c_str(),save.c_str());
 				exit(5);
 			};
 			if (!is_ok) Exec::system("cp "+save+" "+errorDir+rnam);
+		*/
 			num++;
 			if (ModBase::get("REPP_LOGGEDOUT").toBool()) {
 				printf("\nLogged OUT\n");
@@ -186,7 +199,7 @@ int main (int argc,char *argv[]) {
 				break;
 			};
 		};
-		if (!num) sleep(1);
+		if (!num) usleep(100000);
 		else lasthello = nowtime;
 	};
 	fclose(LOGFILE);
