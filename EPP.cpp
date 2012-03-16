@@ -1162,11 +1162,22 @@ data_type EPP::hostSmartUpdate (data_cref a,data_cref info) {
 
 data_type EPP::hostSmartDelete (data_cref a) {
 	data_type p = hostDelete(a);
-	return isResponseOk(p) ? p : hostRename(a.getLine("name"));
+	return isResponseOk(p) ? p : hostSmartRename(a.getLine("name"));
 };
 
-data_type EPP::hostRename (line_cref oldn,line_cref newn,line_cref pfix) {
-	return hostUpdate(data_type("name",oldn,"change",data_type("name",newn.size() ? newn : oldn+pfix)));
+data_type EPP::hostRename (line_cref oldn,line_cref newn) {
+	return hostUpdate(data_type("name",oldn,"change",data_type("name",newn)));
+};
+
+data_type EPP::hostSmartRename (line_cref oldn,line_cref pfix) {
+	data_type p;
+	for (size_type i=0;i<100;i++) {
+		line_type newn = oldn+(i ? "-"+size2line(i)+pfix : pfix);
+		hostDelete(newn);
+		p = hostRename(oldn,newn);
+		if (isResponseOk(p)) return p;
+	};
+	return p;
 };
 
 data_type EPP::domainSmartRenew (data_cref a) {

@@ -116,7 +116,8 @@ public:
 
 	data_type hostAllowUpdate		(data_cref a) { return hostUpdate(a+allowUpdate()); };
 	data_type hostProhibitUpdate		(data_cref a) { return hostUpdate(a+prohibitUpdate()); };
-	data_type hostRename			(line_cref oldn,line_cref newn="",line_cref pfix=".public-ns.com");
+	data_type hostRename			(line_cref oldn,line_cref newn);
+	data_type hostSmartRename		(line_cref oldn,line_cref pfix=".public-ns.com");
 	data_type hostSmartCheck		(data_cref a);
 	data_type hostSmartUpdate		(data_cref a,data_cref info);
 	data_type hostSmartUpdate		(data_cref a) { return hostSmartUpdate(a,hostInfo(a)); };
