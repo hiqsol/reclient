@@ -390,6 +390,15 @@ data_type EPP::domainDelete (data_cref a) {
 };
 
 data_type EPP::domainTransfer (data_cref a) {
+	// for .NAME zone try create nameservers
+	line_type name = a.getLine("name");
+	if (name.substr(name.size()-5)==".name") {
+		data_type info = domainInfo(a);
+		if (info.has("nameservers")) {
+			data_type nses = info.get("nameservers").csplited();
+			for (size_type i=0,n=nses.size();i<n;i++) hostCreate(data_type("name",nses.get(i)));
+		};
+	};
 	// preparing request
 	epp_DomainTransferReq_ref request(new epp_DomainTransferReq());
 	request->m_cmd.ref(newCommand(a,"DT"));
