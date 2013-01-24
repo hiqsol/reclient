@@ -6,6 +6,7 @@
 #include "rebase/Sys/File.h"
 #include "rebase/Parsing/ConfigParser.h"
 #include "rebase/Parsing/Reader.h"
+#include "rebase/DB/PgDB.h"
 #include "epp-rtk-cpp/data/epp_Exception.h"
 #include "epp-rtk-cpp/data/epp_XMLException.h"
 #include "epp-rtk-cpp/data/epp_PollResFactory.h"
@@ -25,11 +26,21 @@ data_type parseConfig (line_cref path) {
 	return ConfigParser::parseConfig(r.c_str());
 };
 
+size_type getRandom (size_type num) {
+	return random() % num;
+}
+
+time_t getTime () {
+	struct timeval tv;
+	gettimeofday(&tv,NULL);
+	return tv.tv_sec;
+};
+
 #define MAXDOMS 4096
 
 data_type domains;
-size_type domainNum;
-size_type domainSum;
+size_type domainNum = 0;
+size_type domainSum = 0;
 size_type domainWts[MAXDOMS] = {0};
 size_type domainSnt[MAXDOMS] = {0};
 
@@ -38,21 +49,16 @@ void_type updateDomains (data_cref doms) {
 	assert(domainNum<MAXDOMS);
 	domainSum = 0;
 	for (size_type i=0;i<domainNum;i++) {
-		size_type wts = doms.getIntN(i);
-		domainWts[i] = wts;
-		domainSum += wts;
+		domainSum += doms.getIntN(i);
+		domainWts[i] = domainSum;
 	};
 };
 
 size_type selectDomain () {
-	size_type r = random() % domainSum;
-	size_type i = 0;
-	size_type s = 0;
-	while (1) {
-		s += domainWts[i];
-		if (r<s) return i;
-		i++;
-	};
+	assert(domainSum>0);
+	size_type r = getRandom(domainSum);
+	for (size_type i=0;r<domainNum;i++) if (r<domainWts[i]) return i;
+	return 0;
 };
 
 int main (int argc,char *argv[]) {
@@ -64,10 +70,11 @@ int main (int argc,char *argv[]) {
 	if (argc<2 || !File::isFile(argv[1])) errx(1,"usage: reBomber configfile");
 	data_type config = parseConfig(argv[1]);
 	printf("config: %s\n",config.dump2line().c_str());
-	line_type regDomains = config.getLine("regDomains");
-	size_type regNum = config.getIntN("regNum");
-	if (!regNum) regNum = 10;
-	size_type wait = config.has("wait") ? config.getIntN("wait") : 100;
+	time_t wait = config.has("wait") ? config.getUnsN("wait") : 3;
+	time_t jitt = config.has("wait_jitter") ? config.getUnsN("wait_jitter") : wait;
+
+	// INITIALIZING DB
+	PgDB db(config.get("db"));
 
 	// INITIALIZING EPP
 	EPP session(
@@ -82,7 +89,7 @@ int main (int argc,char *argv[]) {
 		"password",	config.getLine("password")
 	));
 
-	// PREPARING REGISTRATION REQUEST
+	// PREPARING THE REQUEST
 	line_type regPassword = chomp(Exec::backtick(config.getLine("passgen")));
 	data_type regRequest("password",regPassword);
 	line_type regRegistrant	= config.getLine("regRegistrant");
@@ -96,63 +103,52 @@ int main (int argc,char *argv[]) {
 		regRequest.set("billing",	regBilling.size() ? regBilling : regRegistrant);
 	};
 
-	//time_t last = 0;
-	//time_t curr = 0;
 	// MAIN LOOP
-	size_type count = 0;
-	bool_type readDomains = false;
-	bool_type dropStats  = false;
+	time_t last = 0;
 	while (1) {
-		// CHECKING WHAT TO DO
-		struct stat st;
-		int rs = stat(regDomains.c_str(),&st);
-		if (rs) {
-			//fprintf(stderr,"couldn't open domains file: %s\n",regDomains.c_str());
-			sleep(1);
+		// DETERMINING WHAT TO BOMB if enough time has passed since last check
+		time_t curr = getTime();
+		if (curr>last+wait+(time_t)getRandom(jitt)) {
+			last = curr;
+			if (domainNum) {
+				line_type sql;
+				const size_t buffsize = 4096;
+				char buff[buffsize];
+				for (size_type i=0;i<domainNum;i++) {
+					size_type sent = domainSnt[i];
+					if (sent) {
+						snprintf(buff,buffsize,"INSERT INTO intercept_log (domain,num) VALUES ('%s',%d);\n",domains.key(i),sent);
+					};
+					sql += buff;
+					domainSnt[i] = 0;
+				};
+				db.exec(sql);
+			};
+			domains = db.hash1("\
+				SELECT		domain,sum\
+				FROM		simple_intercepting_domain\
+				WHERE		time=to_day()\
+			");
+			fprintf(stderr,"domains: %s\n",domains.dump2line().c_str());
+			updateDomains(domains);
+		};
+
+		if (!domainNum) {
+			sleep(getRandom(jitt));
 			continue;
 		};
-		//curr = st.st_mtime.tv_sec;
-		//if (curr>last) {
-		if (count>0) count = 0;
-		if (count==0) readDomains = true;
-		count++;
-		if (readDomains) dropStats = true;
 
-		// DROPPING STATS
-		if (dropStats) {
-			for (size_type i=0;i<domainNum;i++) if (domainSnt[i]) {
-				fprintf(stderr,"%-50s %i\n",domains.key(i),domainSnt[i]);
-				domainSnt[i] = 0;
-			};
-			dropStats = false;
-		};
-		// READING DOMAINS LIST
-		if (readDomains) {
-			//last = curr;
-			domains = parseConfig(regDomains);
-			//fprintf(stderr,"domains: %s\n",domains.dump2line().c_str());
-			updateDomains(domains);
-			readDomains = false;
-		};
+		// SELECTING DOMAIN
+		size_t n = selectDomain();
+		domainSnt[n]++;
+		line_type domain = domains.key(n);
 
-		for (size_type i=0;i<regNum;i++) {
-			// DETERMINING DOMAIN
-			size_t n = selectDomain();
-			line_type domain = domains.key(n);
-			domainSnt[n]++;
-			// SENDING REQUEST
-			regRequest.set("name",domain);
-			data_type regResult = session.domainCreate(regRequest);
-			line_type regCode = regResult.getLine("result_code");
-			/*
-				fprintf(stderr,"%i: '%s'\n",n,domain.c_str());
-				fprintf(stderr,"req: %s",regRequest.dump2line().c_str());
-				fprintf(stderr,"%s: %s\n",domain.c_str(),regResult.dump2line().c_str());
-			*/
-			if (strcmp(regCode.c_str(),"2302"))
-				fprintf(stderr,"%s: %s (%s)\n",domain.c_str(),regCode.c_str(),regPassword.c_str());
-		};
-		sleep(wait);
+		// SENDING REQUEST
+		regRequest.set("name",domain);
+		data_type regResult = session.domainCreate(regRequest);
+		size_type regCode = regResult.getUnsN("result_code");
+		if (regCode!=2302) fprintf(stderr,"GOT IT: %4u %4u %s\n",domainSnt[n],regCode,domain.c_str());
+		//usleep(300000);
 	};
 	return 0;
 };
