@@ -1,6 +1,6 @@
 LDADD =	\
 	libeppextensions.a \
-	-lreScript -lreParsing -lreTypes -lreSys \
+	-lreScript -lreParsing -lreTypes -lreSys -lreDB -lpq \
 	-L$(NAMEADDON_PATH)/lib -lnameaddon -lnamedata \
 	-L$(COMNETADDON_PATH)/lib -lcomnetaddon -lcomnetdata \
 	-L$(EPPRTK_PATH)/lib -lepprtk -ldata -ltransport -lnpssl \
