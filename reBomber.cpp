@@ -26,8 +26,12 @@ data_type parseConfig (line_cref path) {
 	return ConfigParser::parseConfig(r.c_str());
 };
 
-size_type getRandom (size_type num) {
-	return random() % num;
+size_type getRandom (size_type limit) {
+	size_type d = RAND_MAX / limit;
+	limit *= d;
+	size_type r;
+	do { r = random(); } while (r >= limit);
+	return r / d;
 }
 
 time_t getTime () {
@@ -57,7 +61,9 @@ void_type updateDomains (data_cref doms) {
 size_type selectDomain () {
 	assert(domainSum>0);
 	size_type r = getRandom(domainSum);
-	for (size_type i=0;r<domainNum;i++) if (r<domainWts[i]) return i;
+	for (size_type i=0;i<domainNum;i++) {
+		if (r<domainWts[i]) return i;
+	};
 	return 0;
 };
 
@@ -71,7 +77,7 @@ int main (int argc,char *argv[]) {
 	data_type config = parseConfig(argv[1]);
 	printf("config: %s\n",config.dump2line().c_str());
 	time_t wait = config.has("wait") ? config.getUnsN("wait") : 3;
-	time_t jitt = config.has("wait_jitter") ? config.getUnsN("wait_jitter") : wait;
+	time_t jitt = config.has("jitt") ? config.getUnsN("jitt") : wait;
 
 	// INITIALIZING DB
 	PgDB db(config.get("db"));
@@ -116,9 +122,8 @@ int main (int argc,char *argv[]) {
 				char buff[buffsize];
 				for (size_type i=0;i<domainNum;i++) {
 					size_type sent = domainSnt[i];
-					if (sent) {
-						snprintf(buff,buffsize,"INSERT INTO intercept_log (domain,num) VALUES ('%s',%d);\n",domains.key(i),sent);
-					};
+					if (!sent) continue;
+					snprintf(buff,buffsize,"INSERT INTO intercept_log (domain,num) VALUES ('%s',%d);\n",domains.key(i),sent);
 					sql += buff;
 					domainSnt[i] = 0;
 				};
@@ -129,8 +134,8 @@ int main (int argc,char *argv[]) {
 				FROM		simple_intercepting_domain\
 				WHERE		time=to_day()\
 			");
-			fprintf(stderr,"domains: %s\n",domains.dump2line().c_str());
 			updateDomains(domains);
+			fprintf(stderr,"domains: %s\n",domains.dump2line().c_str());
 		};
 
 		if (!domainNum) {
@@ -144,10 +149,11 @@ int main (int argc,char *argv[]) {
 		line_type domain = domains.key(n);
 
 		// SENDING REQUEST
-		regRequest.set("name",domain);
+		regRequest.set("name",domains.key(n));
 		data_type regResult = session.domainCreate(regRequest);
 		size_type regCode = regResult.getUnsN("result_code");
-		if (regCode!=2302) fprintf(stderr,"GOT IT: %4u %4u %s\n",domainSnt[n],regCode,domain.c_str());
+		//fprintf(stderr,"n:%2u/%4u domain:%s sent:%2u\n",n,domainSum,domains.key(n),domainSnt[n]);
+		if (regCode!=2302) fprintf(stderr,"GOT IT: %4u %4u %s\n",domainSnt[n],regCode,domains.key(n));
 		//usleep(300000);
 	};
 	return 0;
