@@ -1,6 +1,8 @@
 // (c) Andrii Vasyliev
 // EPP - EPP interface
 
+#include <ostream>
+
 #include "reclient/EPP.h"
 #include "epp-rtk-cpp/epp_Action.h"
 #include "epp-rtk-cpp/epp_Poll.h"
@@ -1302,6 +1304,8 @@ data_type EPP::safeProcessAction (epp_Action_ref command) {
 			"result_msg",		line_type(ex.getString())
 		);
 	} catch (const epp_Exception &ex) {
+		printf("epp_Exception!!!\n\n");
+		std::cout << ex << std::endl;
 		printf("epp_Exception!!!\n\n");
 		return readResultsData(ex.m_details)+readTransIDData(ex.m_trans_id);
 	};
