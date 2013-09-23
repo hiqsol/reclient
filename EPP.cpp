@@ -1305,7 +1305,7 @@ data_type EPP::safeProcessAction (epp_Action_ref command) {
 		);
 	} catch (const epp_Exception &ex) {
 		printf("epp_Exception!!!\n\n");
-		std::cout << ex << std::endl;
+		//std::cout << ex << std::endl;
 		printf("epp_Exception!!!\n\n");
 		return readResultsData(ex.m_details)+readTransIDData(ex.m_trans_id);
 	};
