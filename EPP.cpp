@@ -1063,11 +1063,8 @@ data_type EPP::domainSmartDelete (data_cref a) {
 data_type EPP::domainSmartDelete (data_cref a,data_cref info) {
 	if (info.getLine("statuses").find("pendingDelete")!=line_npos) return info;
 	data_type r("name",a.get("name"));
-	if (info.getLine("statuses").find("clientDeleteProhibited")!=line_npos) {
-		line_type news = "clientDeleteProhibited";
-		if (info.getLine("statuses").find("clientUpdateProhibited")!=line_npos) news += ",clientUpdateProhibited";
-		r.let("remove").set("statuses",news);
-	};
+	if (info.getLine("statuses").find("clientUpdateProhibited")!=line_npos) domainAllowUpdate(a);
+	if (info.getLine("statuses").find("clientDeleteProhibited")!=line_npos) r.let("remove").set("statuses","clientDeleteProhibited");
 	if (info.getLine("nameservers").find(a.getLine("name"))!=line_npos) r.let("remove").set("nameservers",info.getLine("nameservers"));
 	if (r.has("remove")) domainUpdate(r);
 	data_type p = domainDelete(a);
