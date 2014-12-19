@@ -53,6 +53,7 @@
 #include "liberty-org-extensions/SecDNSUpdateAdd.h"
 #include "liberty-org-extensions/SecDNSUpdateChg.h"
 #include "liberty-org-extensions/SecDNSUpdateRem.h"
+#include "liberty-org-extensions/IDN.h"
 #include "comnetaddon/epp_IDNLangExt.h"
 #include "comnetaddon/data/epp_IDNLangExtData.h"
 
@@ -151,6 +152,7 @@ line_type EPP::getExt (line_cref a) {
 line_type EPP::getExt (data_cref a) {
 	if (a.has("ext"))       return a.getLine("ext");
 	if (a.has("trademark")) return "trademark";
+	if (a.has("idnScript")) return "idnScript";
 	if (a.has("idnLang"))   return "idnLang";
 	if (a.has("secdns"))    return "secdns";
 	if (a.has("zone"))      return a.getLine("zone");
@@ -165,7 +167,8 @@ line_type EPP::getExt (data_cref a) {
 epp_Extension_ref EPP::getExtension (data_cref a,line_cref e) {
 	line_cref ext = e.size() ? e : getExt(a);
 	if ("trademark"==ext)   return domainTrademark(a);
-	if ("idnLang"==ext)     return domainIDNLang(a);
+	if ("idnScript"==ext)   return domainIDNScript(a);
+    if ("idnLang"==ext)     return domainIDNLang(a);
     if ("secdns"==ext)      return domainSecDNS(a);
 	return extensions.has(ext) ? extensions.let(ext) : NULL;
 };
@@ -434,6 +437,15 @@ epp_Extension_ref EPP::domainIDNLang (data_cref a) {
     epp_IDNLangExt_ref ext(new epp_IDNLangExt());
     epp_IDNLangExtData data(a.getLine("idnLang"));
     ext->setRequestData(data);
+    return ext;
+};
+
+epp_Extension_ref EPP::domainIDNScript (data_cref a) {
+    IDN_ref ext(new IDN(true));
+    line_type script  = a.getLine("idnScript");
+    line_type command = a.getLine("idnCommand");
+    ext->m_script.ref(new epp_string(script.size() ? script : "ru"));
+    ext->m_command.ref(new epp_string(command.size() ? command : "create"));
     return ext;
 };
 

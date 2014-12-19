@@ -193,6 +193,7 @@ protected:
 
 /// Extensions
     static  epp_Extension_ref       domainTrademark         (data_cref a);
+    static  epp_Extension_ref       domainIDNScript         (data_cref a);
     static  epp_Extension_ref       domainIDNLang           (data_cref a);
     static  epp_Extension_ref       domainSecDNS            (data_cref a);
     static  SecDNSDsData_ref        SecDNS                  (data_cref a);
