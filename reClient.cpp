@@ -111,6 +111,7 @@ int main (int argc,char *argv[]) {
 	File::writeln(logDir+"pid",size2line(THE_PID));
 
 	// INITIALIZING EPP
+	writelog("initing");
 	script.runFunc("repp.init",data_type(
 		"host",		ModBase::get("host"),
 		"port",		ModBase::get("port"),
@@ -134,6 +135,7 @@ int main (int argc,char *argv[]) {
 	);
 	if (ModBase::has("new_password").toBool()) loginOptions.set("new_password",ModBase::get("new_password"));
 	if (ModBase::has("login_trID").toBool()) loginOptions.set("trID",ModBase::get("login_trID"));
+	writelog("logging in");
 	script.runFunc("repp.login",loginOptions);
 	writelog("inited, loggedin");
 	// Register poll response handler
