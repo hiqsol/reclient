@@ -4,7 +4,6 @@
 #ifndef __RE_EPP_H__
 #define __RE_EPP_H__
 
-#include "reclient/DomainTrademark.h"
 #include "rebase/Types/Hash.h"
 #include "rebase/Types/Data.h"
 #include "epp-rtk-cpp/epp_Session.h"
@@ -19,6 +18,9 @@
 #include "epp-rtk-cpp/data/epp_Response.h"
 #include "epp-rtk-cpp/transport/transports.h"
 #include "comnetaddon/epp_NamestoreExt.h"
+
+/// extensions
+#include "liberty-org-extensions/SecDNSDsData.h"
 
 using namespace epptransport;
 using namespace eppobject::epp;
@@ -43,8 +45,6 @@ public:
 		refcnt_ptr<epp_TransportSSL> tref(dynamic_cast<epp_TransportSSL*>(transport));
 		session.setTransport(tref);
 	};
-
-	epp_Extension_ref getExtension		(data_cref a);
 
 	void_type setCredentials		(line_cref u,line_cref p) { username = u;password = p; };
 	void_type setNamestoreExtension		(line_cref ext,line_cref data);
@@ -142,15 +142,20 @@ public:
 
 // RTK auxiliary functions
 protected:
-		epp_Command *			newCommand			(const epp_Extension_ref &ext,line_cref trID)	{ return new epp_Command(NULL,ext,epp_trid(trID)); };
-		epp_Command *			newCommand			(data_cref a,line_cref op)			{ return newCommand(getExtension(a),trID(a.getLine("trID"),op)); };
-		line_type			trID				(line_cref id,line_cref op) { return id.size() ? id : genTrID(op); };
-		line_type			genTrID				(line_cref op) { return serialNo+'-'+size2line(batchNo)+'-'+size2line(commandNo++)+'-'+op; };
-		line_type			genPass				() { return "Jiwynn-Op8"; };
+    epp_extension_ref_seq_ref   getExtensions       (data_cref a);
+    epp_Extension_ref           getExtension        (data_cref a,line_cref e = "");
+    static  line_type           getExt              (data_cref a);
+    static  line_type           getExt              (line_cref a);
 
-	static	line_type			getExt				(data_cref a);
-	static	line_type			getExt				(line_cref a);
-		data_type			safeProcessAction		(epp_Action_ref request);
+            epp_Command *       newCommand          (const epp_extension_ref_seq_ref &exts,line_cref trID)  { return new epp_Command(exts,epp_trid(trID)); };
+            epp_Command *       newCommand          (const epp_Extension_ref &ext,line_cref trID)           { return new epp_Command(NULL,ext,epp_trid(trID)); };
+            epp_Command *       newCommand          (data_cref a,line_cref op)                              { return newCommand(getExtension(a),trID(a.getLine("trID"),op)); };
+
+            line_type           trID                (line_cref id,line_cref op) { return id.size() ? id : genTrID(op); };
+            line_type           genTrID             (line_cref op) { return serialNo+'-'+size2line(batchNo)+'-'+size2line(commandNo++)+'-'+op; };
+            line_type           genPass             () { return "Jiwynn-Op8"; };
+
+            data_type           safeProcessAction   (epp_Action_ref request);
 
 	static	data_type			errorResult			(int code,line_cref msg) { return data_type("result_code",code,"result_msg",msg); };
 
@@ -185,16 +190,21 @@ protected:
 	static	epp_ContactNameAddress		ContactNameAddress		(data_cref a);
 	static	epp_ContactNameAddress_seq *	newContactNameAddressSeq	(data_cref a);
 	static	epp_ContactPhone *		newContactPhone			(data_cref p,data_cref e);
-	static	epp_Extension_ref		domainTrademark			(data_cref a);
 
-	static	data_type			readDomainTrnData		(const epp_PollResData_ref &t);
-	static	data_type			readContactTrnData		(const epp_PollResData_ref &t);
-	static	data_type			readLowBalancePollData		(const epp_PollResData_ref &t);
-	static	data_type			readRGPPollData			(const epp_PollResData_ref &t); // Redemption Grace Period
-	static	data_type			readMessageQueueData		(const epp_MessageQueue_ref &r);
-	static	data_type			readTransIDData			(const epp_TransID_ref &r);
-	static	data_type			readResultsData			(const epp_result_seq_ref &r);
-	static	data_type			readResponseData		(const epp_Response_ref &r);
+/// Extensions
+    static  epp_Extension_ref       domainTrademark         (data_cref a);
+    static  epp_Extension_ref       domainIDNLang           (data_cref a);
+    static  epp_Extension_ref       domainSecDNS            (data_cref a);
+    static  SecDNSDsData_ref        SecDNS                  (data_cref a);
+
+    static  data_type               readDomainTrnData       (const epp_PollResData_ref &t);
+    static  data_type               readContactTrnData      (const epp_PollResData_ref &t);
+    static  data_type               readLowBalancePollData  (const epp_PollResData_ref &t);
+    static  data_type               readRGPPollData         (const epp_PollResData_ref &t); // Redemption Grace Period
+    static  data_type               readMessageQueueData    (const epp_MessageQueue_ref &r);
+    static  data_type               readTransIDData         (const epp_TransID_ref &r);
+    static  data_type               readResultsData         (const epp_result_seq_ref &r);
+    static  data_type               readResponseData        (const epp_Response_ref &r);
 
 // Other auxiliary functions
 protected:

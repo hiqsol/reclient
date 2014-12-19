@@ -45,20 +45,34 @@
 #include "comnetaddon/data/epp_LowBalancePollResData.h"
 #include "comnetaddon/data/epp_RGPPollResData.h"
 
+/// extensions
+#include "reclient/DomainTrademark.h"
+#include "liberty-org-extensions/SecDNSCreate.h"
+#include "liberty-org-extensions/SecDNSKeyData.h"
+#include "liberty-org-extensions/SecDNSUpdate.h"
+#include "liberty-org-extensions/SecDNSUpdateAdd.h"
+#include "liberty-org-extensions/SecDNSUpdateChg.h"
+#include "liberty-org-extensions/SecDNSUpdateRem.h"
+#include "comnetaddon/epp_IDNLangExt.h"
+#include "comnetaddon/data/epp_IDNLangExtData.h"
+
 using namespace eppobject::domain;
 using namespace eppobject::emailFwd;
 using namespace eppobject::sync;
 using namespace eppobject::host;
 using namespace eppobject::contact;
 using namespace eppobject::rgpPoll;
+using namespace eppobject::idnLang;
 using namespace eppobject::lowbalancePoll;
 
 namespace re {
 
 data_type EPP::poll (data_cref a) {
 	// preparing request
+printf("at poll 3\n");
 	epp_PollReq_ref request(new epp_PollReq());
 	request->m_cmd.ref(newCommand(a,"PO"));
+printf("at poll 6\n");
 	request->m_op.ref(new epp_PollOpType(a.getLine("op")=="ack" ? ACK : REQ));
 	if (a.has("id")) request->m_msgID.ref(new epp_string(a.getLine("id")));
 	// performing command
@@ -131,14 +145,16 @@ data_type EPP::logout (data_cref a) {
 
 line_type EPP::getExt (line_cref a) {
 	size_type pos = a.rfind('.');
-	return pos==line_npos ? "" : a.substr(pos);
+	return pos==line_npos ? a : a.substr(pos);
 };
 
 line_type EPP::getExt (data_cref a) {
-	if (a.has("ext")) return a.getLine("ext");
+	if (a.has("ext"))       return a.getLine("ext");
 	if (a.has("trademark")) return "trademark";
-	if (a.has("zone")) return a.getLine("zone");
-	if (a.has("name")) return getExt(a.getLine("name"));
+	if (a.has("idnLang"))   return "idnLang";
+	if (a.has("secdns"))    return "secdns";
+	if (a.has("zone"))      return a.getLine("zone");
+	if (a.has("name"))      return getExt(a.getLine("name"));
 	if (a.has("names")) {
 		line_type n = a.getLine("names");
 		return getExt(n.substr(0,n.find(',')));
@@ -146,17 +162,35 @@ line_type EPP::getExt (data_cref a) {
 	return "";
 };
 
-epp_Extension_ref EPP::getExtension (data_cref a) {
-	line_cref ext = getExt(a);
-	if ("trademark"==ext) return domainTrademark(a);
+epp_Extension_ref EPP::getExtension (data_cref a,line_cref e) {
+	line_cref ext = e.size() ? e : getExt(a);
+	if ("trademark"==ext)   return domainTrademark(a);
+	if ("idnLang"==ext)     return domainIDNLang(a);
+    if ("secdns"==ext)      return domainSecDNS(a);
 	return extensions.has(ext) ? extensions.let(ext) : NULL;
 };
 
+epp_extension_ref_seq_ref EPP::getExtensions (data_cref a) {
+    data_type b = a;
+    epp_extension_ref_seq_ref res;
+    res.ref(new epp_extension_ref_seq());
+    while (1) {
+        line_type ext = getExt(b);
+        if (ext.empty()) break;
+        b.del(ext);
+        res->push_back(getExtension(a,ext));
+    };
+    return res;
+};
+
 data_type EPP::domainInfo (data_cref a) {
+printf("at domainInfo 3\n");
 	// preparing request
 	epp_DomainInfoReq_ref request(new epp_DomainInfoReq());
+printf("at domainInfo 6\n");
 	request->m_cmd.ref(newCommand(a,"DI"));
 		//l_req->m_cmd.ref(new epp_Command(NULL,epp_Unspec_ref(new epp_Unspec()),epp_trid("ABC-12346")));
+printf("at domainInfo 9\n");
 	request->m_name.ref(new epp_string(a.getLine("name")));
 	if (a.has("type")) request->m_hosts_type.ref(newDomainHostsType(a.getLine("type")));
 	if (a.has("password")) request->m_auth_info.ref(newAuthInfo(a));
@@ -327,6 +361,80 @@ data_type EPP::domainCreate (data_cref a) {
 	if (r->m_creation_date!=NULL) res["created_date"] = *r->m_creation_date;
 	if (r->m_expiration_date!=NULL) res["expiration_date"] = *r->m_expiration_date;
 	return res;
+};
+
+epp_Extension_ref EPP::domainSecDNS (data_cref a) {
+	if (!a.has("secdns")) return NULL;
+    data_cref secdns = a.get("secdns");
+printf("a: %s\n",a.dump2line().c_str());
+    if (secdns.has("create")) {
+        data_cref adds = secdns.get("create");
+        SecDNSCreate_ref secdns_create(new SecDNSCreate());
+        secdns_create->m_ds_data.ref(new SecDNSDsData_seq());
+        for (size_type i=0,n=adds.size();i<n;i++) {
+            SecDNSDsData_ref ds_data = SecDNS(adds.get(i));
+            secdns_create->m_ds_data->push_back(*ds_data);
+        };
+        return secdns_create;
+    } else if (secdns.has("update")) {
+        data_cref update = secdns.get("update");
+        SecDNSUpdate_ref secdns_update(new SecDNSUpdate());
+        secdns_update->m_urgent = true;
+        if (update.has("add")) {
+            data_cref adds = update.get("add");
+            secdns_update->m_add.ref(new SecDNSUpdateAdd());
+            secdns_update->m_add->m_ds_data.ref(new SecDNSDsData_seq());
+            for (size_type i=0,n=adds.size();i<n;i++) {
+                SecDNSDsData_ref ds_data = SecDNS(adds.get(i));
+                secdns_update->m_add->m_ds_data->push_back(*ds_data);
+            };
+        };
+        if (update.has("remove")) {
+            data_cref rems = update.get("remove");
+            secdns_update->m_rem.ref(new SecDNSUpdateRem());
+            if (rems=="all") {
+                secdns_update->m_rem->m_all = true;
+            } else {
+                secdns_update->m_rem->m_ds_data.ref(new SecDNSDsData_seq());
+                for (size_type i=0,n=rems.size();i<n;i++) {
+                    SecDNSDsData_ref ds_data = SecDNS(rems.get(i));
+                    secdns_update->m_rem->m_ds_data->push_back(*ds_data);
+                };
+            };
+        };
+        if (update.has("change")) {
+            secdns_update->m_chg.ref(new SecDNSUpdateChg());
+            secdns_update->m_chg->m_ds_data.ref(new SecDNSDsData_seq());
+            SecDNSDsData_ref ds_old = SecDNS(update.get("change").get("old"));
+            SecDNSDsData_ref ds_new = SecDNS(update.get("change").get("new"));
+            secdns_update->m_chg->m_ds_data->push_back(*ds_old);
+            secdns_update->m_chg->m_ds_data->push_back(*ds_new);
+        };
+        return secdns_update;
+    };
+	return NULL;
+};
+
+SecDNSDsData_ref EPP::SecDNS (data_cref a) {
+    SecDNSDsData_ref ds_data(new SecDNSDsData());
+    ds_data->m_ds_key_tag.ref(new epp_long(a.getIntN("key_tag")));
+    ds_data->m_ds_alg.ref(new epp_short(a.getIntN("algorithm")));
+    ds_data->m_ds_digest_type.ref(new epp_short(a.getIntN("digest_type")));
+    ds_data->m_ds_digest.ref(new epp_string(a.getLine("digest")));
+    // ds_data->m_ds_max_sig_life.ref(new epp_long(604800));
+    // ds_data->m_ds_key_data.ref(new SecDNSKeyData());
+    // ds_data->m_ds_key_data->m_ds_flags.ref(new epp_short(256));
+    // ds_data->m_ds_key_data->m_ds_protocol.ref(new epp_short(3));
+    // ds_data->m_ds_key_data->m_ds_alg.ref(new epp_short(1));
+    // ds_data->m_ds_key_data->m_ds_pub_key.ref(new epp_string("AQOyKAL4mM81OhKl9dlhJ8nw5m2S0z0EEpVtHo4AUzjxgU6mupRZXjjSnavw4QxCTFPuwTpGGqAG4WQCwKh5Sr1OJ/xAxUIdp5Sbi/P/ugUcdau1QJydq3yvxLIOTOv9FZuLRbpNPZGqXSfMD5kWTbZwtFS8jbmxJojoGp1xBSej0Q=="));
+    return ds_data;
+};
+
+epp_Extension_ref EPP::domainIDNLang (data_cref a) {
+    epp_IDNLangExt_ref ext(new epp_IDNLangExt());
+    epp_IDNLangExtData data(a.getLine("idnLang"));
+    ext->setRequestData(data);
+    return ext;
 };
 
 epp_Extension_ref EPP::domainTrademark (data_cref a) {
@@ -1181,7 +1289,7 @@ data_type EPP::hostSmartRename (line_cref oldn,line_cref pfix) {
 	data_type p;
 	for (size_type i=0;i<100;i++) {
 		line_type newn = oldn+(i ? "-"+size2line(i)+pfix : pfix);
-		hostDelete(newn);
+		hostDelete(data_type("name",newn));
 		p = hostRename(oldn,newn);
 		if (isResponseOk(p)) return p;
 	};
@@ -1302,7 +1410,7 @@ data_type EPP::safeProcessAction (epp_Action_ref command) {
 		);
 	} catch (const epp_Exception &ex) {
 		printf("epp_Exception!!!\n\n");
-		//std::cout << ex << std::endl;
+		std::cout << ex << std::endl;
 		printf("epp_Exception!!!\n\n");
 		return readResultsData(ex.m_details)+readTransIDData(ex.m_trans_id);
 	};
