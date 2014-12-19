@@ -1,5 +1,5 @@
 LDADD =	\
-	libeppextensions.a \
+	libeppextensions.a -lafiliasext \
 	-lreScript -lreParsing -lreTypes -lreSys -lreDB -lpq \
 	-L$(NAMEADDON_PATH)/lib -lnameaddon -lnamedata \
 	-L$(COMNETADDON_PATH)/lib -lcomnetaddon -lcomnetdata \
