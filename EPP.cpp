@@ -1319,7 +1319,7 @@ data_type EPP::hostRename (line_cref oldn,line_cref newn) {
 
 data_type EPP::hostSmartRename (line_cref oldn,line_cref pfix) {
 	data_type p;
-	for (size_type i=0;i<100;i++) {
+	for (size_type i=0;i<10;i++) {
 		line_type newn = oldn+(i ? "-"+size2line(i)+pfix : pfix);
 		hostDelete(data_type("name",newn));
 		p = hostRename(oldn,newn);
