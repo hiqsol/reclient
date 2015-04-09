@@ -47,6 +47,7 @@
 
 /// extensions
 #include "reclient/DomainTrademark.h"
+#include "reclient/ProSupplementalData.h"
 #include "liberty-org-extensions/SecDNSCreate.h"
 #include "liberty-org-extensions/SecDNSKeyData.h"
 #include "liberty-org-extensions/SecDNSUpdate.h"
@@ -70,10 +71,8 @@ namespace re {
 
 data_type EPP::poll (data_cref a) {
 	// preparing request
-printf("at poll 3\n");
 	epp_PollReq_ref request(new epp_PollReq());
 	request->m_cmd.ref(newCommand(a,"PO"));
-printf("at poll 6\n");
 	request->m_op.ref(new epp_PollOpType(a.getLine("op")=="ack" ? ACK : REQ));
 	if (a.has("id")) request->m_msgID.ref(new epp_string(a.getLine("id")));
 	// performing command
@@ -155,6 +154,7 @@ line_type EPP::getExt (data_cref a) {
 	if (a.has("idnScript")) return "idnScript";
 	if (a.has("idnLang"))   return "idnLang";
 	if (a.has("secdns"))    return "secdns";
+	if (a.has("pro"))       return "pro";
 	if (a.has("zone"))      return a.getLine("zone");
 	if (a.has("name"))      return getExt(a.getLine("name"));
 	if (a.has("names")) {
@@ -170,6 +170,7 @@ epp_Extension_ref EPP::getExtension (data_cref a,line_cref e) {
 	if ("idnScript"==ext)   return domainIDNScript(a);
     if ("idnLang"==ext)     return domainIDNLang(a);
     if ("secdns"==ext)      return domainSecDNS(a);
+    if ("pro"==ext)         return domainPro(a);
 	return extensions.has(ext) ? extensions.let(ext) : NULL;
 };
 
@@ -187,13 +188,10 @@ epp_extension_ref_seq_ref EPP::getExtensions (data_cref a) {
 };
 
 data_type EPP::domainInfo (data_cref a) {
-printf("at domainInfo 3\n");
 	// preparing request
 	epp_DomainInfoReq_ref request(new epp_DomainInfoReq());
-printf("at domainInfo 6\n");
 	request->m_cmd.ref(newCommand(a,"DI"));
 		//l_req->m_cmd.ref(new epp_Command(NULL,epp_Unspec_ref(new epp_Unspec()),epp_trid("ABC-12346")));
-printf("at domainInfo 9\n");
 	request->m_name.ref(new epp_string(a.getLine("name")));
 	if (a.has("type")) request->m_hosts_type.ref(newDomainHostsType(a.getLine("type")));
 	if (a.has("password")) request->m_auth_info.ref(newAuthInfo(a));
@@ -369,7 +367,6 @@ data_type EPP::domainCreate (data_cref a) {
 epp_Extension_ref EPP::domainSecDNS (data_cref a) {
 	if (!a.has("secdns")) return NULL;
     data_cref secdns = a.get("secdns");
-printf("a: %s\n",a.dump2line().c_str());
     if (secdns.has("create")) {
         data_cref adds = secdns.get("create");
         SecDNSCreate_ref secdns_create(new SecDNSCreate());
@@ -446,6 +443,17 @@ epp_Extension_ref EPP::domainIDNScript (data_cref a) {
     line_type command = a.getLine("idnCommand");
     ext->m_script.ref(new epp_string(script.size() ? script : "ru"));
     ext->m_command.ref(new epp_string(command.size() ? command : "create"));
+    return ext;
+};
+
+epp_Extension_ref EPP::domainPro (data_cref a) {
+    ProSupplementalData_ref ext(new ProSupplementalData());
+    data_cref pro = a.get("pro");
+    ext->m_op.ref           (new epp_string(pro.getLine("op")));
+    ext->m_profession.ref   (new epp_string(pro.getLine("profession")));
+    ext->m_authorityName.ref(new epp_string(pro.getLine("authorityName")));
+    ext->m_authorityUrl.ref (new epp_string(pro.getLine("authorityUrl")));
+    ext->m_licenseNumber.ref(new epp_string(pro.getLine("licenseNumber")));
     return ext;
 };
 
@@ -778,6 +786,18 @@ data_type EPP::contactInfo (data_cref a) {
 	if (r->m_updated_date!=NULL) res["updated_date"] = *r->m_updated_date;
 	if (r->m_transfer_date!=NULL) res["transfer_date"] = *r->m_transfer_date;
 	if (r->m_auth_info!=NULL && r->m_auth_info->m_value!=NULL) res["password"] = *r->m_auth_info->m_value;
+	// getting extensions info
+	if(r->m_rsp->m_ext_strings != NULL) {
+		ProSupplementalData_ref pro(new ProSupplementalData());
+		eppobject::epp::epp_xml_string_seq_ref extension_strings;
+		extension_strings = r->m_rsp->m_ext_strings;
+		eppobject::epp::epp_xml_string first_extension = extension_strings->front();
+		pro->fromXML(first_extension);
+		if (pro->m_profession!=NULL)		res["profession"]		= *pro->m_profession;
+		if (pro->m_authorityName!=NULL)		res["authorityName"]    = *pro->m_authorityName;
+		if (pro->m_authorityUrl!=NULL)		res["authorityUrl"]		= *pro->m_authorityUrl;
+		if (pro->m_licenseNumber!=NULL)		res["licenseNumber"]	= *pro->m_licenseNumber;
+	};
 	return res;
 };
 
