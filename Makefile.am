@@ -18,4 +18,4 @@ check_PROGRAMS = testEPP
 testEPP_SOURCES = testEPP.cpp EPP.cpp
 
 lib_LIBRARIES = libeppextensions.a
-libeppextensions_a_SOURCES = DomainTrademark.cc ProSupplementalData.cc
+libeppextensions_a_SOURCES = DomainTrademark.cc ProSupplementalData.cc XxxLaunch.cc

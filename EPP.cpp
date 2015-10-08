@@ -48,6 +48,7 @@
 /// extensions
 #include "reclient/DomainTrademark.h"
 #include "reclient/ProSupplementalData.h"
+#include "reclient/XxxLaunch.h"
 #include "liberty-org-extensions/SecDNSCreate.h"
 #include "liberty-org-extensions/SecDNSKeyData.h"
 #include "liberty-org-extensions/SecDNSUpdate.h"
@@ -155,6 +156,7 @@ line_type EPP::getExt (data_cref a) {
 	if (a.has("idnLang"))   return "idnLang";
 	if (a.has("secdns"))    return "secdns";
 	if (a.has("pro"))       return "pro";
+	if (a.has("launch"))    return "launch";
 	if (a.has("zone"))      return a.getLine("zone");
 	if (a.has("name"))      return getExt(a.getLine("name"));
 	if (a.has("names")) {
@@ -171,6 +173,7 @@ epp_Extension_ref EPP::getExtension (data_cref a,line_cref e) {
     if ("idnLang"==ext)     return domainIDNLang(a);
     if ("secdns"==ext)      return domainSecDNS(a);
     if ("pro"==ext)         return domainPro(a);
+    if ("launch"==ext)      return domainLaunch(a);
 	return extensions.has(ext) ? extensions.let(ext) : NULL;
 };
 
@@ -454,6 +457,19 @@ epp_Extension_ref EPP::domainPro (data_cref a) {
     ext->m_authorityName.ref(new epp_string(pro.getLine("authorityName")));
     ext->m_authorityUrl.ref (new epp_string(pro.getLine("authorityUrl")));
     ext->m_licenseNumber.ref(new epp_string(pro.getLine("licenseNumber")));
+    return ext;
+};
+
+epp_Extension_ref EPP::domainLaunch (data_cref a) {
+    XxxLaunch_ref ext(new XxxLaunch());
+    data_cref pro = a.get("launch");
+    ext->m_op.ref           (new epp_string(pro.get("op").toLine(pro.toLine())));
+    ext->m_name.ref         (new epp_string(pro.get("name").toLine()));
+//  ext->m_name.ref         (new epp_string(pro.get("name").toLine("restricted")));
+    ext->m_phase.ref        (new epp_string(pro.get("phase").toLine("open")));
+    ext->m_noticeID.ref     (new epp_string(pro.getLine("noticeID")));
+    ext->m_notAfter.ref     (new epp_string(pro.getLine("notAfter")));
+    ext->m_acceptedDate.ref (new epp_string(pro.getLine("acceptedDate")));
     return ext;
 };
 

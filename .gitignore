@@ -12,7 +12,11 @@ install-sh
 missing
 stamp-h1
 reClient
+*.reClient
+reBomber
+*.reBomber
 save-reClient
+
 
 # General ignores
 old.*
