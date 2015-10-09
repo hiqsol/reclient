@@ -357,6 +357,7 @@ data_type EPP::domainCreate (data_cref a) {
 	epp_DomainCreate_ref command(new epp_DomainCreate());
 	command->setRequestData(*request);
 	data_type err = safeProcessAction(command);
+/// printf("\ndomainCreate: %s\n\n", (command->toXML()).c_str());
 	if (err.notNull()) return err;
 	// getting response
 	epp_DomainCreateRsp_ref r = command->getResponseData();
@@ -462,14 +463,14 @@ epp_Extension_ref EPP::domainPro (data_cref a) {
 
 epp_Extension_ref EPP::domainLaunch (data_cref a) {
     XxxLaunch_ref ext(new XxxLaunch());
-    data_cref pro = a.get("launch");
-    ext->m_op.ref           (new epp_string(pro.get("op").toLine(pro.toLine())));
-    ext->m_name.ref         (new epp_string(pro.get("name").toLine()));
-//  ext->m_name.ref         (new epp_string(pro.get("name").toLine("restricted")));
-    ext->m_phase.ref        (new epp_string(pro.get("phase").toLine("open")));
-    ext->m_noticeID.ref     (new epp_string(pro.getLine("noticeID")));
-    ext->m_notAfter.ref     (new epp_string(pro.getLine("notAfter")));
-    ext->m_acceptedDate.ref (new epp_string(pro.getLine("acceptedDate")));
+    data_cref launch = a.get("launch");
+    line_type domain = a.getLine("name");
+    ext->m_op.ref           (new epp_string(launch.get("op").toLine("create")));
+    ext->m_name.ref         (new epp_string(launch.get("name").toLine(launch.toLine())));
+    ext->m_phase.ref        (new epp_string(launch.get("phase").toLine("open")));
+    ext->m_noticeID.ref     (new epp_string(launch.getLine("noticeID")));
+    ext->m_notAfter.ref     (new epp_string(launch.getLine("notAfter")));
+    ext->m_acceptedDate.ref (new epp_string(launch.getLine("acceptedDate")));
     return ext;
 };
 
