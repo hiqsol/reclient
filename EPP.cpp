@@ -465,9 +465,9 @@ epp_Extension_ref EPP::domainLaunch (data_cref a) {
     XxxLaunch_ref ext(new XxxLaunch());
     data_cref launch = a.get("launch");
     line_type domain = a.getLine("name");
-    ext->m_op.ref           (new epp_string(launch.get("op").toLine("create")));
-    ext->m_name.ref         (new epp_string(launch.get("name").toLine(launch.toLine())));
-    ext->m_phase.ref        (new epp_string(launch.get("phase").toLine("open")));
+    ext->m_op.ref           (new epp_string(launch.get("op").toLine(launch.toLine())));
+    ext->m_name.ref         (new epp_string(launch.get("name").toLine(a.get("launchName").toLine())));
+    ext->m_phase.ref        (new epp_string(launch.get("phase").toLine(a.get("launchPhase").toLine("open"))));
     ext->m_noticeID.ref     (new epp_string(launch.getLine("noticeID")));
     ext->m_notAfter.ref     (new epp_string(launch.getLine("notAfter")));
     ext->m_acceptedDate.ref (new epp_string(launch.getLine("acceptedDate")));
