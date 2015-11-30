@@ -1234,7 +1234,7 @@ data_type EPP::domainSmartDelete (data_cref a,data_cref info) {
 data_type EPP::domainSmartLock (data_cref a,data_cref info) {
 	data_type old_s = info.get("statuses").ksplited();
 	data_type new_s = old_s;
-	char_cptr stats[] = {"clientUpdateProhibited","clientDeleteProhibited","clientTransferProhibited"};
+	char_cptr stats[] = {"clientDeleteProhibited","clientTransferProhibited"};
 	size_type go = 0;
 	for (size_type i=0,n=sizeof(stats)/sizeof(*stats);i<n;i++) if (!old_s.has(stats[i])) {
 		new_s.set(stats[i],data_null);
