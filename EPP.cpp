@@ -1631,9 +1631,9 @@ epp_ContactAddress *EPP::newContactAddress (data_cref a) {
 	if (a.has("street2")) res->m_street2.ref(new epp_string(a.getLine("street2")));
 	if (a.has("street3")) res->m_street3.ref(new epp_string(a.getLine("street3")));
 	if (a.has("city")) res->m_city.ref(new epp_string(a.getLine("city")));
-	if (a.has("province")) res->m_state_province.ref(new epp_string(a.getLine("province")));
+	if (a.has("province") && a.getLine("province")!=" ") res->m_state_province.ref(new epp_string(a.getLine("province")));
 	if (a.has("postal_code")) res->m_postal_code.ref(new epp_string(a.getLine("postal_code")));
-	if (a.has("country")) res->m_country_code.ref(new epp_string(a.getLine("country")));
+	if (a.has("country")) res->m_country_code.ref(new epp_string(uc(a.getLine("country"))));
 	return res;
 };
 
