@@ -90,13 +90,15 @@ int main (int argc,char *argv[]) {
 	bool_type doSerialize	= ModBase::get("doSerialize").toBool();
 
 	// INITIALIZING LOG
-	data_type lastlog = csplit(chomp(Exec::backtick("ls -t "+logDir+" | head -n 1")),".");
-	size_type lastpid = lastlog.getIntN(2);
+    line_type pidfile = logDir + "pid";
+	//data_type lastlog = csplit(chomp(Exec::backtick("ls -t "+logDir+" | head -n 1")),".");
+	size_type lastpid = atol(File::read(pidfile).c_str());
 	if (lastpid && !kill(lastpid,0)) {
 		printf("Already running\n");
 		exit(1);
 	};
-	THE_SNO = lastlog.getIntN(1)+1;
+	//THE_SNO = lastlog.getIntN(1)+1;
+	THE_SNO = 1;
 	THE_PID = getpid();
 	THE_EXT = "."+size2line(THE_SNO);
 	THE_DAY = chomp(Exec::backtick("date '+%Y-%m-%d'"));
@@ -106,9 +108,10 @@ int main (int argc,char *argv[]) {
 		printf("can't open log: %s\n",THE_LOG.c_str());
 		exit(1);
 	};
-	printf("LastLog:%s LastPID:%i THE_SNO:%i' \n",lastlog.getLine(0).c_str(),lastpid,THE_SNO);
+	//printf("LastLog:%s LastPID:%i THE_SNO:%i' \n",lastlog.getLine(0).c_str(),lastpid,THE_SNO);
+	printf("LastPID:%i THE_SNO:%i' \n", lastpid, THE_SNO);
 	writelog("opened");
-	File::writeln(logDir+"pid",size2line(THE_PID));
+	File::writeln(pidfile, size2line(THE_PID));
 
 	// INITIALIZING EPP
 	writelog("initing");
