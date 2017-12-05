@@ -56,6 +56,7 @@ data_type ModEPP::contactDelete		(data_cref a) { return sessions.let(a.getLine("
 // SMART COMMANDS
 data_type ModEPP::pollOne		(data_cref a) { return sessions.let(a.getLine("session",0)).pollOne(a); };
 data_type ModEPP::pollAll		(data_cref a) { return sessions.let(a.getLine("session",0)).pollAll(a); };
+data_type ModEPP::pollAck		(data_cref a) { sessions.let(a.getLine("session",0)).pollAck(a.get("id"));return NULL; };
 data_type ModEPP::domainAllowUpdate	(data_cref a) { return sessions.let(a.getLine("session",0)).domainAllowUpdate(a); };
 data_type ModEPP::domainProhibitUpdate	(data_cref a) { return sessions.let(a.getLine("session",0)).domainProhibitUpdate(a); };
 data_type ModEPP::domainMassCheck	(data_cref a) { return sessions.let(a.getLine("session",0)).domainMassCheck(a); };

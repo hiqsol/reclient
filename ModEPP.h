@@ -21,7 +21,7 @@ public:
 		",emailFwdInfo,emailFwdCheck,emailFwdRenew,emailFwdCreate,emailFwdUpdate,emailFwdDelete,emailFwdTransfer"
 		",hostInfo,hostCheck,hostCreate,hostUpdate,hostDelete"
 		",contactCheck,contactCreate,contactInfo,contactTransfer,contactUpdate,contactDelete"
-		",pollOne,pollAll"
+		",pollOne,pollAck,pollAll"
 		",domainAllowUpdate,domainProhibitUpdate"
 		",domainMassCheck,domainSmartCheck,domainSmartUpdate,domainSmartDelete,domainSmartRenew"
 		",domainSmartLock,domainSmartUnlock,domainSmartHold,domainSmartUnhold"
@@ -69,6 +69,7 @@ public:
 
 // SMART COMMANDS
 	static	data_type pollOne		(data_cref a);
+	static	data_type pollAck		(data_cref a);
 	static	data_type pollAll		(data_cref a);
 	static	data_type domainAllowUpdate	(data_cref a);
 	static	data_type domainProhibitUpdate	(data_cref a);
